@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Document extends Model
 {
     use HasFactory;
+
+    public function document_copy()
+    {
+        return $this->hasOne(Document_copy::class);
+    }
 }
