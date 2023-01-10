@@ -9,6 +9,13 @@ class Document extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'content',
+        'type',
+        
+    ];
+
     public function document_copy()
     {
         return $this->hasOne(Document_copy::class);
