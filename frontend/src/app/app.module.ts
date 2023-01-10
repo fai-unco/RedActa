@@ -3,8 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
+import { NbThemeModule, NbLayoutModule, NbMenuModule, NbSidebarModule, NbContextMenuModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
+import { PanelModule } from './panel/panel.module';
 
 @NgModule({
   declarations: [
@@ -15,8 +16,9 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
     AppRoutingModule,
     BrowserAnimationsModule,
     NbThemeModule.forRoot({ name: 'default' }),
-    NbLayoutModule,
-    NbEvaIconsModule
+    PanelModule,
+    NbMenuModule.forRoot(),
+    NbSidebarModule.forRoot(), //if this is your app.module
   ],
   providers: [],
   bootstrap: [AppComponent]
