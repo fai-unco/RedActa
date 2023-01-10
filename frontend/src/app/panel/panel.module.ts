@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 
 import { PanelRoutingModule } from './panel-routing.module';
 import { PanelComponent } from './panel.component';
-import { NbContextMenuModule, NbLayoutModule, NbSidebarModule } from '@nebular/theme';
+import { NbContextMenuModule, NbLayoutModule, NbMenuModule, NbSidebarModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
+import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 
 @NgModule({
   declarations: [
-    PanelComponent
+    PanelComponent,
+    SidebarMenuComponent
   ],
   imports: [
     CommonModule,
@@ -16,7 +18,8 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
     NbContextMenuModule,
     NbLayoutModule,
     NbEvaIconsModule,
-    NbSidebarModule
+    NbSidebarModule,
+    NbMenuModule
 
 
   ]
