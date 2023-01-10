@@ -17,11 +17,16 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('type');
-            $table->string('content');
+            $table->text('content');
             $table->timestamps();
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('redacta_users');
         });
+
+         Schema::table('documents', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+
     }
 
     /**
