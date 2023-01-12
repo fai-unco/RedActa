@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('type');
             $table->text('content');
             $table->timestamps();
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('redacta_users');
+            $table->bigInteger('redacta_user_id')->unsigned();
+            $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
         });
          Schema::table('documents', function (Blueprint $table) {
             $table->softDeletes();
