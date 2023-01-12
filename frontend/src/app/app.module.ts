@@ -5,6 +5,9 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbLayoutModule, NbMenuModule, NbSidebarModule, NbContextMenuModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
+import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth.interceptor';
+
 import { PanelModule } from './panel/panel.module';
 
 @NgModule({
@@ -15,12 +18,16 @@ import { PanelModule } from './panel/panel.module';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     NbThemeModule.forRoot({ name: 'default' }),
+    NbEvaIconsModule,
     PanelModule,
     NbMenuModule.forRoot(),
     NbSidebarModule.forRoot(), //if this is your app.module
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true } 
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,26 @@
+<nb-layout>
+  <nb-layout-column>
+    <nb-card>
+      <nb-card-body>
+        <h1>Iniciar sesión</h1>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <div class="form-section">
+            <label for="input-email">Email</label>
+            <input type="email" nbInput fullWidth id="input-email" formControlName="email" name="email" placeholder="">
+          </div>
+          <div class="form-section">
+            <label for="input-password">Contraseña</label>
+            <input type="password" nbInput fullWidth id="input-password" formControlName="password" name="password" placeholder="">
+          </div>
+          <button [nbSpinner]="loading" nbSpinnerStatus="primary" status="success" nbButton type="submit" [disabled]="!loginForm.valid || loading">
+            <ng-container *ngIf="!loading">Iniciar sesión</ng-container> 
+          </button>
+        </form>
+        <div class="error-message" *ngIf="error">
+          <nb-icon icon="close-circle-outline"></nb-icon>
+            {{error}}
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </nb-layout-column>
+</nb-layout>
