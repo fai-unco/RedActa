@@ -9,6 +9,7 @@ import { NbSidebarService } from '@nebular/theme';
 export class NavbarComponent implements OnInit {
 
   sidebarIsCollapsed = false;
+  userMenu = [ { title: 'Cerrar sesión' } ];
   
   constructor(private sidebarService: NbSidebarService) { }
 

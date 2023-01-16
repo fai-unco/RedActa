@@ -1,11 +1,11 @@
-<button nbButton class="menu-btn" (click)="toggleSidebar()">
+<button nbButton ghost class="menu-btn" (click)="toggleSidebar()">
     <nb-icon icon="menu-outline"></nb-icon>
 </button>
 <div class="btn-group-header">
     <nb-user
+        [nbContextMenu]="userMenu"
         size="large"
         name="Jonh Doe"
-        title="User"
         onlyPicture>
     </nb-user>
 </div>
