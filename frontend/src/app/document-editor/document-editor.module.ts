@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { DocumentEditorRoutingModule } from './document-editor-routing.module';
 import { DocumentEditorComponent } from './document-editor.component';
 import { NbInputModule, NbCardModule, NbButtonModule, NbActionsModule, NbUserModule, NbCheckboxModule, NbRadioModule, NbDatepickerModule, NbSelectModule, NbIconModule } from '@nebular/theme';
+import { TextEditorComponent } from './text-editor/text-editor.component';
 
 
 @NgModule({
   declarations: [
-    DocumentEditorComponent
+    DocumentEditorComponent,
+    TextEditorComponent
   ],
   imports: [
     CommonModule,
