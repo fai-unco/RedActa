@@ -1,0 +1,76 @@
+<nb-card>
+    <nb-card-header>Tipo de documento</nb-card-header>
+        <nb-card-body>
+            <div class="form-group">
+                <nb-select fullWidth placeholder="Seleccionar tipo de documento" [(selected)]="documentType">
+                    <nb-option value="declaracion">Declaración</nb-option>
+                    <nb-option value="resolucion">Resolución</nb-option>
+                    <nb-option value="acta">Acta</nb-option>
+                    <nb-option value="memo">Memo</nb-option>
+                    <nb-option value="nota">Nota</nb-option>
+                </nb-select>
+            </div>
+            <div class="form-group">
+                <nb-checkbox>Ad-referendum</nb-checkbox>
+            </div>
+        </nb-card-body>
+</nb-card>
+<nb-card>
+    <nb-card-header>Datos generales</nb-card-header>
+        <nb-card-body>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="number" nbInput fullWidth placeholder="Nro. de identificador del documento">           
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <nb-select fullWidth placeholder="Seleccionar remitente">
+                            <nb-option *ngFor="let remitente of remitentes" [value]="remitente.id">
+                                {{remitente.name}}
+                            </nb-option>
+                        </nb-select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input nbInput fullWidth [nbDatepicker]="datepicker" placeholder="Fecha de emisión">
+                    <nb-datepicker #datepicker></nb-datepicker>
+                </div>
+                <div class="col-sm-6">
+                    <input nbInput fullWidth placeholder="Lugar de emisión">
+                </div>
+            </div>
+            <div class="form-group">
+                <input  nbInput fullWidth placeholder="Asunto">           
+            </div>
+            <div class="form-group">
+                <textarea *ngIf="documentType == 'memo' || documentType == 'nota'" nbInput fullWidth placeholder="Destinatario"></textarea>         
+            </div>      
+    </nb-card-body>
+</nb-card>
+<ng-container *ngIf="documentType == 'declaracion' || documentType == 'resolucion'">
+    <nb-card>
+        <nb-card-header>Visto</nb-card-header>
+        <nb-card-body></nb-card-body>
+    </nb-card>
+    <nb-card>
+        <nb-card-header>Considerando</nb-card-header>
+        <nb-card-body></nb-card-body>
+    </nb-card>
+    <nb-card>
+        <nb-card-header>
+            <ng-container *ngIf="documentType == 'declaracion'">Declara</ng-container>
+            <ng-container *ngIf="documentType == 'resolucion'">Resuelve</ng-container>
+        </nb-card-header>
+        <nb-card-body></nb-card-body>
+    </nb-card>
+</ng-container>
+<ng-container *ngIf="documentType == 'acta' || documentType == 'memo' || documentType == 'nota'" >
+    <nb-card>
+        <nb-card-header>Cuerpo</nb-card-header>
+        <nb-card-body></nb-card-body>
+    </nb-card>
+</ng-container> 
