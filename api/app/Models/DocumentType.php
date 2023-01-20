@@ -11,8 +11,10 @@ class DocumentType extends Model
 {
     use HasFactory,SoftDeletes;
 
+    protected $primaryKey = 'document_type_id';
+
     protected $fillable = [
-        'description',
+        'description'
     ];
 
 
