@@ -14,6 +14,6 @@ class DocumentCopy extends Model
 
     public function document()
     {
-        return $this->belongsTo(Document::class);
+        return $this->hasOne(Document::class);
     }
 }
