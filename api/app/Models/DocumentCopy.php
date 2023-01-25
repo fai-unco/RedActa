@@ -10,7 +10,7 @@ class DocumentCopy extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_document_copy';
-    const CREATED_AT = 'creation_date';
+    const created_at = 'creation_date';
 
     public function document()
     {
