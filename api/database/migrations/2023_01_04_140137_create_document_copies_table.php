@@ -17,6 +17,10 @@ return new class extends Migration
             $table->id('id_document_copy');
             $table->timestamps();
         });
+        Schema::table('document_copies', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+
     }
 
     /**
