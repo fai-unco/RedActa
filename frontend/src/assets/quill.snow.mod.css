@@ -1,0 +1,3 @@
+.ql-snow .ql-stroke {
+    stroke: var(--input-basic-text-color); /*this variable is defined in nebular styles*/
+  }
