@@ -26,6 +26,11 @@ return new class extends Migration
             $table->foreign('document_copy_id')->references('id')->on('document_copies');
             $table->bigInteger('issuer_id')->unsigned();
             $table->foreign('issuer_id')->references('id')->on('issuers');
+            $table->string('issue_place');
+            $table->date('issue_date');
+            $table->string('destinatary')->nullable();
+            $table->string('subject')->nullable();
+            $table->boolean('ad_referendum')->default(false);
 
         });
          Schema::table('documents', function (Blueprint $table) {
