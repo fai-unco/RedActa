@@ -13,8 +13,12 @@ class Document extends Model
 
     protected $fillable = [
         'name',
-        'content',
-        'type',
+        'body',
+        'issue_date',
+        'issue_place',
+        'destinatary',
+        'subject',
+        'ad_referendum'
         
     ];
 
