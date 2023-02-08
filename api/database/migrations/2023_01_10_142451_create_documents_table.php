@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('type');
             $table->text('content');
             $table->timestamps();
             $table->bigInteger('redacta_user_id')->unsigned();
