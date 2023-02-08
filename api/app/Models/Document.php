@@ -30,16 +30,16 @@ class Document extends Model
     
     
 //belonTo
-    public function document_type(){
-        return $this->belongsTo(Document_type::class);
+    public function documentType(){
+        return $this->belongsTo(DocumentType::class);
     }
 
     public function redactaUser(){
         return $this->belongsTo(RedactaUser::class);
     }
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function issuer(){
+        return $this->belongsTo(Issuer::class);
     }
 
     
