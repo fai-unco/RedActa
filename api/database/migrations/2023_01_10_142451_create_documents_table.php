@@ -14,18 +14,29 @@ return new class extends Migration
     public function up()
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
+            $table->id('id_document');
+            $table->string('name');
             $table->string('type');
             $table->text('content');
             $table->timestamps();
+            $table->string('issue_place');
+            $table->date('issue_date');
+            $table->string('destinatary')->nullable();
+            $table->string('subject')->nullable();
+            $table->boolean('ad_referendum')->default(false);
+
             $table->bigInteger('redacta_user_id')->unsigned();
             $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
+
+            $table->bigInteger('document_type_id')->unsigned();
+            $table->foreign('document_type_id')->references('id_document_types')->on('document_types');
+
+            $table->bigInteger('document_copy_id')->unsigned();
+            $table->foreign('document_copy_id')->references('id_document_copy')->on('document_copies');
         });
-         Schema::table('documents', function (Blueprint $table) {
+        Schema::table('documents', function (Blueprint $table) {
             $table->softDeletes();
         });
-
     }
 
     /**
