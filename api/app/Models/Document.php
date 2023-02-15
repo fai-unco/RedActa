@@ -50,4 +50,21 @@ class Document extends Model
     public function document_signature_presentations(){
         return $this->hasMany(Document_signature_presentation::class);
     }
+
+    public function set($data){
+        $issuer = Issuer::find($data['issuer_id']);
+        $user = RedactaUser::find(Auth::id());
+        $documentType = DocumentType::find($data['document_type_id']);
+
+        $this->redactaUser()->associate($user);
+        foreach ($data as $key => $value) {
+            if ($key == 'document_type_id'){
+                $this->documentType()->associate($documentType);
+            } else if  ($key == 'issuer_id'){
+                $this->issuer()->associate($issuer);
+            } else {
+                $this->setAttribute($key, $value);
+            }
+        }
+    }
 }
