@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('document_types', function (Blueprint $table) {
+        Schema::create('issuers', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
             $table->timestamps();
+            $table->string('description');
         });
 
-        Schema::table('document_types', function (Blueprint $table) {
+        Schema::table('issuers', function (Blueprint $table) {
             $table->softDeletes();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('document_types');
+        Schema::dropIfExists('issuers');
     }
 };

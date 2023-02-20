@@ -13,8 +13,12 @@ class Document extends Model
 
     protected $fillable = [
         'name',
-        'content',
-        'type',
+        'body',
+        'issue_date',
+        'issue_place',
+        'destinatary',
+        'subject',
+        'ad_referendum'
         
     ];
 
@@ -26,16 +30,16 @@ class Document extends Model
     
     
 //belonTo
-    public function document_type(){
-        return $this->belongsTo(Document_type::class);
+    public function documentType(){
+        return $this->belongsTo(DocumentType::class);
     }
 
     public function redactaUser(){
         return $this->belongsTo(RedactaUser::class);
     }
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function issuer(){
+        return $this->belongsTo(Issuer::class);
     }
 
     
@@ -45,5 +49,22 @@ class Document extends Model
     }
     public function document_signature_presentations(){
         return $this->hasMany(Document_signature_presentation::class);
+    }
+
+    public function set($data){
+        $issuer = Issuer::find($data['issuer_id']);
+        $user = RedactaUser::find(Auth::id());
+        $documentType = DocumentType::find($data['document_type_id']);
+
+        $this->redactaUser()->associate($user);
+        foreach ($data as $key => $value) {
+            if ($key == 'document_type_id'){
+                $this->documentType()->associate($documentType);
+            } else if  ($key == 'issuer_id'){
+                $this->issuer()->associate($issuer);
+            } else {
+                $this->setAttribute($key, $value);
+            }
+        }
     }
 }

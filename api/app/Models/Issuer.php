@@ -6,21 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
-class DocumentType extends Model
+class Issuer extends Model
 {
-    use HasFactory,SoftDeletes;
-
-    //protected $primaryKey = 'document_type_id';
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'description'
     ];
 
-
-    //hasMany
-    public function documents()
-    {
+    public function documents(){
         return $this->hasMany(Document::class);
     }
 }
