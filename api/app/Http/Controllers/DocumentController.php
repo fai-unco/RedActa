@@ -150,6 +150,7 @@ class DocumentController extends Controller
     
     private function formatDocumentDataForRetrieving($data){  
         return [
+            'id' => $data->id,
             'documentTypeId' => $data->document_type_id,
             'name' => $data->name,
             'issuerId' => $data->issuer_id,
