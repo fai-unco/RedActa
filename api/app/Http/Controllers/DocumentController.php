@@ -74,7 +74,7 @@ class DocumentController extends Controller
             return response()->json([
                 'status' => 404,
                 'description' => 'El documento que desea modificar no existe'        
-            ]);
+            ], 404);
         }
     }
 
@@ -114,7 +114,7 @@ class DocumentController extends Controller
             return response()->json([
                 'status' => 404,
                 'description' => 'El documento que desea modificar no existe'        
-            ]);
+            ], 404);
         }
 
     }
