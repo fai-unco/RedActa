@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Document_state_history_item extends Model
+class DocumentStateHistoryItem extends Model
 {
     use HasFactory;
-    
+    protected $fillable = [
+        'start_date',
+        'end_date'
+        
+    ];
 
     //belongTo
     public function document(){
