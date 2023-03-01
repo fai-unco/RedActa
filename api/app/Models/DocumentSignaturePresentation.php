@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Document_signature_presentation extends Model
+class DocumentSignaturePresentation extends Model
 {
     use HasFactory;
-    
+    protected $fillable = [
+        'creation_date' 
+    ];
     //belongTo
     public function document(){
         return $this->belongsTo(Document::class);
