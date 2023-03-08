@@ -11,7 +11,7 @@ export class ApiConnectionService {
   constructor(private http: HttpClient) { }
 
   get(urlSuffix: string, id?: string){
-    let url = environment.API_URL_BASE + urlSuffix;
+    let url = `${environment.API_URL_BASE}/${urlSuffix}`;
     if(id) {
       url = `${url}/${id}`
     }
