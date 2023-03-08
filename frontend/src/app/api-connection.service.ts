@@ -10,12 +10,12 @@ export class ApiConnectionService {
 
   constructor(private http: HttpClient) { }
 
-  get(urlSuffix: string, id?: string){
+  get(urlSuffix: string, id?: string, options:any = {headers: {accept:'application/json'}}){
     let url = `${environment.API_URL_BASE}/${urlSuffix}`;
     if(id) {
       url = `${url}/${id}`
     }
-    return this.http.get(url);
+    return this.http.get(url, options);
   }
 
   post(urlSuffix: string, data: any){

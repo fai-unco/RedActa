@@ -12,7 +12,7 @@ export class SidebarMenuComponent implements OnInit {
   items: NbMenuItem[]  = [
     {
       title: 'Crear documento',
-      link: ''
+      link: 'documentos/editar'
       //expanded: true,
     }
   ];
