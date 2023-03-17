@@ -171,6 +171,7 @@ class DocumentController extends Controller
         return [
             'document_type_id' => $data->documentTypeId,
             'name' => $data->name,
+            'number' => $data->number,
             'issuer_id' => $data->issuerId,
             'issue_date' => $data->issueDate,
             'issue_place' => $data->issuePlace,
@@ -186,6 +187,7 @@ class DocumentController extends Controller
             'id' => $data->id,
             'documentTypeId' => $data->document_type_id,
             'name' => $data->name,
+            'number' => $data->number,
             'issuerId' => $data->issuer_id,
             'issueDate' => $data->issue_date,
             'issuePlace' => $data->issue_place,
