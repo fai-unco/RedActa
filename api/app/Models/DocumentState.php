@@ -11,7 +11,6 @@ class DocumentState extends Model
 
     protected $fillable = [
         'description',
-        'disabled_date' 
     ];
 
 //hasMany

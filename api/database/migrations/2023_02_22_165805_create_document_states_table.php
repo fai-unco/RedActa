@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('document_states', function (Blueprint $table) {
             $table->id();
             $table->string('description');
-            $table->date('disabled_date');
             $table->timestamps();
         });
         Schema::table('document_states', function (Blueprint $table) {
