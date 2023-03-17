@@ -19,7 +19,8 @@ class Document extends Model
         'issue_place',
         'destinatary',
         'subject',
-        'ad_referendum'
+        'ad_referendum',
+        'number'
         
     ];
 
