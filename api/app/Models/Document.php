@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Document extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -24,13 +24,10 @@ class Document extends Model
         
     ];
 
-    public function document_copy()
-    {
-        return $this->hasOne(Document_copy::class);
+    public function documentCopy(){
+        return $this->hasOne(DocumentCopy::class);
     }
-
-    
-    
+  
 //belonTo
     public function documentType(){
         return $this->belongsTo(DocumentType::class);
@@ -46,11 +43,12 @@ class Document extends Model
 
     
 //hasMany
-    public function document_state_history_items(){
-        return $this->hasMany(Document_state_history_item::class);
+    public function documentStateHistoryItems(){
+        return $this->hasMany(DocumentStateHistoryItem::class);
     }
-    public function document_signature_presentations(){
-        return $this->hasMany(Document_signature_presentation::class);
+
+    public function documentSignaturePresentations(){
+        return $this->hasMany(DocumentSignaturePresentation::class);
     }
 
     public function set($data){

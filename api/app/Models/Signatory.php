@@ -17,7 +17,7 @@ class Signatory extends Model
 
 //hasMany
 
-    public function Document_signature_presentations(){
-        return $this->hasMany(Document_signature_presentation::class);
+    public function DocumentSignaturePresentations(){
+        return $this->hasMany(DocumentSignaturePresentation::class);
     }
 }

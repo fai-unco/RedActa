@@ -18,13 +18,17 @@ class DocumentStateHistoryItem extends Model
     public function document(){
         return $this->belongsTo(Document::class);
     }
+
     public function redactaUser(){
-        return $this->belongsTo(RedactaUser::class);}
+        return $this->belongsTo(RedactaUser::class);
+    }
+
     public function user(){
         return $this->belongsTo(User::class);
     }
-    public function document_state(){
-        return $this->belongsTo(Document_state::class);
+    
+    public function documentState(){
+        return $this->belongsTo(DocumentState::class);
     }
 
 
