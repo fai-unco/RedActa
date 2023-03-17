@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('singatories', function (Blueprint $table) {
+        Schema::create('signatories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('last_name');
             $table->timestamps();
         });
-        Schema::table('singatories', function (Blueprint $table) {
+
+        Schema::table('signatories', function (Blueprint $table) {
             $table->softDeletes();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('singatories');
+        Schema::dropIfExists('signatories');
     }
 };
