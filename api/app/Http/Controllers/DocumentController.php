@@ -57,24 +57,40 @@ class DocumentController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $document = Document::where('id', $id)->first();
-        //->where('user_id', $request->user()->id) Implementa restricción de que solo el creador del documento puede accederlo
-        if($document){
-            return response()->json([
-                'status' => 200,
-                'description' => 'OK',
-                'data' => $this->formatDocumentDataForRetrieving($document)            
-            ]);
-        } else {
-            return response()->json([
-                'status' => 404,
-                'description' => 'El documento que desea modificar no existe'        
-            ], 404);
+        $document = Document::find($id);
+        $loggedInUserId = $request->user()->id;        
+        if ($request->accepts(['application/pdf'])) {                
+            $isCopy = $request->boolean('is_copy', false);
+            $filename = 'documento';
+            if($document){
+                $filename = $document->name;
+                if($isCopy){
+                    $filename = $filename.'_copia';
+                }
+            }
+            return response($this->generatePDF($document, $isCopy, $loggedInUserId))
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
+                ->header('Access-Control-Expose-Headers', 'Content-Disposition');
+        } else if ($request->accepts(['application/json'])) {  
+            if($document && $document->redactaUser->id == $loggedInUserId){
+                return response()->json([
+                    'status' => 200,
+                    'description' => 'OK',
+                    'data' => $this->formatDocumentDataForRetrieving($document)            
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'description' => 'El documento que desea modificar no existe'        
+                ], 404);
+            }  
         }
     }
 
@@ -130,8 +146,25 @@ class DocumentController extends Controller
         //
     }
 
-    public function exportToPDF($id){
-        
+    public function generatePDF($document, $isCopy, $loggedInUserId){
+        $views = [
+            1 => 'res-dec-disp', //if document type == resolucion
+            2 => 'res-dec-disp', //if document type == declaracion
+            3 => 'res-dec-disp', //if document type == disposicion
+            4 => 'nota', //if document type == nota
+            5 => 'acta', //if document type == acta
+            6 => 'memo', //if document type == memo
+        ];
+        $html = "";
+        if($document && $document->redactaUser->id == $loggedInUserId) {
+            $html = view($views[$document->documentType->id])->with(['document' => $document, 'isCopy' => $isCopy]);
+        } 
+        $snappdf = new \Beganovich\Snappdf\Snappdf();
+        $pdf = $snappdf
+            ->setHtml($html->render())
+            ->waitBeforePrinting(10000) 
+            ->generate();
+        return $pdf;
     }
 
     private function formatDocumentDataForStoring($data){  
