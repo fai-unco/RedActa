@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Document_state extends Model
+class DocumentState extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,7 @@ class Document_state extends Model
     ];
 
 //hasMany
-    public function document_state_history_items(){
-        return $this->hasMany(Document_state_history_item::class);
+    public function documentStateHistoryItems(){
+        return $this->hasMany(DocumentStateHistoryItem::class);
     }
 }
