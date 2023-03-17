@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
             $table->bigInteger('document_type_id')->unsigned();
             $table->foreign('document_type_id')->references('id')->on('document_types');
-            $table->bigInteger('document_copy_id')->unsigned();
+            $table->bigInteger('document_copy_id')->nullable()->unsigned();
             $table->foreign('document_copy_id')->references('id')->on('document_copies');
             $table->bigInteger('issuer_id')->unsigned();
             $table->foreign('issuer_id')->references('id')->on('issuers');
