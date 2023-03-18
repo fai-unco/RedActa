@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\IssuerController;
 
 
 /*
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::apiResource('document_types', DocumentTypeController::class);
+Route::apiResource('issuers', IssuerController::class);
 
 Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/login', [AuthenticationController::class, 'login']);
