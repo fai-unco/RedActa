@@ -1,0 +1,67 @@
+/*Document page margins*/
+
+@page {
+    margin-top: 5cm;
+    margin-bottom: 2.5cm;
+    margin-left: 4cm;
+    margin-right: 1cm;
+    size: A4;
+}
+
+/* Document header styles */
+
+.top-header {
+    padding-bottom: 2rem;
+}
+
+.subheader {
+    padding-bottom: 2rem;
+    text-align: right;
+    font-weight: 400;
+    line-height: 1.25;
+}
+
+/* Document body styles*/
+
+.indented {
+    text-indent: 10rem;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+.visto-section {
+    margin-top: 0;
+    text-align: justify;
+    padding-bottom: 1rem;
+}
+
+.visto-section p {
+    display: inline;
+}
+
+.considerando-section {
+    padding-bottom: 1rem;
+}
+
+.articulos-section-beggining { 
+    text-align: center;
+    padding-bottom: 1rem;
+    break-inside: avoid;
+}
+
+.articulo {
+    display: flex;
+    margin-bottom: 1rem; 
+}
+
+.articulo-number {
+    margin-right: 1rem;	
+    line-height: 1.6;
+}
+
+.articulo-content p {
+    padding: 0;
+    margin: 0;
+}
