@@ -1,0 +1,96 @@
+body {
+    position: relative;
+    background: transparent;
+}
+
+/*Remove table borders*/
+
+table {
+    border: 0;
+    width: 100%;
+}
+
+table > tbody > tr:first-child > td, table > tbody > tr:first-child > th {
+    border-top: 0;
+}
+
+table > tbody > tr:last-child > td, table > tbody > tr:last-child > th {
+    border-bottom: 0;
+}
+
+table.document-container {
+    break-after:always;
+}
+
+thead.document-header {
+    display: table-header-group;
+}
+        
+/*
+    Table footer has two children divs: one with "document-footer-cell" class and the other
+    with  "document-footer-empty-cell" class. 
+    The "document-footer-cell" displays the document footer except in print view mode. In this case, the document footer is displayed by the "footer" class element.
+    The "document-footer-empty-cell" div is displayed only in print view mode for keeping a space between the last line of the document body and the "footer" class element.
+*/
+    
+tfoot.document-footer .document-footer-empty-cell {
+    display: none;
+    height: 6rem;
+}
+
+th, td {
+    padding: 0;
+}
+
+.document-body p {
+    line-height: 1.2;		
+}
+
+.footer {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    width: 80ch;
+    padding-right: 2.75rem;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+
+
+@media print {
+    body {
+        margin: 0;
+        padding: 0;	
+        background-color: transparent;
+    }
+
+    .document-header {
+        padding: 0;
+        margin: 0;
+    }
+
+    .issuer>:first-child {
+        margin-top: 0;
+    }
+
+    .document-footer-cell {
+        display: none;
+    }
+
+    tfoot.document-footer .document-footer-empty-cell {
+        display: block;
+        
+    }
+
+    .footer {
+        display: block;
+        width: 100%;
+        padding: 0;
+    }
+}
+
+/* Document body styles*/
+
+.signatures {
+    height: 10rem;
+}
