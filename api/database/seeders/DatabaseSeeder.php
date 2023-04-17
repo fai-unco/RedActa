@@ -25,38 +25,38 @@ class DatabaseSeeder extends Seeder
         DB::table('document_types')->insert([
             [
                 'id' => 1,
-                'description' => 'resolución',
+                'description' => 'Resolución',
             ],
             [
                 'id' => 2,
-                'description' => 'declaración',
+                'description' => 'Declaración',
             ],
             [
                 'id' => 3,
-                'description' => 'disposición',
+                'description' => 'Disposición',
             ],
             [
                 'id' => 4,
-                'description' => 'acta',
+                'description' => 'Acta',
             ],
             [
                 'id' => 5,
-                'description' => 'memo',
+                'description' => 'Memo',
             ],
             [
                 'id' => 6,
-                'description' => 'nota',
+                'description' => 'Nota',
             ],
         ]);
 
         DB::table('issuers')->insert([
             [
                 'id' => 1,
-                'description' => 'decanato',
+                'description' => 'Decanato',
             ],
             [
                 'id' => 2,
-                'description' => 'consejo directivo',
+                'description' => 'Consejo Directivo',
             ]
         ]);
     }
