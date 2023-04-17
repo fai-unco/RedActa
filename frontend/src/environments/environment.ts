@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  API_URL_BASE: 'https://redacta.nahuelmamani.repl.co/api',
+  API_URL_BASE: 'http://localhost:8000/api',
 };
 
 /*
