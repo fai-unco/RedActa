@@ -25,4 +25,26 @@ class RedactaUser extends Authenticatable
         'password',
         'remember_token',
     ];
+
+//hasMany
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function roles(){
+        return $this->hasMany(Role::class);
+    }
+
+    public function documentSignaturePresentations()
+    {
+        return $this->hasMany(DocumentSignaturePresentation::class);
+    }
+
+    public function documentStateHistoryItems()
+    {
+        return $this->hasMany(DocumentStateHistoryItem::class);
+    }
+
 }
