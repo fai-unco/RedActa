@@ -1,0 +1,163 @@
+<nb-card class="h-100" *ngIf="!(formIsLoaded || error)" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+</nb-card>
+
+
+<form *ngIf="formIsLoaded" [formGroup]="form">
+    <div class="d-flex justify-content-between">
+        <div class="mb-3 h3 document-name-input" nbTooltip="Cambiar nombre del documento" [nbTooltipDisabled]="nameOnFocus" contenteditable="true" 
+            (input)="nameOnInput($any($event.target).innerText)" (blur)="nameOnBlur()" (focus)="nameOnFocus = true" [textContent]="form.get('name')?.value">
+        </div>
+        <div *ngIf="documentTypeId" class="d-flex align-items-center text-align-center">
+            <ng-container *ngIf="!submitting">
+                <div *ngIf="actionResult" class="action-result fade-out">
+                    {{actionResult}}   
+                </div>
+                <div class="mx-2" nbTooltip="Guardar cambios">
+                    <button class="ghost-btn" nbButton ghost (click)="submit()">
+                        <nb-icon icon="save-outline"></nb-icon>
+                    </button>
+                </div>
+                <div nbTooltip="Exportar como PDF"> 
+                    <button [disabled]="!documentId" class="ghost-btn" nbButton ghost (click)="export()">
+                        <nb-icon icon="download-outline"></nb-icon>
+                    </button>
+                </div>
+            </ng-container>
+
+            <nb-card *ngIf="submitting" class="ghost-card" [nbSpinner]="true" nbSpinnerSize="small" nbSpinnerStatus="primary">
+                <nb-card-body></nb-card-body>
+            </nb-card>
+        </div>
+    </div>
+    <nb-card>
+        <nb-card-header>Tipo de documento</nb-card-header>
+            <nb-card-body>
+                <div class="form-group">
+                    <nb-select fullWidth placeholder="Seleccionar tipo de documento" [selected]="documentTypeId" (selectedChange)="documentTypeOnChange($event)">
+                        <nb-option *ngFor="let item of documentTypes" [value]="item.id">{{item.description}}</nb-option>
+                    </nb-select>
+                </div>
+                <div *ngIf="documentTypeId == 1" class="form-group">
+                    <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
+                </div>
+            </nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="documentTypeId">
+        <nb-card-header>Encabezado</nb-card-header>
+            <nb-card-body>
+                <div class="form-group">
+                    <label class="label col-form-label">Número</label>
+                    <input type="number" nbInput fullWidth formControlName="number" placeholder="Ingresar número" (input)="setDocumentName()">
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Dependencia emisora</label>
+                    <nb-select fullWidth placeholder="Seleccionar dependencia" formControlName="issuerId" [selected]="form.get('issuerId')?.value">
+                        <nb-option *ngFor="let item of issuers" [value]="item.id">{{item.description}}</nb-option>
+                    </nb-select>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Fecha de emisión</label>
+                            <input nbInput fullWidth [nbDatepicker]="datepicker" placeholder="Ingresar fecha en formato dd/mm/aa" formControlName="issueDate">
+                            <nb-datepicker #datepicker format="dd/MM/yyyy"></nb-datepicker>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Lugar de emisión</label>
+                            <input nbInput fullWidth formControlName="issuePlace" placeholder="Ingresar lugar">
+                        </div>
+                    </div>
+                </div>
+                <ng-container *ngIf="[4, 5, 6].includes(documentTypeId)">
+                    <div class="form-group">
+                        <label class="label col-form-label">Asunto</label>
+                        <input  nbInput fullWidth placeholder="Ingresar asunto" formControlName="subject">           
+                    </div>
+                    <div class="form-group"> 
+                        <textarea nbInput fullWidth placeholder="Ingresar destinatario" formControlName="destinatary"></textarea>  
+                    </div>      
+                </ng-container>
+        </nb-card-body>
+    </nb-card>
+
+    <ng-container formGroupName="body">
+        <ng-container *ngIf="[1, 2, 3].includes(documentTypeId)">
+            <nb-card>
+                <nb-card-header>Visto</nb-card-header>
+                <nb-card-body>
+                    <app-text-editor formControlName="visto"></app-text-editor>
+                </nb-card-body>
+            </nb-card>
+            <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Considerando', formArrayName: 'considerando', itemName:'párrafo'}"></ng-container>
+            <ng-container *ngIf="documentTypeId == 1">
+                <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="documentTypeId == 2">
+                <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Declara' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+            </ng-container>
+            <ng-container *ngIf="documentTypeId == 3">
+                <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Dispone' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+            </ng-container>
+        </ng-container>
+        <ng-container *ngIf="[4, 5, 6].includes(this.documentTypeId)" >
+            <nb-card>
+                <nb-card-header>Cuerpo</nb-card-header>
+                <nb-card-body>
+                    <app-text-editor formControlName="cuerpo"></app-text-editor>
+                </nb-card-body>
+            </nb-card>
+        </ng-container> 
+    
+        <ng-template #sectionWithMultipleItems let-formArrayName="formArrayName" let-sectionTitle="sectionTitle" let-itemName="itemName">
+            <ng-container [formArrayName]="formArrayName">
+                <nb-card>
+                    <nb-card-header>
+                        {{sectionTitle}}
+                    </nb-card-header>
+                    <nb-card-body>
+                        <ng-container *ngFor="let item of getBodyFormArray(formArrayName).controls; let i=index">
+                            <label class="label col-form-label">{{itemName | titlecase}} {{i + 1}}</label>
+                            <div class="d-flex justify-content-between">
+                                <app-text-editor class="full-width pr-2" [formControlName]="i"></app-text-editor>   
+                                <button *ngIf="getBodyFormArray(formArrayName).controls.length > 1" nbButton ghost nbTooltip="Eliminar {{itemName}}" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, formArrayName, itemName)">
+                                    <nb-icon icon="close-outline"></nb-icon>
+                                </button>
+                            </div>
+                        </ng-container>
+                        <div class="d-flex flex-row-reverse">
+                            <button nbButton ghost class="ghost-btn" nbTooltip="Agregar {{itemName}}" (click)="addItemToBodyFormArray('', formArrayName)">
+                                <nb-icon icon="plus-outline" status="primary"></nb-icon>
+                            </button>
+                        </div>
+                        
+                    </nb-card-body>
+                </nb-card>
+            </ng-container>
+        </ng-template>
+    </ng-container>
+</form>
+
+<ng-template #dialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Eliminar {{data.item}} {{data.index+1}}?</nb-card-header>
+        <nb-card-footer>
+            <button nbButton status="danger" (click)="ref.close(true)" class="mr-4">Eliminar</button>
+            <button nbButton (click)="ref.close(false)">Cancelar</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #errorDialog let-data let-ref="dialogRef">
+    <nb-card status="danger" class="error-dialog">
+        <nb-card-header>
+            Error
+        </nb-card-header>
+        <nb-card-body>{{data.errorMsg}}</nb-card-body>
+        <nb-card-footer>
+            <button nbButton (click)="ref.close()">Aceptar</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>

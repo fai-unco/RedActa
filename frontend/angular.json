@@ -32,7 +32,9 @@
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/assets/quill.snow.css",
+              "src/assets/quill.snow.mod.css"
             ],
             "scripts": []
           },

@@ -4,7 +4,6 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   selector: 'app-panel',
   templateUrl: './panel.component.html',
   styleUrls: ['./panel.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 
 })
 export class PanelComponent implements OnInit {
