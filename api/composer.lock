@@ -4,8 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35697252081c12ad268ab75acd0cdff1",
+    "content-hash": "fb4af8df58123e99330d5c69739d4a9a",
     "packages": [
+        {
+            "name": "beganovich/snappdf",
+            "version": "v3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beganovich/snappdf.git",
+                "reference": "b2656c2c67be086b535cd13a704e27caaf5a7570"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beganovich/snappdf/zipball/b2656c2c67be086b535cd13a704e27caaf5a7570",
+                "reference": "b2656c2c67be086b535cd13a704e27caaf5a7570",
+                "shasum": ""
+            },
+            "require": {
+                "ext-zip": "*",
+                "php": "^8.0|^8.1",
+                "symfony/console": "^6.0",
+                "symfony/filesystem": "^6.0",
+                "symfony/process": "^6.0"
+            },
+            "require-dev": {
+                "ext-fileinfo": "*",
+                "friendsofphp/php-cs-fixer": "^3.6",
+                "phpunit/phpunit": "^9.5"
+            },
+            "bin": [
+                "snappdf"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Beganovich\\Snappdf\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Beganović",
+                    "email": "k1pstabug@gmail.com"
+                }
+            ],
+            "description": "Convert webpages or HTML into the PDF file using Chromium or Google Chrome.",
+            "support": {
+                "issues": "https://github.com/beganovich/snappdf/issues",
+                "source": "https://github.com/beganovich/snappdf/tree/v3.1.0"
+            },
+            "time": "2022-09-14T10:35:47+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.10.2",
@@ -940,71 +992,6 @@
                 }
             ],
             "time": "2022-10-26T14:07:24+00:00"
-        },
-        {
-            "name": "ismaelw/laratex",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ismaelw/laratex.git",
-                "reference": "8c1f425fc698c20abcaaa71327e390a139920f8e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ismaelw/laratex/zipball/8c1f425fc698c20abcaaa71327e390a139920f8e",
-                "reference": "8c1f425fc698c20abcaaa71327e390a139920f8e",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/filesystem": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0|^9.0",
-                "illuminate/support": "5.4.x|5.5.X|5.6.X|5.7.X|5.8.X|^6.0|^7.0|^8.0|^9.0",
-                "php": "^7.4|^8.0",
-                "symfony/process": "^2.0|^3.0|^4.0|^5.0|^6.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Ismaelw\\LaraTeX\\LaraTeXServiceProvider"
-                    ],
-                    "aliases": {
-                        "LaraTeX": "Ismaelw\\LaraTeX\\LaraTeXFacade"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Ismaelw\\LaraTeX\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ismael Wismann",
-                    "email": "wismann.ismael@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A package for creating PDFs in Laravel using LaTeX",
-            "homepage": "https://github.com/ismaelw/laratex",
-            "keywords": [
-                "ismaelw",
-                "laratex"
-            ],
-            "support": {
-                "issues": "https://github.com/ismaelw/laratex/issues",
-                "source": "https://github.com/ismaelw/laratex/tree/v1.0.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ismaelw",
-                    "type": "github"
-                }
-            ],
-            "time": "2022-07-20T11:18:44+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3413,6 +3400,69 @@
                 }
             ],
             "time": "2022-11-25T10:21:52+00:00"
+        },
+        {
+            "name": "symfony/filesystem",
+            "version": "v6.2.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/filesystem.git",
+                "reference": "82b6c62b959f642d000456f08c6d219d749215b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/82b6c62b959f642d000456f08c6d219d749215b3",
+                "reference": "82b6c62b959f642d000456f08c6d219d749215b3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-mbstring": "~1.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Filesystem\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides basic utilities for the filesystem",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/filesystem/tree/v6.2.7"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2023-02-14T08:44:56+00:00"
         },
         {
             "name": "symfony/finder",
