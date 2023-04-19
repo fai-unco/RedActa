@@ -2,6 +2,10 @@
     <nb-icon icon="menu-outline"></nb-icon>
 </button>
 <div class="btn-group-header">
+    <nb-select class="theme-selector" placeholder="Seleccionar tema" size="large">
+        <nb-option value="default" (click)="changeTheme('default')">Claro</nb-option>
+        <nb-option value="dark" (click)="changeTheme('dark')">Oscuro</nb-option>
+    </nb-select>
     <nb-user
         [nbContextMenu]="userMenu"
         size="large"
