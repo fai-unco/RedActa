@@ -1,0 +1,35 @@
+/*Document page margins*/
+
+@page {
+    margin-top: 5cm;
+    margin-bottom: 2.5cm;
+    margin-left: 4cm;
+    margin-right: 1cm;
+    size: A4;
+}
+
+/* Document body styles*/
+
+.subheader {
+    text-align: center;
+}
+
+.subheader-bottom {
+    padding-left: 5rem;
+    padding-right: 5rem;
+    font-weight: 600;
+}
+
+.subheader-top-content, .subheader-bottom-content {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.subject {
+    font-weight: 600;
+}
+
+.parting-phrase {
+    padding: 2.5rem 0 2.5rem 20rem;
+}
+
