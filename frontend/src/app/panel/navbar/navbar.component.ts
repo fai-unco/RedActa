@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NbSidebarService } from '@nebular/theme';
+import { NbSidebarService, NbThemeService } from '@nebular/theme';
 
 @Component({
   selector: 'app-navbar',
@@ -10,8 +10,8 @@ export class NavbarComponent implements OnInit {
 
   sidebarIsCollapsed = false;
   userMenu = [ { title: 'Cerrar sesión' } ];
-  
-  constructor(private sidebarService: NbSidebarService) { }
+ 
+  constructor(private sidebarService: NbSidebarService, private themeService: NbThemeService) { }
 
   ngOnInit() {
   }
@@ -24,4 +24,9 @@ export class NavbarComponent implements OnInit {
     }
     this.sidebarIsCollapsed = !this.sidebarIsCollapsed;
   }
+
+  changeTheme(theme: string){
+    this.themeService.changeTheme(theme);
+  }
+  
 }
