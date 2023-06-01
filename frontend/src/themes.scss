@@ -17,12 +17,14 @@ $nb-themes: nb-register-theme((
   // color-primary-700: #1a34b8,
   // color-primary-800: #102694,
   // color-primary-900: #091c7a,
-  card-header-danger-background-color: red
+  card-header-danger-background-color: red,
+  //spinner-primary-background-color: transparent
 ), default, default);
 
 $nb-themes: nb-register-theme(
   (
     // add your variables here like:
+    //spinner-primary-background-color: transparent
   ),
   dark,
   dark
