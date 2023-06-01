@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\RedactaUser;
 use App\Models\Issuer;
+use App\Models\Anexo;
 use App\Models\DocumentType;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 
 
@@ -44,14 +47,22 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $document = new Document();
-        $document->set($this->formatDocumentDataForStoring($request));
-        $document->save();
-        return response()->json([
-            'status' => 200,
-            'description' => 'OK',
-            'data' => $this->formatDocumentDataForRetrieving($document)        
-        ]);
+        $this->validateRequest($request);
+        try {
+            $document = new Document();
+            $document->set($this->formatDocumentDataForStoring($request));
+            $document->save();
+            return response()->json([
+                'status' => 201,
+                'message' => 'OK',
+                'data' => $this->formatDocumentDataForRetrieving($document)        
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }      
     }
 
     /**
@@ -63,35 +74,38 @@ class DocumentController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $document = Document::find($id);
-        $loggedInUserId = $request->user()->id;        
-        if ($request->accepts(['application/pdf'])) {                
-            $isCopy = $request->boolean('is_copy', false);
-            $filename = 'documento';
-            if($document){
+        try {
+            $document = Document::find($id);
+            $loggedInUserId = $request->user()->id;        
+            if(!$document || $document->redactaUser->id != $loggedInUserId){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'El documento que desea modificar no existe'        
+                ], 404);
+            } 
+            if ($request->accepts(['application/pdf'])) {                
+                $isCopy = $request->boolean('is_copy', false);
+                $filename = 'documento';
                 $filename = $document->name;
                 if($isCopy){
                     $filename = $filename.'_copia';
                 }
-            }
-            return response($this->generatePDF($document, $isCopy, $loggedInUserId))
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
-                ->header('Access-Control-Expose-Headers', 'Content-Disposition');
-        } else if ($request->accepts(['application/json'])) {  
-            if($document && $document->redactaUser->id == $loggedInUserId){
+                return response($this->generatePDF($document, $isCopy, $loggedInUserId))
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
+                    ->header('Access-Control-Expose-Headers', 'Content-Disposition');
+            } else if ($request->accepts(['application/json'])) {  
                 return response()->json([
                     'status' => 200,
-                    'description' => 'OK',
+                    'message' => $loggedInUserId,
                     'data' => $this->formatDocumentDataForRetrieving($document)            
-                ]);
-            } else {
-                return response()->json([
-                    'status' => 404,
-                    'description' => 'El documento que desea modificar no existe'        
-                ], 404);
-            }  
-        }
+                ]);  
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }      
     }
 
     /**
@@ -116,23 +130,29 @@ class DocumentController extends Controller
 
     public function update(Request $request, $id)
     {
-        $document = Document::where('id', $id)->first();
-        //->where('user_id', $request->user()->id) Implementa restricción de que solo el creador del documento puede editarlo
-        if($document){
+        $this->validateRequest($request);
+        try {
+            $loggedInUserId = $request->user()->id;        
+            $document = Document::where('id', $id)->first();
+            if(!$document || $document->redactaUser->id != $loggedInUserId){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'El documento que desea modificar no existe'        
+                ], 404);  
+            }  
             $document->set($this->formatDocumentDataForStoring($request));
             $document->save();
             return response()->json([
                 'status' => 200,
-                'description' => 'OK',
+                'message' => 'OK',
                 'data' => $this->formatDocumentDataForRetrieving($document)           
             ]);
-        } else {
+        } catch (\Throwable $th) {
             return response()->json([
-                'status' => 404,
-                'description' => 'El documento que desea modificar no existe'        
-            ], 404);
-        }
-
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }  
     }
 
     /**
@@ -154,17 +174,45 @@ class DocumentController extends Controller
             4 => 'nota', //if document type == nota
             5 => 'acta', //if document type == acta
             6 => 'memo', //if document type == memo
-        ];
-        $html = "";
-        if($document && $document->redactaUser->id == $loggedInUserId) {
-            $html = view($views[$document->documentType->id])->with(['document' => $document, 'isCopy' => $isCopy]);
-        } 
+        ];        
+        $html = view($views[$document->documentType->id])->with([
+            'document' => $document, 
+            'isCopy' => $isCopy, 
+            'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get()
+        ]);
         $snappdf = new \Beganovich\Snappdf\Snappdf();
         $pdf = $snappdf
             ->setHtml($html->render())
             ->waitBeforePrinting(10000) 
             ->generate();
         return $pdf;
+    }
+
+    private function validateRequest($request) {
+        $validator = Validator::make($request->all(), [
+                'documentTypeId' => 'required|numeric',
+                'name' => 'required',
+                'number' => 'required|numeric',
+                'issuerId' => 'required|numeric',
+                'issueDate' => 'required|date',
+                'issuePlace' => 'required',
+                'adReferendum' => 'boolean',
+                //'anexosSectionTypeId' => 'required'
+            ], [
+                'required' => 'El campo :attribute es requerido',
+                'numeric' => 'El campo :attribute debe ser un número',
+                'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy'
+            ], [
+                'documentTypeId' => '"tipo de documento"',
+                'name' => '"nombre de documento"',
+                'number' => '"número"',
+                'issuerId' => '"dependencia emisora"',
+                'issueDate' => '"fecha de emisión"',
+                'issuePlace' => '"lugar de emisión"',
+                'adReferendum' => '"ad referendum"',
+                //'anexosSectionTypeId' => '"tipo de anexo"'
+            ])->stopOnFirstFailure(true);
+        $validator->validate();
     }
 
     private function formatDocumentDataForStoring($data){  
@@ -178,6 +226,7 @@ class DocumentController extends Controller
             'ad_referendum' => $data->adReferendum,
             'subject' => $data->subject,
             'destinatary' => $data->destinatary,
+            //'anexos_section_type_id' => $data->anexosSectionTypeId, 
             'body' => json_encode($data->body)
         ];
     }
@@ -194,11 +243,40 @@ class DocumentController extends Controller
             'adReferendum' => $data->ad_referendum,
             'subject' => $data->subject,
             'destinatary' => $data->destinatary,
-            'body' => json_decode($data->body)
+            //'anexosSectionTypeId' => $data->anexos_section_type_id,
+            'body' => json_decode($data->body),
+            'anexos' => Anexo::with(['file'])->where('document_id', $data->id)->get()
         ];
     }
 
+    public function exportAnexo(Request $request, $id){
+        $document = Document::where('id', $id)->first();
+        $views = [
+            1 => 'res-dec-disp', //if document type == resolucion
+            2 => 'res-dec-disp', //if document type == declaracion
+            3 => 'res-dec-disp', //if document type == disposicion
+            4 => 'nota', //if document type == nota
+            5 => 'acta', //if document type == acta
+            6 => 'memo', //if document type == memo
+        ];
+        $html = "";
+        if($document) {
+            $filename = $document->name;
+            $html = view($views[$document->documentType->id])->with(['document' => $document, 'isCopy' => true, 'anexos' => Anexo::with(['file'])->where('document_id', $id)->get()]);
+        } 
+        return $html;
+        /*$snappdf = new \Beganovich\Snappdf\Snappdf();
+        $pdf = $snappdf
+            ->setHtml($html->render())
+            ->waitBeforePrinting(10000) 
+            ->generate();
+        return response($pdf)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
+            ->header('Access-Control-Expose-Headers', 'Content-Disposition');
 
+       */
+    }
 
    
 }

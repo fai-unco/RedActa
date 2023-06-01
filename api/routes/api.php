@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\IssuerController;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\AnexoController;
 
 
 /*
@@ -20,11 +22,18 @@ use App\Http\Controllers\IssuerController;
 */
 Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('documents', DocumentController::class);
+  Route::apiResource('anexos', AnexoController::class);
   Route::post('/logout', [AuthenticationController::class, 'logout']);
+  Route::apiResource('files', FileController::class);
 });
 
 Route::apiResource('document_types', DocumentTypeController::class);
 Route::apiResource('issuers', IssuerController::class);
 
+
 Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/login', [AuthenticationController::class, 'login']);
+
+Route::get('/export', [DocumentController::class, 'export']);
+
+Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);

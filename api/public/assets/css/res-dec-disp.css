@@ -1,10 +1,10 @@
 /*Document page margins*/
 
 @page {
-    margin-top: 5cm;
+    margin-top: 2.5cm;
     margin-bottom: 2.5cm;
     margin-left: 4cm;
-    margin-right: 1cm;
+    margin-right: 1.5cm;
     size: A4;
 }
 
@@ -45,6 +45,14 @@
     padding-bottom: 1rem;
 }
 
+.considerando-item p:before{
+    content: "Que ";
+}
+
+.considerando-item p:after{
+    content: ";"
+}
+
 .articulos-section-beggining { 
     text-align: center;
     padding-bottom: 1rem;
@@ -58,10 +66,45 @@
 
 .articulo-number {
     margin-right: 1rem;	
-    line-height: 1.6;
 }
 
 .articulo-content p {
     padding: 0;
     margin: 0;
+}
+
+.articulo-content p:after {
+    content:".";
+}
+
+.anexo-content {
+    page-break-before: always;
+    text-align: center;
+}
+
+.anexo-content p {
+    text-align: center;
+}
+
+.normal-img {
+    padding-top: 1rem;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    max-width: 37rem;
+    max-height: 43rem;
+}
+
+.is-copy-img {
+    padding-top: 1rem;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    max-width: 37rem;
+    max-height: 36rem;
+   
+}
+
+ul {
+    text-indent: 0;
 }

@@ -33,6 +33,8 @@ return new class extends Migration
             $table->foreign('document_copy_id')->references('id')->on('document_copies');
             $table->bigInteger('issuer_id')->unsigned();
             $table->foreign('issuer_id')->references('id')->on('issuers');
+            //$table->bigInteger('anexos_section_type_id')->unsigned();
+            //$table->foreign('anexos_section_type_id')->references('id')->on('anexos_section_types');
         });
         
         Schema::table('documents', function (Blueprint $table) {

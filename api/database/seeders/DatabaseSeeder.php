@@ -59,5 +59,20 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Consejo Directivo',
             ]
         ]);
+
+        /*DB::table('anexos_section_types')->insert([
+            [
+                'id' => 1,
+                'description' => 'Ninguno',
+            ],
+            [
+                'id' => 2,
+                'description' => 'Único',
+            ],
+            [
+                'id' => 3,
+                'description' => 'Enumerado',
+            ]
+        ]);*/
     }
 }
