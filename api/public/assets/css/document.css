@@ -35,7 +35,7 @@ thead.document-header {
     
 tfoot.document-footer .document-footer-empty-cell {
     display: none;
-    height: 6rem;
+    height: 7rem;
 }
 
 th, td {
