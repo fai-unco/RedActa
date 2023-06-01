@@ -38,13 +38,14 @@
     animation: fadeOut ease 2.5s;
     animation-fill-mode: forwards;
     animation-delay: 4s;
-  }
-  
-  @keyframes fadeOut {
+}
+
+@keyframes fadeOut {
     0% {
-      opacity: 1;
+        opacity: 1;
     }
+    
     100% {
-      opacity: 0;
+        opacity: 0;
     }
-  }
+}

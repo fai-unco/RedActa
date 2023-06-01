@@ -1,8 +1,6 @@
 <nb-card class="h-100" *ngIf="!(formIsLoaded || error)" [nbSpinner]="true" nbSpinnerStatus="primary">
     <nb-card-body></nb-card-body>
 </nb-card>
-
-
 <form *ngIf="formIsLoaded" [formGroup]="form">
     <div class="d-flex justify-content-between">
         <div class="mb-3 h3 document-name-input" nbTooltip="Cambiar nombre del documento" [nbTooltipDisabled]="nameOnFocus" contenteditable="true" 
@@ -15,16 +13,15 @@
                 </div>
                 <div class="mx-2" nbTooltip="Guardar cambios">
                     <button class="ghost-btn" nbButton ghost (click)="submit()">
-                        <nb-icon icon="save-outline"></nb-icon>
+                        <nb-icon icon="save-outline" status="primary"></nb-icon>
                     </button>
                 </div>
                 <div nbTooltip="Exportar como PDF"> 
                     <button [disabled]="!documentId" class="ghost-btn" nbButton ghost (click)="export()">
-                        <nb-icon icon="download-outline"></nb-icon>
+                        <nb-icon icon="download-outline" status="primary"></nb-icon>
                     </button>
                 </div>
             </ng-container>
-
             <nb-card *ngIf="submitting" class="ghost-card" [nbSpinner]="true" nbSpinnerSize="small" nbSpinnerStatus="primary">
                 <nb-card-body></nb-card-body>
             </nb-card>
@@ -38,9 +35,21 @@
                         <nb-option *ngFor="let item of documentTypes" [value]="item.id">{{item.description}}</nb-option>
                     </nb-select>
                 </div>
-                <div *ngIf="documentTypeId == 1" class="form-group">
-                    <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
-                </div>
+                <ng-container *ngIf="documentTypeId == 1">
+                    <div class="form-group">
+                        <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
+                    </div>
+                    <div class="form-group">
+                        <nb-checkbox (change)="hasAnexosOnChange()" [checked]="hasAnexos">Incluye anexos</nb-checkbox>
+                    </div>
+                    <!--div class="form-group">
+                        <label class="label col-form-label">Tipo de anexo</label>
+                        <nb-select fullWidth placeholder="Seleccionar tipo" formControlName="anexosSectionTypeId" [selected]="form.get('anexosSectionTypeId')?.value" (selectedChange)="anexoSectionTypeOnChange($event)">
+                            <nb-option *ngFor="let item of anexoTypes" [value]="item.id">{{item.description}}</nb-option>
+                        </nb-select>
+                    </div-->
+                </ng-container>
+
             </nb-card-body>
     </nb-card>
     <nb-card *ngIf="documentTypeId">
@@ -60,7 +69,7 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label class="label col-form-label">Fecha de emisión</label>
-                            <input nbInput fullWidth [nbDatepicker]="datepicker" placeholder="Ingresar fecha en formato dd/mm/aa" formControlName="issueDate">
+                            <input nbInput fullWidth [nbDatepicker]="datepicker" placeholder="Ingresar fecha en formato dd/mm/aa" formControlName="issueDate" (keydown)="$event.preventDefault()">
                             <nb-datepicker #datepicker format="dd/MM/yyyy"></nb-datepicker>
                         </div>
                     </div>
@@ -94,6 +103,19 @@
             <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Considerando', formArrayName: 'considerando', itemName:'párrafo'}"></ng-container>
             <ng-container *ngIf="documentTypeId == 1">
                 <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+                <nb-card *ngIf="hasAnexos">
+                    <nb-card-header>
+                        Anexos
+                    </nb-card-header>
+                    <nb-card-body>
+                        <app-anexo  *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
+                        <div class="d-flex flex-row-reverse">
+                            <button nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo" (click)="addAnexo()">
+                                <nb-icon icon="plus-outline" status="success"></nb-icon>
+                            </button>
+                        </div>
+                    </nb-card-body>
+                </nb-card>
             </ng-container>
             <ng-container *ngIf="documentTypeId == 2">
                 <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Declara' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
@@ -102,7 +124,7 @@
                 <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Dispone' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
             </ng-container>
         </ng-container>
-        <ng-container *ngIf="[4, 5, 6].includes(this.documentTypeId)" >
+        <ng-container *ngIf="[4, 5, 6].includes(documentTypeId)" >
             <nb-card>
                 <nb-card-header>Cuerpo</nb-card-header>
                 <nb-card-body>
@@ -123,16 +145,15 @@
                             <div class="d-flex justify-content-between">
                                 <app-text-editor class="full-width pr-2" [formControlName]="i"></app-text-editor>   
                                 <button *ngIf="getBodyFormArray(formArrayName).controls.length > 1" nbButton ghost nbTooltip="Eliminar {{itemName}}" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, formArrayName, itemName)">
-                                    <nb-icon icon="close-outline"></nb-icon>
+                                    <nb-icon icon="close-outline" status="danger"></nb-icon>
                                 </button>
                             </div>
                         </ng-container>
                         <div class="d-flex flex-row-reverse">
                             <button nbButton ghost class="ghost-btn" nbTooltip="Agregar {{itemName}}" (click)="addItemToBodyFormArray('', formArrayName)">
-                                <nb-icon icon="plus-outline" status="primary"></nb-icon>
+                                <nb-icon icon="plus-outline" status="success"></nb-icon>
                             </button>
                         </div>
-                        
                     </nb-card-body>
                 </nb-card>
             </ng-container>
