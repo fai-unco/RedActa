@@ -171,9 +171,9 @@ class DocumentController extends Controller
             1 => 'res-dec-disp', //if document type == resolucion
             2 => 'res-dec-disp', //if document type == declaracion
             3 => 'res-dec-disp', //if document type == disposicion
-            4 => 'nota', //if document type == nota
-            5 => 'acta', //if document type == acta
-            6 => 'memo', //if document type == memo
+            4 => 'acta', //if document type == acta
+            5 => 'memo', //if document type == memo
+            6 => 'nota', //if document type == nota
         ];        
         $html = view($views[$document->documentType->id])->with([
             'document' => $document, 
