@@ -142,6 +142,8 @@ export class DocumentEditorComponent implements OnInit {
       this.body.addControl('cuerpo', this.fb.control(''));
     }
     this.setDocumentName();    
+    this.hasAnexos = false;
+    this.resetAnexos();
   }
 
   adReferendumOnChange(){
@@ -152,15 +154,19 @@ export class DocumentEditorComponent implements OnInit {
   hasAnexosOnChange(){
     this.hasAnexos = !this.hasAnexos;
     if(!this.hasAnexos){
-      for (let item of this.anexosData){
-        if(item.form.get('id').value != ''){
-          this.anexosToBeRemoved.push(item.form.get('id').value);
-        }
-      }
-      this.anexosData = [];
+      this.resetAnexos();
     } else {
       this.addAnexo();
     }
+  }
+
+  private resetAnexos(){
+    for (let item of this.anexosData){
+      if(item.form.get('id').value != ''){
+        this.anexosToBeRemoved.push(item.form.get('id').value);
+      }
+    }
+    this.anexosData = [];
   }
 
   setDocumentName() {
