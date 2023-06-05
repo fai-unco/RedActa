@@ -22,14 +22,13 @@ export class AuthService {
 
     logout() {
         this.http.post(environment.API_URL_BASE + '/logout',{}).subscribe({
-            next: res => {
+            next: _ => {
                 localStorage.removeItem("access_token");
                 this.router.navigate(['/login']);
             },
             error: e => {
                 console.log(e);
-            },
-            complete: () => console.log('done'),
+            }
         }) 
     }
 
