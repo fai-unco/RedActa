@@ -17,25 +17,33 @@ export class AuthService {
         
     setSession(authResult: any) {
         localStorage.setItem('access_token', authResult.access_token);
+        localStorage.setItem('username', authResult.username);
         this.router.navigate(['/'])
     }          
 
     logout() {
         this.http.post(environment.API_URL_BASE + '/logout',{}).subscribe({
-            next: res => {
+            next: _ => {
                 localStorage.removeItem("access_token");
                 this.router.navigate(['/login']);
             },
             error: e => {
                 console.log(e);
-            },
-            complete: () => console.log('done'),
+            }
         }) 
     }
 
-    public isLoggedIn() {
+    isLoggedIn() {
         let token = localStorage.getItem("access_token");
         return token != null && token.length > 0;
+    }
+
+    loggedInUsername(): string{
+        let username = localStorage.getItem("username");
+        if(!username){
+            username = '';
+        }
+        return username;
     }
 }
           
