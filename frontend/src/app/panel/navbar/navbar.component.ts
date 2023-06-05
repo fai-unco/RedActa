@@ -49,5 +49,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   changeTheme(theme: string){
     this.themeService.changeTheme(theme);
   }
+
+  loggedInUsername(): string {
+    return this.authService.loggedInUsername();
+  }
   
 }

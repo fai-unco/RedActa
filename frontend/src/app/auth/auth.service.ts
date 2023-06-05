@@ -17,6 +17,7 @@ export class AuthService {
         
     setSession(authResult: any) {
         localStorage.setItem('access_token', authResult.access_token);
+        localStorage.setItem('username', authResult.username);
         this.router.navigate(['/'])
     }          
 
@@ -32,9 +33,17 @@ export class AuthService {
         }) 
     }
 
-    public isLoggedIn() {
+    isLoggedIn() {
         let token = localStorage.getItem("access_token");
         return token != null && token.length > 0;
+    }
+
+    loggedInUsername(): string{
+        let username = localStorage.getItem("username");
+        if(!username){
+            username = '';
+        }
+        return username;
     }
 }
           
