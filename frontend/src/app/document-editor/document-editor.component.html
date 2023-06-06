@@ -171,14 +171,3 @@
     </nb-card>
 </ng-template>
 
-<ng-template #errorDialog let-data let-ref="dialogRef">
-    <nb-card status="danger" class="error-dialog">
-        <nb-card-header>
-            Error
-        </nb-card-header>
-        <nb-card-body>{{data.errorMsg}}</nb-card-body>
-        <nb-card-footer>
-            <button nbButton (click)="ref.close()">Aceptar</button>
-        </nb-card-footer>
-    </nb-card>
-</ng-template>
