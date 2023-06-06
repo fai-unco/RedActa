@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NbDialogService} from '@nebular/theme';
+import { NbDialogService, NbMenuService} from '@nebular/theme';
 import { DatePipe } from '@angular/common';
 import { ApiConnectionService } from '../api-connection.service';
-import { finalize, forkJoin } from 'rxjs';
+import { Subscription, finalize, forkJoin } from 'rxjs';
 import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.component';
 
 @Component({
@@ -30,6 +30,10 @@ export class DocumentEditorComponent implements OnInit {
   @ViewChild('errorDialog') errorDialog!: any; 
   @ViewChild('documentNameInput') documentNameInput!: ElementRef;
   anexosToBeRemoved: any = [];   
+  menuSubscription!: Subscription;
+
+
+  exportOptions = [{ title: 'Exportar original' }, { title: 'Exportar copia fiel' }];
 
   
   constructor(private fb: FormBuilder, 
@@ -37,9 +41,22 @@ export class DocumentEditorComponent implements OnInit {
               private route: ActivatedRoute,
               private router: Router,
               private datePipe: DatePipe, 
-              private connectionService: ApiConnectionService) {}
+              private connectionService: ApiConnectionService,
+              private nbMenuService: NbMenuService, 
+              ) {}
 
   ngOnInit(): void {
+
+    this.menuSubscription = this.nbMenuService.onItemClick()
+      .subscribe((event) => {
+        if(event.item.title === 'Exportar original'){
+          this.export()
+        } else if(event.item.title === 'Exportar copia fiel'){
+          this.export(true);
+        }
+      });
+
+
     this.route.queryParams.subscribe(params => {
         this.error = false;
         this.formIsLoaded = false;
@@ -66,6 +83,13 @@ export class DocumentEditorComponent implements OnInit {
           }
         });    
     });
+  }
+
+
+  
+
+  ngOnDestroy(): void {
+    this.menuSubscription.unsubscribe();
   }
 
   private initializeForm(data?: any){
@@ -322,11 +346,11 @@ export class DocumentEditorComponent implements OnInit {
       });
   }
 
-  export(){
+  export(isCopy = false){
     this.actionResult = '';
     this.error = false;
     this.submitting = true;
-    this.connectionService.get('documents', this.documentId, {headers: {accept:'application/pdf'}, responseType: 'blob', observe: 'response'})
+    this.connectionService.get('documents', this.documentId, {headers: {accept:'application/pdf'}, responseType: 'blob', observe: 'response', params: {is_copy: isCopy}})
       .pipe(
         finalize(() => this.submitting = false),
       )
