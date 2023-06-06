@@ -5,6 +5,7 @@ import { NbDialogService} from '@nebular/theme';
 import { DatePipe } from '@angular/common';
 import { ApiConnectionService } from '../api-connection.service';
 import { finalize, forkJoin } from 'rxjs';
+import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-document-editor',
@@ -231,12 +232,15 @@ export class DocumentEditorComponent implements OnInit {
 
   private errorHandler(error?: any, urlRedirect?: any) {
     this.error = true;
-    console.log(error.error);
     this.openErrorDialog(error.error.message, urlRedirect);
   }
 
   openErrorDialog (errorMsg: string, urlRedirect?: any){
-    this.dialogService.open(this.errorDialog, {context:{errorMsg: errorMsg}})
+    this.dialogService.open(ErrorDialogComponent, {
+      context: {
+        msg: errorMsg,
+      },
+    })
     .onClose.subscribe(_ => {
       if(urlRedirect){
         this.router.navigateByUrl(urlRedirect);
