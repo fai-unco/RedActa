@@ -49,3 +49,19 @@
         opacity: 0;
     }
 }
+
+.flex-container {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+    height: calc(100vh - 10rem);
+}
+
+.scrollable {
+    overflow-y: auto;
+    flex-grow: 1; 
+}
+
+.scrollable nb-card:last-child {
+    margin-bottom: 0;
+}
