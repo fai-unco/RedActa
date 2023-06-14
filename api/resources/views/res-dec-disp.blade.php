@@ -23,8 +23,8 @@
     	<meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="https://latex.now.sh/style.css">
-		<link rel="stylesheet" href="{{ env('FILESERVER_URL').'/assets/css/document.css' }}">
-		<link rel="stylesheet" href="{{ env('FILESERVER_URL').'/assets/css/res-dec-disp.css' }}">
+		<link rel="stylesheet" href="{{ env('STATIC_FILES_DIRECTORY').'/assets/css/document.css' }}">
+		<link rel="stylesheet" href="{{ env('STATIC_FILES_DIRECTORY').'/assets/css/res-dec-disp.css' }}">
 	</head>
 	<body>
 		<table class="document-container">
@@ -32,7 +32,7 @@
 				<tr>
 					<th>
 						<div class="top-header">
-							<img src="{{ env('FILESERVER_URL').'/assets/images/headers/'.date('Y', $issueDate).'/'.$headers[$issuerId].'.png' }}">
+							<img src="{{ env('STATIC_FILES_DIRECTORY').'/assets/images/headers/'.date('Y', $issueDate).'/'.$headers[$issuerId].'.png' }}">
 						</div>
 						<div class="subheader">
 							{{mb_strtoupper($documentTypeName, 'UTF-8')}} {{mb_strtoupper($issuerName, 'UTF-8')}} FAIF N° {{sprintf('%03s', $number)}}<br>
@@ -83,13 +83,13 @@
 							@endforeach
 						</div>
 						<div class="anexos-section">
-							@php(chdir(env('FILESERVER_PUBLIC_DIRECTORY').'/uploads'))
+							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))
 							@foreach($anexos as $key=>$anexo)
 								<div class="anexo-content">
 									<p><b>ANEXO {{sizeof($anexos) > 1 ? $intToRomanNumbers[$key+1] : 'ÚNICO'}}</b></p>
 									@php($numberOfPages = (int)shell_exec('set -- '.$anexo->file->id.'-* ; echo "$#"'))
 									@for($i = 1; $i <= $numberOfPages; $i++)
-										<img src="{{ env('FILESERVER_URL').'/uploads/'.$anexo->file->id.'-'.$i.'.png'}}" @class([
+										<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$anexo->file->id.'-'.$i.'.png'}}" @class([
 											'is-copy-img' => $isCopy,
 											'normal-img' => !$isCopy
 										])>

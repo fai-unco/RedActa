@@ -46,7 +46,7 @@ class FileController extends Controller
             $file = $request->file('file');
             $name = $file->getClientOriginalName();
             //$file = $request->file('file')->storeAs('uploads', $name);
-            $uploadsDirPath = env('FILESERVER_PUBLIC_DIRECTORY').'/uploads';
+            $uploadsDirPath = env('STATIC_FILES_DIRECTORY').'/uploads';
             $file->move($uploadsDirPath, $name);
             $file = new File();
             $file->filename = $name;
