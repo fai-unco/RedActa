@@ -20,15 +20,15 @@
     	<meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="https://latex.now.sh/style.css">
-		<link rel="stylesheet" href="{{ env('STATIC_FILES_DIRECTORY').'/assets/css/document.css' }}">
-		<link rel="stylesheet" href="{{ env('STATIC_FILES_DIRECTORY').'assets/css/nota.css' }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/document.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/nota.css') }}">
 	</head>
 	<body>
 		<table class="document-container">
 			<thead class="document-header">
 				<tr>
 					<th>
-						<img src="{{ env('STATIC_FILES_DIRECTORY').'assets/images/headers/'.date('Y', $issueDate).'/'.$headers[$issuerId].'.png'}}">
+						<img src="{{ asset('assets/images/headers/'.date('Y', $issueDate).'/'.$headers[$issuerId].'.png') }}">
 						<hr>
 					</th>
 				</tr>
