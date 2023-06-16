@@ -31,9 +31,11 @@ export class DocumentEditorComponent implements OnInit {
   @ViewChild('documentNameInput') documentNameInput!: ElementRef;
   anexosToBeRemoved: any = [];   
   menuSubscription!: Subscription;
-
-
   exportOptions = [{ title: 'Exportar original' }, { title: 'Exportar copia fiel' }];
+  hints: {[index: string]: any} = {
+    Visto: 'No incluir "Visto," al inicio, ni ";y," al final. Estos son añadidos en forma automática al generar el documento',
+    Considerando: 'No incluir "Que" al inicio, ni ";" al final. Estos son añadidos en forma automática al generar el documento',
+  }
 
   
   constructor(private fb: FormBuilder, 
