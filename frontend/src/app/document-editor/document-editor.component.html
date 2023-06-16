@@ -100,7 +100,13 @@
             <ng-container formGroupName="body">
                 <ng-container *ngIf="[1, 2, 3].includes(documentTypeId)">
                     <nb-card>
-                        <nb-card-header>Visto</nb-card-header>
+                        <nb-card-header>
+                            <div class="d-flex justify-content-between">
+                                Visto
+                                <nb-icon icon="question-mark-circle-outline" status="primary" [nbTooltip]="hints['Visto']"></nb-icon>
+                            </div>
+                            
+                        </nb-card-header>
                         <nb-card-body>
                             <app-text-editor formControlName="visto"></app-text-editor>
                         </nb-card-body>
@@ -142,7 +148,10 @@
                     <ng-container [formArrayName]="formArrayName">
                         <nb-card>
                             <nb-card-header>
-                                {{sectionTitle}}
+                                <div class="d-flex justify-content-between">
+                                    {{sectionTitle}}
+                                    <nb-icon *ngIf="hints[sectionTitle]" icon="question-mark-circle-outline" status="primary" [nbTooltip]="hints[sectionTitle]"></nb-icon>
+                                </div>
                             </nb-card-header>
                             <nb-card-body>
                                 <ng-container *ngFor="let item of getBodyFormArray(formArrayName).controls; let i=index">
