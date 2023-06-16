@@ -22,7 +22,7 @@ class AuthenticationController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',        
                 'last_name' => 'required|string|max:255',        
-                'email' => 'required|email|unique:users|max:255',              
+                'email' => 'required|email|unique:redacta_users|max:255',              
                 'password' => 'required|confirmed|min:8',    
             ]); 
             
@@ -45,7 +45,7 @@ class AuthenticationController extends Controller
                 ], 200);
             }
             } catch (\Throwable $th) {
-                return response()->json(['message' => '$th->getMessage()'], 500);
+                return response()->json(['message' => $th->getMessage()], 500);
             }
         }
 
@@ -76,7 +76,8 @@ class AuthenticationController extends Controller
             //Retorna un JSON con el token generado y el tipo de token
             return response()->json([
                 'access_token' => $token,
-                'token_type' => 'Bearer'
+                'token_type' => 'Bearer',
+                'username' => $user->name.' '.$user->last_name
             ], 200);
           } catch (\Throwable $th) {
               return response()->json(['message' => $th->getMessage()], 500);
