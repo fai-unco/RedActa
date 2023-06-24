@@ -1,0 +1,48 @@
+services:
+  database:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: redacta
+    networks:
+      - my_network
+    volumes: #Para persistir los datos de la db
+      - db_volume:/var/lib/mysql
+    ports:
+      - 3306:3306
+  api:
+    build:
+      context: ./api
+    networks:
+      - my_network 
+    depends_on:
+      - database
+    ports:
+      - 8500:80
+    volumes:
+      - ./api:/var/www/html
+      - /var/www/html/vendor #Este volumen permite que al montar el anterior, se excluya al directorio 'vendor' dentro del contenedor
+    user: ${CURRENT_UID} #El contenedor se ejecutará con el usuario y grupo propietarios del proyecto, para evitar problemas con permisos en los volúmenes
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 42000:4200
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules #Este volumen permite que al montar el anterior, se excluya al directorio 'node_modules' dentro del contenedor 
+    user: ${CURRENT_UID} #El contenedor se ejecutará con el usuario y grupo propietarios del proyecto, para evitar problemas con permisos en los volúmenes
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8501:8080
+    networks:
+      - my_network
+
+networks:
+  my_network: 
+
+volumes:
+  db_volume:
+
