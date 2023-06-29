@@ -155,6 +155,8 @@ class DocumentController extends Controller
         }  
     }
 
+
+
     /**
      * Remove the specified resource from storage.
      *
@@ -187,6 +189,38 @@ class DocumentController extends Controller
             ->generate();
         return $pdf;
     }
+
+    public function search(Request $request){
+        $params = [
+            'document_type_id',
+            'name',
+            'number',
+            'issuer_id',
+            'issue_date_start',
+            'issue_date_end',
+            'issue_place',
+            'ad_referendum',
+            'subject',
+            'destinatary',
+            'id'
+        ];
+        $searchInput = [];
+        foreach($params as $param){
+            if($request->has($param)){
+                if($param == 'issue_date_start'){
+                    array_push($searchInput, ['issue_date', '>=' ,$request->query($param)]);
+                } else if ($param == 'issue_date_end'){
+                    array_push($searchInput, ['issue_date', '<=' ,$request->query($param)]);
+                } else {
+                    array_push($searchInput, [$param, '=' ,$request->query($param)]);
+                }
+            }
+        }
+        array_push($searchInput, ['redacta_user_id', '=' ,$request->user()->id]);
+        $results = Document::where($searchInput)->get();
+        return $results;
+    }
+
 
     private function validateRequest($request) {
         $validator = Validator::make($request->all(), [
