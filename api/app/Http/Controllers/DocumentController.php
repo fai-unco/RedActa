@@ -10,7 +10,7 @@ use App\Models\Anexo;
 use App\Models\DocumentType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Str;
 
 
 
@@ -191,34 +191,54 @@ class DocumentController extends Controller
     }
 
     public function search(Request $request){
-        $params = [
-            'document_type_id',
-            'name',
-            'number',
-            'issuer_id',
-            'issue_date_start',
-            'issue_date_end',
-            'issue_place',
-            'ad_referendum',
-            'subject',
-            'destinatary',
-            'id'
-        ];
-        $searchInput = [];
-        foreach($params as $param){
-            if($request->has($param)){
-                if($param == 'issue_date_start'){
-                    array_push($searchInput, ['issue_date', '>=' ,$request->query($param)]);
-                } else if ($param == 'issue_date_end'){
-                    array_push($searchInput, ['issue_date', '<=' ,$request->query($param)]);
-                } else {
-                    array_push($searchInput, [$param, '=' ,$request->query($param)]);
+        try {
+            $params = [
+                'documentTypeId',
+                'name',
+                'number',
+                'issuerId',
+                'issuePlace',
+                'adReferendum',
+                'subject',
+                'destinatary',
+                'id'
+            ];
+            $searchInput = [];
+            $output = [];
+            foreach($params as $param){
+                if($request->has($param)){
+                    if ($param == 'name'){
+                        array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
+                    } else if ($param != 'issueDateStart' && $param != 'issueDateEnd') {
+                        array_push($searchInput, [Str::snake($param), '=', $request->query($param)]);
+                    }
                 }
             }
-        }
-        array_push($searchInput, ['redacta_user_id', '=' ,$request->user()->id]);
-        $results = Document::where($searchInput)->get();
-        return $results;
+            array_push($searchInput, ['redacta_user_id', '=', $request->user()->id]);
+            $results = Document::with(['issuer','documentType'])->where($searchInput);
+            if($request->has('issueDateStart')){
+                $results = $results->whereDate('issue_date', '>=', $request->query('issueDateStart'));
+            }
+            if($request->has('issueDateEnd')){
+                $results = $results->whereDate('issue_date', '<=', $request->query('issueDateEnd'));
+            }
+            $results = $results->get();
+            foreach ($results as $document){
+                array_push($output, [
+                    'id' => $document->id,
+                    'issuer' => $document->issuer->description,
+                    'documentType' => $document->documentType->description,
+                    'name' => $document->name,
+                    'issueDate' => $document->issue_date
+                ]);
+            }
+            return $output; 
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }  
     }
 
 
