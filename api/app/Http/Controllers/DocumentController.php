@@ -14,8 +14,6 @@ use Illuminate\Support\Str;
 
 
 
-
-
 class DocumentController extends Controller
 {
     /**
