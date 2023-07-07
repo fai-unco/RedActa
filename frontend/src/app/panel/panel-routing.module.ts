@@ -12,6 +12,10 @@ const routes: Routes = [
           { 
             path: 'editar',
             loadChildren: () => import('../document-editor/document-editor.module').then(m => m.DocumentEditorModule) 
+          },
+          { 
+            path: 'buscar',
+            loadChildren: () => import('../document-finder/document-finder.module').then(m => m.DocumentFinderModule) 
           }
         ]
       }
