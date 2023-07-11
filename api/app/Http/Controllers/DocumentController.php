@@ -10,7 +10,7 @@ use App\Models\Anexo;
 use App\Models\DocumentType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Str;
 
 
 
@@ -186,6 +186,58 @@ class DocumentController extends Controller
             ->waitBeforePrinting(10000) 
             ->generate();
         return $pdf;
+    }
+
+    public function search(Request $request){
+        try {
+            $params = [
+                'documentTypeId',
+                'name',
+                'number',
+                'issuerId',
+                'issuePlace',
+                'adReferendum',
+                'subject',
+                'destinatary',
+                'id'
+            ];
+            $searchInput = [];
+            $output = [];
+            foreach($params as $param){
+                if($request->has($param)){
+                    if (in_array($param, ['name', 'destinatary', 'subject'])){
+                        array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
+                    } else if ($param != 'issueDateStart' && $param != 'issueDateEnd') {
+                        array_push($searchInput, [Str::snake($param), '=', $request->query($param)]);
+                    }
+                }
+            }
+            array_push($searchInput, ['redacta_user_id', '=', $request->user()->id]);
+            $results = Document::with(['issuer','documentType'])->where($searchInput);
+            if($request->has('issueDateStart')){
+                $results = $results->whereDate('issue_date', '>=', $request->query('issueDateStart'));
+            }
+            if($request->has('issueDateEnd')){
+                $results = $results->whereDate('issue_date', '<=', $request->query('issueDateEnd'));
+            }
+            $results = $results->get();
+            foreach ($results as $document){
+                array_push($output, [
+                    'id' => $document->id,
+                    'issuer' => $document->issuer->description,
+                    'documentType' => $document->documentType->description,
+                    'name' => $document->name,
+                    'issueDate' => $document->issue_date,
+                    'number' => $document->number
+                ]);
+            }
+            return $output; 
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }  
     }
 
     private function validateRequest($request) {
