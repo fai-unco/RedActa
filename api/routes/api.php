@@ -20,18 +20,12 @@ use App\Http\Controllers\AnexoController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-
 Route::middleware('auth:sanctum')->group(function () {
-  Route::get('/documents/search', [DocumentController::class, 'search']);
   Route::apiResource('documents', DocumentController::class);
   Route::apiResource('anexos', AnexoController::class);
   Route::post('/logout', [AuthenticationController::class, 'logout']);
   Route::apiResource('files', FileController::class);
-  
-  
 });
-
 
 Route::apiResource('document_types', DocumentTypeController::class);
 Route::apiResource('issuers', IssuerController::class);
