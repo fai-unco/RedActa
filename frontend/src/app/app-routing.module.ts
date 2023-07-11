@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   { 
     path: '', loadChildren: () => import('./panel/panel.module').then(m => m.PanelModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard] 
   },
 ]
 @NgModule({

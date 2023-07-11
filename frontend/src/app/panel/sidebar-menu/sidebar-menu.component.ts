@@ -12,14 +12,8 @@ export class SidebarMenuComponent implements OnInit {
   items: NbMenuItem[]  = [
     {
       title: 'Crear documento',
-      link: 'documentos/editar',
+      link: 'documentos/editar'
       //expanded: true,
-      icon: 'plus-outline'
-    },
-    {
-      title: 'Buscar documento',
-      link: 'documentos/buscar',
-      icon: 'search-outline'
     }
   ];
 
