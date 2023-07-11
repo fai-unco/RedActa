@@ -21,6 +21,7 @@ use App\Http\Controllers\AnexoController;
 |
 */
 Route::middleware('auth:sanctum')->group(function () {
+  Route::get('/documents/search', [DocumentController::class, 'search']);
   Route::apiResource('documents', DocumentController::class);
   Route::apiResource('anexos', AnexoController::class);
   Route::post('/logout', [AuthenticationController::class, 'logout']);
