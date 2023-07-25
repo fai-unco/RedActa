@@ -3,6 +3,10 @@ body {
     background: transparent;
 }
 
+img {
+    max-width: 100%;
+}
+
 /*Remove table borders*/
 
 table {
@@ -25,6 +29,7 @@ table.document-container {
 thead.document-header {
     display: table-header-group;
 }
+
         
 /*
     Table footer has two children divs: one with "document-footer-cell" class and the other
@@ -40,9 +45,6 @@ tfoot.document-footer .document-footer-empty-cell {
 
 th, td {
     padding: 0;
-}
-
-.document-body p {
     line-height: 1.2;		
 }
 
