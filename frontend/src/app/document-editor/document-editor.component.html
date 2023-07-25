@@ -101,14 +101,10 @@
                 <ng-container *ngIf="[1, 2, 3].includes(documentTypeId)">
                     <nb-card>
                         <nb-card-header>
-                            <div class="d-flex justify-content-between">
-                                Visto
-                                <nb-icon icon="question-mark-circle-outline" status="primary" [nbTooltip]="hints['Visto']"></nb-icon>
-                            </div>
-                            
+                            Visto
                         </nb-card-header>
                         <nb-card-body>
-                            <app-text-editor formControlName="visto"></app-text-editor>
+                            <app-text-editor formControlName="visto" [placeholder]="hints['Visto']"></app-text-editor>
                         </nb-card-body>
                     </nb-card>
                     <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Considerando', formArrayName: 'considerando', itemName:'párrafo'}"></ng-container>
@@ -148,16 +144,13 @@
                     <ng-container [formArrayName]="formArrayName">
                         <nb-card>
                             <nb-card-header>
-                                <div class="d-flex justify-content-between">
-                                    {{sectionTitle}}
-                                    <nb-icon *ngIf="hints[sectionTitle]" icon="question-mark-circle-outline" status="primary" [nbTooltip]="hints[sectionTitle]"></nb-icon>
-                                </div>
+                                {{sectionTitle}}
                             </nb-card-header>
                             <nb-card-body>
                                 <ng-container *ngFor="let item of getBodyFormArray(formArrayName).controls; let i=index">
                                     <label class="label col-form-label">{{itemName | titlecase}} {{i + 1}}</label>
                                     <div class="d-flex justify-content-between">
-                                        <app-text-editor class="full-width pr-2" [formControlName]="i"></app-text-editor>   
+                                        <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints[sectionTitle]"></app-text-editor>   
                                         <button *ngIf="getBodyFormArray(formArrayName).controls.length > 1" nbButton ghost nbTooltip="Eliminar {{itemName}}" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, formArrayName, itemName)">
                                             <nb-icon icon="close-outline" status="danger"></nb-icon>
                                         </button>
