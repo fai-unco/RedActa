@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { PanelRoutingModule } from './panel-routing.module';
 import { PanelComponent } from './panel.component';
-import { NbActionsModule, NbButtonModule, NbContextMenuModule, NbIconModule, NbLayoutModule, NbMenuModule, NbSelectModule, NbSidebarModule, NbUserModule } from '@nebular/theme';
+import { NbActionsModule, NbButtonModule, NbContextMenuModule, NbIconModule, NbLayoutModule, NbMenuModule, NbSelectModule, NbSidebarModule, NbToggleModule, NbUserModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -28,6 +28,7 @@ import { NavbarComponent } from './navbar/navbar.component';
     NbUserModule,
     NbButtonModule,
     NbSelectModule,
+    NbToggleModule,
 
 
   ]

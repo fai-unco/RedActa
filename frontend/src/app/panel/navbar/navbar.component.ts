@@ -1,7 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { NB_WINDOW, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { NB_WINDOW, NbMenuService, NbSidebarService} from '@nebular/theme';
 import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
@@ -20,7 +19,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(private sidebarService: NbSidebarService, 
     @Inject(NB_WINDOW) private window: any, 
     private nbMenuService: NbMenuService, 
-    private themeService: NbThemeService,
     private authService: AuthService  
   ) { }
 
@@ -44,10 +42,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.sidebarService.collapse('sidebar')
     }
     this.sidebarIsCollapsed = !this.sidebarIsCollapsed;
-  }
-
-  changeTheme(theme: string){
-    this.themeService.changeTheme(theme);
   }
 
   loggedInUsername(): string {

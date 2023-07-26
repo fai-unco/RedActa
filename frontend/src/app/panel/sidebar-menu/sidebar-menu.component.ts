@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { NbMenuItem } from '@nebular/theme';
+import { NbMenuItem, NbThemeService } from '@nebular/theme';
 
 @Component({
   selector: 'app-sidebar-menu',
@@ -23,9 +23,18 @@ export class SidebarMenuComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor (private themeService: NbThemeService) { }
 
   ngOnInit(): void {
   }
+
+  changeTheme(enableDarkMode: boolean){
+    if(enableDarkMode) {
+      this.themeService.changeTheme('dark');
+    } else {
+      this.themeService.changeTheme('default');
+    }
+  }
+
 
 }
