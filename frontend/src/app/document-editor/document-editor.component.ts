@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/c
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbMenuService} from '@nebular/theme';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { ApiConnectionService } from '../api-connection.service';
 import { Subscription, finalize, forkJoin } from 'rxjs';
 import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.component';
@@ -45,6 +45,7 @@ export class DocumentEditorComponent implements OnInit {
               private datePipe: DatePipe, 
               private connectionService: ApiConnectionService,
               private nbMenuService: NbMenuService, 
+              private location: Location
               ) {}
 
   ngOnInit(): void {
@@ -272,6 +273,12 @@ export class DocumentEditorComponent implements OnInit {
         this.router.navigateByUrl(urlRedirect);
       }
     });
+  }
+
+  cloneDocument(){
+    this.documentId = '';
+    this.form.get('name')?.setValue('Nuevo documento');
+    this.location.replaceState('/documentos/editar');
   }
 
   submit() {

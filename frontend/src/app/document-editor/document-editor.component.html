@@ -12,7 +12,12 @@
                     <div *ngIf="actionResult" class="action-result fade-out">
                         {{actionResult}}   
                     </div>
-                    <div class="mx-2" nbTooltip="Guardar cambios">
+                    <div class="mr-2" nbTooltip="Crear copia a partir del documento actual">
+                        <button class="ghost-btn" nbButton ghost (click)="cloneDocument()">
+                            <nb-icon icon="copy-outline" status="primary"></nb-icon>
+                        </button>
+                    </div>
+                    <div class="mr-2" nbTooltip="Guardar cambios">
                         <button class="ghost-btn" nbButton ghost (click)="submit()">
                             <nb-icon icon="save-outline" status="primary"></nb-icon>
                         </button>
