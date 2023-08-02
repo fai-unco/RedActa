@@ -110,27 +110,31 @@ export class DocumentEditorComponent implements OnInit {
     });
     if(data){
       for(let [key, value] of Object.entries(data)) {
-        if(key == 'body'){ 
-          for (let [key, value] of Object.entries(data.body)) {
-            if(Array.isArray(value)){
-              let formArray = this.fb.array([]);
-              this.body.addControl(key, formArray);            
-              value?.forEach((elem) => formArray.push(this.fb.control(elem)));
-            } else {
-              this.body.addControl(key, this.fb.control(value));
+        switch(key){
+          case 'body':
+            for (let [key, value] of Object.entries(data.body)) {
+              if(Array.isArray(value)){
+                let formArray = this.fb.array([]);
+                this.body.addControl(key, formArray);            
+                value?.forEach((elem) => formArray.push(this.fb.control(elem)));
+              } else {
+                this.body.addControl(key, this.fb.control(value));
+              }
             }
-          }
-        } else if(key == "issueDate"){
-          this.form.get('issueDate')?.setValue(new Date (value + 'T00:00:00-03:00'));
-        } else if(key == 'anexos'){
+            break;
+          case 'issueDate':
+            this.form.get('issueDate')?.setValue(new Date (value + 'T00:00:00-03:00'));
+            break;
+          case 'anexos':
             for(let anexo of data.anexos){
               this.addAnexo(anexo.id, anexo.index, anexo.title, anexo.subtitle, anexo.content, anexo.file);
             }
             if(this.anexosData.length > 0){
               this.hasAnexos = true;
             }
-        } else if(key != 'id'){
-          this.form.get(key)?.setValue(value);
+            break;
+          default:
+            this.form.get(key)?.setValue(value);
         }
       }
     }
