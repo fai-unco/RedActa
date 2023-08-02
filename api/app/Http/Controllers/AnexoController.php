@@ -41,7 +41,7 @@ class AnexoController extends Controller
     public function store(Request $request)
     {
         $this->validateRequest($request);
-        try {
+        //try {
             $document = Document::find($request->documentId);
             $file = null;
             if(!$document || $request->user()->id != $document->redactaUser->id){
@@ -69,12 +69,12 @@ class AnexoController extends Controller
                     'id' => $anexo->id
                 ]       
             ], 201);    
-        } catch (\Throwable $th) {
+        /*} catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }    
+        } */   
     }
 
     /**

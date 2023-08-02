@@ -152,7 +152,7 @@ class DocumentController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }  
+        } 
     }
 
     /**
