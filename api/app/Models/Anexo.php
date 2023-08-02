@@ -17,7 +17,7 @@ class Anexo extends Model
     ];
 
     public function file(){
-        return $this->hasOne(File::class);
+        return $this->morphOne('App\Models\File', 'fileable');    
     }
 
     public function document(){
@@ -33,7 +33,7 @@ class Anexo extends Model
         $this->save();
         if($file && $this->file != $file){
             if($this->file){
-                $this->file()->update(['anexo_id' => $this->id]);
+                $this->file()->update(['fileable_id' => $this->id]);
             } else {
                 $this->file()->save($file);
             }

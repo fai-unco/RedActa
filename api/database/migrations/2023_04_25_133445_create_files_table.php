@@ -17,9 +17,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('filename');
-
-            $table->bigInteger('anexo_id')->nullable()->unsigned();
-            $table->foreign('anexo_id')->references('id')->on('anexos')->onDelete('cascade');
+            $table->integer('fileable_id')->nullable();
+            $table->string('fileable_type')->nullable();
             $table->bigInteger('redacta_user_id')->unsigned();
             $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
            
