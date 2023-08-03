@@ -13,8 +13,8 @@ class File extends Model
         'filename',
     ];
 
-    public function anexo(){
-        return $this->belongsTo(Anexo::class);
+    public function fileable(){
+        return $this->morphTo();
     }
 
     public function redactaUser(){
