@@ -50,7 +50,7 @@ class DocumentController extends Controller
         $this->validateRequest($request);
         try {
             $document = new Document();
-            $document->set($this->formatDocumentDataForStoring($request));
+            $document->set($request->all());
             $document->save();
             return response()->json([
                 'status' => 201,
@@ -140,7 +140,7 @@ class DocumentController extends Controller
                     'message' => 'El documento que desea modificar no existe'        
                 ], 404);  
             }  
-            $document->set($this->formatDocumentDataForStoring($request));
+            $document->set($request->all());
             $document->save();
             return response()->json([
                 'status' => 200,
@@ -152,7 +152,7 @@ class DocumentController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        } 
+        }
     }
 
     /**
@@ -242,32 +242,32 @@ class DocumentController extends Controller
 
     private function validateRequest($request) {
         $validator = Validator::make($request->all(), [
-                'documentTypeId' => 'required|numeric',
+                'document_type_id' => 'required|numeric',
                 'name' => 'required',
                 'number' => 'required|numeric',
-                'issuerId' => 'required|numeric',
-                'issueDate' => 'required|date',
-                'issuePlace' => 'required',
-                'adReferendum' => 'boolean',
+                'issuer_id' => 'required|numeric',
+                'issue_date' => 'required|date',
+                'issue_place' => 'required',
+                'ad_referendum' => 'boolean',
                 //'anexosSectionTypeId' => 'required'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
                 'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy'
             ], [
-                'documentTypeId' => '"tipo de documento"',
+                'document_type_id' => '"tipo de documento"',
                 'name' => '"nombre de documento"',
                 'number' => '"número"',
-                'issuerId' => '"dependencia emisora"',
-                'issueDate' => '"fecha de emisión"',
-                'issuePlace' => '"lugar de emisión"',
-                'adReferendum' => '"ad referendum"',
+                'issuer_id' => '"dependencia emisora"',
+                'issue_date' => '"fecha de emisión"',
+                'issue_place' => '"lugar de emisión"',
+                'ad_referendum' => '"ad referendum"',
                 //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
     }
 
-    private function formatDocumentDataForStoring($data){  
+    /*private function formatDocumentDataForStoring($data){  
         return [
             'document_type_id' => $data->documentTypeId,
             'name' => $data->name,
@@ -281,7 +281,7 @@ class DocumentController extends Controller
             //'anexos_section_type_id' => $data->anexosSectionTypeId, 
             'body' => json_encode($data->body)
         ];
-    }
+    }*/
     
     private function formatDocumentDataForRetrieving($data){  
         return [

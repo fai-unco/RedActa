@@ -71,7 +71,11 @@ class Document extends Model
                 $this->documentType()->associate($documentType);
             } else if  ($key == 'issuer_id'){
                 $this->issuer()->associate($issuer);
-            } /*else if ($key == 'anexos_section_type_id'){
+            } else if ($key == 'body'){
+                $this->setAttribute($key, json_encode($value));
+            } 
+            
+            /*else if ($key == 'anexos_section_type_id'){
                 $this->anexosSectionType()->associate($anexosSectionType);
             } */
             /*else if ($key == 'anexos'){

@@ -42,7 +42,7 @@ class AnexoController extends Controller
     {
         $this->validateRequest($request);
         //try {
-            $document = Document::find($request->documentId);
+            $document = Document::find($request->document_id);
             $file = null;
             if(!$document || $request->user()->id != $document->redactaUser->id){
                 return response()->json([
@@ -50,8 +50,8 @@ class AnexoController extends Controller
                     'message' => 'Documento inexistente',       
                 ], 404);  
             }
-            if($request->fileId){ 
-                $file = File::find($request->fileId);
+            if($request->file_id){ 
+                $file = File::find($request->file_id);
             
                 if(!$file || $file->redactaUser->id != $request->user()->id){ // || $request->user()->id != $file->user->id
                     return response()->json([
@@ -118,8 +118,8 @@ class AnexoController extends Controller
                     'message' => 'Anexo inexistente',       
                 ], 404);  
             }
-            if($request->fileId){
-                $file = File::find($request->fileId);
+            if($request->file_id){
+                $file = File::find($request->file_id);
                 if(!$file || $request->user()->id != $file->redactaUser->id){ 
                     return response()->json([
                         'status' => 404,
@@ -178,13 +178,13 @@ class AnexoController extends Controller
     private function validateRequest($request) {
         $validator = Validator::make($request->all(), [
                 'index' => 'required|numeric',
-                'documentId' => 'required|numeric',
-                'fileId' => 'required|numeric'
+                'document_id' => 'required|numeric',
+                'file_id' => 'required|numeric'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
             ] ,[
-                'fileId' => '"seleccionar archivo"'
+                'file_id' => '"seleccionar archivo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
     }
@@ -208,7 +208,7 @@ class AnexoController extends Controller
                     $anexo->file()->update(['anexo_id' => null]);
                 }
                 $anexo->file()->save($file);
-                if($request->fileId){
+                if($request->file_id){
                 $anexo->file()->save($file);
             }
             }*/
