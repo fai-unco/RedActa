@@ -16,7 +16,7 @@ export class AuthService {
     }
         
     setSession(authResult: any) {
-        localStorage.setItem('access_token', authResult.access_token);
+        localStorage.setItem('access_token', authResult.accessToken);
         localStorage.setItem('username', authResult.username);
         this.router.navigate(['/'])
     }          
