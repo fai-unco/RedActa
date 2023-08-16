@@ -304,6 +304,7 @@ export class DocumentEditorComponent implements OnInit {
       next: (res: any) => {
         if(res.status == '201'){
           this.documentId = res.data.id;
+          this.location.replaceState('/documentos/editar?id=' + this.documentId);
         }
         if(this.anexosData.length > 0 || this.anexosToBeRemoved.length > 0){
           this.saveAnexos();
