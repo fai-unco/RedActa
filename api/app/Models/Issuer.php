@@ -15,7 +15,7 @@ class Issuer extends Model
         'phone',
         'email',
         'city',
-        'state',
+        'province',
         'website_url'
     ];
 
