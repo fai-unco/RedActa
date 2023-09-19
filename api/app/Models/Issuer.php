@@ -23,6 +23,10 @@ class Issuer extends Model
         return $this->hasMany(Document::class);
     }
 
+    public function issuerSettings(){
+        return $this->hasOne(IssuerSettings::class);
+    }
+
     public function set($data){
         foreach ($data as $key => $value) {
             $this->setAttribute($key, $value);
