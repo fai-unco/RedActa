@@ -11,30 +11,10 @@ class Issuer extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'description',
-        'phone',
-        'email',
-        'city',
-        'province',
-        'website_url'
+        'description'
     ];
 
     public function documents(){
         return $this->hasMany(Document::class);
-    }
-
-    public function issuerSettings(){
-        return $this->hasOne(IssuerSettings::class);
-    }
-
-    public function headers(){
-        return $this->hasMany(Header::class);
-    }
-
-    public function set($data){
-        foreach ($data as $key => $value) {
-            $this->setAttribute($key, $value);
-        }
-        $this->save();
     }
 }
