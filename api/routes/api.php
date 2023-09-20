@@ -9,6 +9,7 @@ use App\Http\Controllers\IssuerController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\AnexoController;
 use App\Http\Controllers\IssuerSettingsController;
+use App\Http\Controllers\HeadingController;
 
 
 /*
@@ -28,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthenticationController::class, 'logout']);
   Route::apiResource('files', FileController::class);
   Route::apiResource('issuers_settings', IssuerSettingsController::class);
+  Route::apiResource('headings', HeadingController::class);
+
 });
 
 Route::apiResource('document_types', DocumentTypeController::class);

@@ -27,6 +27,10 @@ class Issuer extends Model
         return $this->hasOne(IssuerSettings::class);
     }
 
+    public function headings(){
+        return $this->hasMany(Heading::class);
+    }
+
     public function set($data){
         foreach ($data as $key => $value) {
             $this->setAttribute($key, $value);
