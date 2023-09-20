@@ -41,7 +41,7 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validateRequest($request);
+        //$this->validateRequest($request);
         try {
             $file = $request->file('file');
             $name = $file->getClientOriginalName();
@@ -145,7 +145,7 @@ class FileController extends Controller
 
     public function validateRequest($request) {
         $validator = Validator::make($request->all(), [
-            'file' => 'mimes:pdf',
+            'file' => 'mimes:pdf,jpeg,jpg,png',
         ])->validate();
     }
 }
