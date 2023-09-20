@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Issuer;
+use Illuminate\Support\Facades\Validator;
 
 
 class IssuerController extends Controller
@@ -41,7 +42,15 @@ class IssuerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validateRequest($request);
+        $issuer = new Issuer(); 
+        $validatedData = $this->validateRequest($request);
+        $issuer->set($validatedData);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $issuer           
+        ]);
     }
 
     /**
@@ -52,7 +61,18 @@ class IssuerController extends Controller
      */
     public function show($id)
     {
-        //
+        $issuer = Issuer::find($id);
+        if(!$issuer){
+            return response()->json([
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $issuer           
+        ]);
     }
 
     /**
@@ -75,7 +95,20 @@ class IssuerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $issuer = Issuer::find($id);
+        if(!$issuer){
+            return response()->json([
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
+        }
+        $validatedData = $this->validateRequest($request);
+        $issuer->set($validatedData);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $issuer           
+        ]);
     }
 
     /**
@@ -87,5 +120,33 @@ class IssuerController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function validateRequest($request){
+        $validator = Validator::make($request->all(), [
+            'description' => 'required|string',
+            'phone' => 'sometimes|numeric|nullable',
+            'address' => 'sometimes|string|nullable',
+            'postal_code' => 'sometimes|string|nullable',
+            'city' => 'sometimes|string|nullable',
+            'state' => 'sometimes|string|nullable',
+            'website_url' => 'sometimes|string|nullable',
+            'email' => 'sometimes|string|nullable'
+        ], [
+            'required' => 'El campo :attribute es requerido',
+            'numeric' => 'El campo :attribute debe ser un número',
+            'string' => 'El campo :attribute debe ser un string'
+        ], [
+            'description' => '"Nombre del emisor"',
+            'phone' => '"Teléfono"',
+            'address' => '"Dirección"',
+            'postal_code' => '"Código postal"',
+            'city' => '"Ciudad"',
+            'state' => '"Provincia"',
+            'website_url' => '"Url al sitio web"',
+            'email' => '"Dirección de correo electrónico"',
+        ])->stopOnFirstFailure(true);
+        $validator->validate();
+        return $validator->validated();
     }
 }
