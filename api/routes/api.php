@@ -30,14 +30,13 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('files', FileController::class);
   Route::apiResource('issuers_settings', IssuerSettingsController::class);
   Route::apiResource('headings', HeadingController::class);
-
+  Route::apiResource('document_types', DocumentTypeController::class);
+  Route::apiResource('issuers', IssuerController::class);
+  Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
 });
 
-Route::apiResource('document_types', DocumentTypeController::class);
-Route::apiResource('issuers', IssuerController::class);
 
 
 Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/login', [AuthenticationController::class, 'login']);
 
-Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
