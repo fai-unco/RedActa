@@ -28,10 +28,10 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.loading = true;
       this.authService.login(formValues.email, formValues.password) 
-      .pipe(finalize(()=> this. loading = false))
+      .pipe(finalize(()=> this.loading = false))
       .subscribe({
         next: (res) => {
-          this.authService.setSession(res);
+          this.authService.setSession(res.data);
         },
         error: (e) => {
           if(e.status == '401'){
