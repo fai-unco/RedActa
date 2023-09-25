@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
+
     /**
      * Seed the application's database.
      *
@@ -26,26 +27,38 @@ class DatabaseSeeder extends Seeder
             [
                 'id' => 1,
                 'description' => 'Resolución',
+                'view' => 'res-dec-disp',
+                'actionInOperativeSection' => 'resuelve'
             ],
             [
                 'id' => 2,
                 'description' => 'Declaración',
+                'view' => 'res-dec-disp',
+                'actionInOperativeSection' => 'declara'
             ],
             [
                 'id' => 3,
                 'description' => 'Disposición',
+                'view' => 'res-dec-disp',
+                'actionInOperativeSection' => 'dispone'
             ],
             [
                 'id' => 4,
                 'description' => 'Acta',
+                'view' => 'acta',
+                'actionInOperativeSection' => ''
             ],
             [
                 'id' => 5,
                 'description' => 'Memo',
+                'view' => 'memo',
+                'actionInOperativeSection' => ''
             ],
             [
                 'id' => 6,
                 'description' => 'Nota',
+                'view' => 'nota',
+                'actionInOperativeSection' => ''
             ],
         ]);
     }

@@ -14,8 +14,12 @@ class DocumentType extends Model
     //protected $primaryKey = 'document_type_id';
 
     protected $fillable = [
-        'description'
+        'description',
+        'view',
+        'actionInOperativeSection'
     ];
+
+    protected $hidden = ['view', 'actionInOperativeSection'];
 
 
     //hasMany

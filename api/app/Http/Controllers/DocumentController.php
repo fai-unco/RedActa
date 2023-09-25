@@ -166,16 +166,8 @@ class DocumentController extends Controller
         //
     }
 
-    public function generatePDF($document, $isCopy, $loggedInUserId){
-        $views = [
-            1 => 'res-dec-disp', //if document type == resolucion
-            2 => 'res-dec-disp', //if document type == declaracion
-            3 => 'res-dec-disp', //if document type == disposicion
-            4 => 'acta', //if document type == acta
-            5 => 'memo', //if document type == memo
-            6 => 'nota', //if document type == nota
-        ];        
-        $html = view($views[$document->documentType->id])->with([
+    public function generatePDF($document, $isCopy, $loggedInUserId){      
+        $html = view($document->documentType->view)->with([
             'document' => $document, 
             'isCopy' => $isCopy, 
             'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get()
@@ -303,18 +295,10 @@ class DocumentController extends Controller
 
     public function exportAnexo(Request $request, $id){
         $document = Document::where('id', $id)->first();
-        $views = [
-            1 => 'res-dec-disp', //if document type == resolucion
-            2 => 'res-dec-disp', //if document type == declaracion
-            3 => 'res-dec-disp', //if document type == disposicion
-            4 => 'nota', //if document type == nota
-            5 => 'acta', //if document type == acta
-            6 => 'memo', //if document type == memo
-        ];
         $html = "";
         if($document) {
             $filename = $document->name;
-            $html = view($views[$document->documentType->id])->with(['document' => $document, 'isCopy' => true, 'anexos' => Anexo::with(['file'])->where('document_id', $id)->get()]);
+            $html = view($document->documentType->view)->with(['document' => $document, 'isCopy' => true, 'anexos' => Anexo::with(['file'])->where('document_id', $id)->get()]);
         } 
         return $html;
         /*$snappdf = new \Beganovich\Snappdf\Snappdf();
