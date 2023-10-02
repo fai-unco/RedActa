@@ -8,6 +8,7 @@ use App\Models\RedactaUser;
 use App\Models\Issuer;
 use App\Models\Anexo;
 use App\Models\DocumentType;
+use App\Models\Heading;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -47,10 +48,10 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validateRequest($request);
+        $validatedData = $this->validateRequest($request);
         try {
             $document = new Document();
-            $document->set($request->all());
+            $document->set($validatedData);
             $document->save();
             return response()->json([
                 'status' => 201,
@@ -130,8 +131,8 @@ class DocumentController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validateRequest($request);
-        try {
+        $validatedData = $this->validateRequest($request);
+        //try {
             $loggedInUserId = $request->user()->id;        
             $document = Document::where('id', $id)->first();
             if(!$document || $document->redactaUser->id != $loggedInUserId){
@@ -140,19 +141,19 @@ class DocumentController extends Controller
                     'message' => 'El documento que desea modificar no existe'        
                 ], 404);  
             }  
-            $document->set($request->all());
+            $document->set($validatedData);
             $document->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
                 'data' => $this->formatDocumentDataForRetrieving($document)           
             ]);
-        } catch (\Throwable $th) {
+        /*} catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }
+        }*/
     }
 
     /**
@@ -167,10 +168,16 @@ class DocumentController extends Controller
     }
 
     public function generatePDF($document, $isCopy, $loggedInUserId){      
+        $heading = Heading::where([
+            ['issuer_id', '=', $document->issuer_id],
+            ['year', '=', date('Y', strtotime($document->issue_date))]
+        ])->first();
         $html = view($document->documentType->view)->with([
             'document' => $document, 
             'isCopy' => $isCopy, 
-            'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get()
+            'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
+            'issuerSettings' => $document->issuer->issuerSettings,
+            'headingFile' => $heading->file 
         ]);
         $snappdf = new \Beganovich\Snappdf\Snappdf();
         $pdf = $snappdf
@@ -241,11 +248,15 @@ class DocumentController extends Controller
                 'issue_date' => 'required|date',
                 'issue_place' => 'required',
                 'ad_referendum' => 'boolean',
+                'body' => 'required',
+                'subject' => 'sometimes|nullable|string',
+                'destinatary' => 'sometimes|nullable|string'
                 //'anexosSectionTypeId' => 'required'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
-                'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy'
+                'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy',
+                'string' => 'El campo :attribute debe ser de tipo string',
             ], [
                 'document_type_id' => '"tipo de documento"',
                 'name' => '"nombre de documento"',
@@ -254,9 +265,12 @@ class DocumentController extends Controller
                 'issue_date' => '"fecha de emisión"',
                 'issue_place' => '"lugar de emisión"',
                 'ad_referendum' => '"ad referendum"',
+                'subject' => '"Asunto"',
+                'destinatary' => '"Destinatario"',
                 //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
+        return $validator->validated();
     }
 
     /*private function formatDocumentDataForStoring($data){  
@@ -297,8 +311,16 @@ class DocumentController extends Controller
         $document = Document::where('id', $id)->first();
         $html = "";
         if($document) {
-            $filename = $document->name;
-            $html = view($document->documentType->view)->with(['document' => $document, 'isCopy' => true, 'anexos' => Anexo::with(['file'])->where('document_id', $id)->get()]);
+            //$html = view($document->documentType->view)->with(['document' => $document, 'isCopy' => true, 'anexos' => Anexo::with(['file'])->where('document_id', $id)->get()]);
+            $html = view($document->documentType->view)->with([
+                'document' => $document, 
+                'isCopy' => true, 
+                'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
+                'fileId' => Heading::where([
+                    ['issuer_id', '=', $document->issuer_id],
+                    ['year', '=', date('Y', strtotime($document->issue_date))]
+                ])->first()->file->id
+            ]);
         } 
         return $html;
         /*$snappdf = new \Beganovich\Snappdf\Snappdf();
