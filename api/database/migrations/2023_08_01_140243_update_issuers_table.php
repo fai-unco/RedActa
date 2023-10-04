@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('city')->nullable();
+            $table->string('address')->nullable();
+            $table->string('postal_code')->nullable();        
             $table->string('province')->nullable();
-            $table->string('website_url')->nullable();            
+            $table->string('website_url')->nullable();    
         });
     }
 

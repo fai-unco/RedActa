@@ -16,7 +16,9 @@ class Issuer extends Model
         'email',
         'city',
         'province',
-        'website_url'
+        'website_url',
+        'address',
+        'postal_code'
     ];
 
     public function documents(){
