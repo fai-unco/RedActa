@@ -128,8 +128,8 @@ class IssuerController extends Controller
             'phone' => 'sometimes|numeric|nullable',
             'address' => 'sometimes|string|nullable',
             'postal_code' => 'sometimes|string|nullable',
+            'province' => 'sometimes|string|nullable',
             'city' => 'sometimes|string|nullable',
-            'state' => 'sometimes|string|nullable',
             'website_url' => 'sometimes|string|nullable',
             'email' => 'sometimes|string|nullable'
         ], [
@@ -142,7 +142,7 @@ class IssuerController extends Controller
             'address' => '"Dirección"',
             'postal_code' => '"Código postal"',
             'city' => '"Ciudad"',
-            'state' => '"Provincia"',
+            'province' => '"Provincia"',
             'website_url' => '"Url al sitio web"',
             'email' => '"Dirección de correo electrónico"',
         ])->stopOnFirstFailure(true);
