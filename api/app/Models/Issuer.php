@@ -18,7 +18,8 @@ class Issuer extends Model
         'province',
         'website_url',
         'address',
-        'postal_code'
+        'postal_code',
+        'code'
     ];
 
     public function documents(){

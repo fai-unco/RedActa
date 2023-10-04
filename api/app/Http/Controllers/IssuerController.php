@@ -131,7 +131,8 @@ class IssuerController extends Controller
             'province' => 'sometimes|string|nullable',
             'city' => 'sometimes|string|nullable',
             'website_url' => 'sometimes|string|nullable',
-            'email' => 'sometimes|string|nullable'
+            'email' => 'sometimes|string|nullable',
+            'code' => 'sometimes|string|nullable'
         ], [
             'required' => 'El campo :attribute es requerido',
             'numeric' => 'El campo :attribute debe ser un número',
@@ -145,6 +146,7 @@ class IssuerController extends Controller
             'province' => '"Provincia"',
             'website_url' => '"Url al sitio web"',
             'email' => '"Dirección de correo electrónico"',
+            'code' => '"Código"',
         ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
