@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('document_types', function (Blueprint $table) {
             $table->string('view')->default('');
-            $table->string('actionInOperativeSection')->nullable();          
+            $table->string('action_in_operative_section')->nullable();          
         });
     }
 

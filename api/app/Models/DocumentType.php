@@ -16,10 +16,10 @@ class DocumentType extends Model
     protected $fillable = [
         'description',
         'view',
-        'actionInOperativeSection'
+        'action_in_operative_section'
     ];
 
-    protected $hidden = ['view', 'actionInOperativeSection'];
+    protected $hidden = ['view', 'action_in_operative_section'];
 
 
     //hasMany

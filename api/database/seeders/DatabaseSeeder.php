@@ -28,37 +28,37 @@ class DatabaseSeeder extends Seeder
                 'id' => 1,
                 'description' => 'Resolución',
                 'view' => 'res-dec-disp',
-                'actionInOperativeSection' => 'resuelve'
+                'action_in_operative_section' => 'resuelve'
             ],
             [
                 'id' => 2,
                 'description' => 'Declaración',
                 'view' => 'res-dec-disp',
-                'actionInOperativeSection' => 'declara'
+                'action_in_operative_section' => 'declara'
             ],
             [
                 'id' => 3,
                 'description' => 'Disposición',
                 'view' => 'res-dec-disp',
-                'actionInOperativeSection' => 'dispone'
+                'action_in_operative_section' => 'dispone'
             ],
             [
                 'id' => 4,
                 'description' => 'Acta',
                 'view' => 'acta',
-                'actionInOperativeSection' => ''
+                'action_in_operative_section' => ''
             ],
             [
                 'id' => 5,
                 'description' => 'Memo',
                 'view' => 'memo',
-                'actionInOperativeSection' => ''
+                'action_in_operative_section' => ''
             ],
             [
                 'id' => 6,
                 'description' => 'Nota',
                 'view' => 'nota',
-                'actionInOperativeSection' => ''
+                'action_in_operative_section' => ''
             ],
         ]);
     }
