@@ -10,17 +10,15 @@ img {
 /*Remove table borders*/
 
 table {
-    border: 0;
+    border: 0  !important;
     width: 100%;
 }
 
 table > tbody > tr:first-child > td, table > tbody > tr:first-child > th {
-    border-top: 0;
+    border: 0 !important;
 }
 
-table > tbody > tr:last-child > td, table > tbody > tr:last-child > th {
-    border-bottom: 0;
-}
+
 
 table.document-container {
     break-after:always;
