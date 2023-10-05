@@ -48,10 +48,14 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $this->validateRequest($request);
+        $dataToBeStored = $this->validateRequest($request);
         try {
+            $issuer = Issuer::find($dataToBeStored['issuer_id']);
+            array_push($dataToBeStored, [
+                'operative_section_beginning' => $issuer->issuerSettings->operative_section_beginning
+            ]);
             $document = new Document();
-            $document->set($validatedData);
+            $document->set($dataToBeStored);
             $document->save();
             return response()->json([
                 'status' => 201,
