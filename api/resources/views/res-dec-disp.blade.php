@@ -1,25 +1,19 @@
-@php( $issuerName = $document->issuer->description )
-@php( $issuerId = $document->issuer->id )
-@php( $documentTypeName = $document->documentType->description )
-@php( $documentTypeId = $document->documentType->id )
+@php( $issuer = $document->issuer )
+@php( $documentType = $document->documentType )
 @php( $name = $document->name )
 @php( $number = $document->number )
 @php( $months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"] )
-@php( $issuePlace = $document->issue_place )
 @php( $issueDate = strtotime($document->issue_date) )
 @php( $issueDateStr = date('d', $issueDate)." de ".$months[date('n', $issueDate)-1]. " de ".date('Y', $issueDate) )
 @php( $adReferendum = $document->ad_referendum )
+@php( $hasAnexoUnico = $document->has_anexo_unico )
 @php( $body = json_decode($document->body) )
-@php( $headers = [1 => "decanato" , 2 => "consejo_directivo"] )
-@php( $documentTypeAction = [1 => "RESUELVE" , 2 => "DECLARA", 3 => "DISPONE"] )
-@php( $issuerInArticlesSectionBeggining = [1 => "DECANO" , 2 => "CONSEJO DIRECTIVO"] )
-@php( $decanatoData = ["Lic. Guillermo Grosso", "Decano"] )
 @php( $intToRomanNumbers = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X'])
-
+@php( $issuerSettings = $issuer->issuerSettings )
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>{{$name}}</title>
+		<title>{{$document->name}}</title>
     	<meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="https://latex.now.sh/style.css">
@@ -32,11 +26,11 @@
 				<tr>
 					<th>
 						<div class="top-header">
-							<img src="{{ asset('/assets/images/headers/'.date('Y', $issueDate).'/'.$headers[$issuerId].'.png') }}">
+							<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$fileId.'.png' }}">
 						</div>
 						<div class="subheader">
-							{{mb_strtoupper($documentTypeName, 'UTF-8')}} {{mb_strtoupper($issuerName, 'UTF-8')}} FAIF N° {{sprintf('%03s', $number)}}<br>
-							{{mb_strtoupper($issuePlace, 'UTF-8')}}, {{$issueDateStr}}
+							{{mb_strtoupper($documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N° {{sprintf('%03s', $document->number)}}<br>
+							{{mb_strtoupper($issuer->city, 'UTF-8')}}, {{$issueDateStr}}
 						</div>
 					</th>
 				</tr>
@@ -59,16 +53,7 @@
 						<div class="articulos-section">
 							<div class="articulos-section-beggining">
 								<b> 
-									<div class="no-wrap">
-										EL 
-										{{ $issuerInArticlesSectionBeggining[$issuerId] }}
-										DE LA FACULTAD DE INFORMÁTICA
-									</div>
-									DE LA UNIVERSIDAD NACIONAL DEL COMAHUE<br> 
-									@if($adReferendum)
-										AD REFERENDUM DEL CONSEJO DIRECTIVO <br>
-									@endif	
-									{{ $documentTypeAction[$documentTypeId] }}:
+									{{mb_strtoupper($issuerSettings->operative_section_beginning, 'UTF-8')}} {{mb_strtoupper($documentType->action_in_operative_section, 'UTF-8')}}
 								</b>
 							</div>
 							@foreach($body->articulos as $articulo)
@@ -83,10 +68,10 @@
 							@endforeach
 						</div>
 						<div class="anexos-section">
-							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))
+							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))							
 							@foreach($anexos as $key=>$anexo)
 								<div class="anexo-content">
-									<p><b>ANEXO {{sizeof($anexos) > 1 ? $intToRomanNumbers[$key+1] : 'ÚNICO'}}</b></p>
+									<p><b>ANEXO {{$hasAnexoUnico ? 'ÚNICO' : $intToRomanNumbers[$key+1]}}</b></p>
 									@php($numberOfPages = (int)shell_exec('set -- '.$anexo->file->id.'-* ; echo "$#"'))
 									@for($i = 1; $i <= $numberOfPages; $i++)
 										<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$anexo->file->id.'-'.$i.'.png'}}" @class([
@@ -107,8 +92,8 @@
 							<p>ES COPIA FIEL</p>
 							<div style="display: flex; flex-flow: row-reverse;">
 								<p style="text-align: center">
-									Fdo. {{$decanatoData[0]}} <br>
-									{{$decanatoData[1]}}
+									Fdo. {{$issuerSettings->true_copy_signatory_full_name}} <br>
+									{{$issuerSettings->true_copy_signatory_role}}
 								</p>
 							</div>
 						</td>
@@ -122,8 +107,8 @@
 				<p>ES COPIA FIEL</p>
 				<div style="display: flex; flex-flow: row-reverse;">
 					<p style="text-align: center">
-						Fdo. {{$decanatoData[0]}} <br>
-						{{$decanatoData[1]}}
+						Fdo. {{$issuerSettings->true_copy_signatory_full_name}} <br>
+						{{$issuerSettings->true_copy_signatory_role}}
 					</p>
 				</div>
 			</div>

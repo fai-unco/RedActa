@@ -1,22 +1,13 @@
-@php( $issuerName = $document->issuer->description )
-@php( $issuerId = $document->issuer->id )
-@php( $documentTypeName = $document->documentType->description )
-@php( $documentTypeId = $document->documentType->id )
-@php( $name = $document->name )
-@php( $number = $document->number )
-@php( $destinatary = $document->destinatary )
-@php( $subject = $document->subject )
+@php( $issuer = $document->issuer )
 @php( $months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"] )
-@php( $issuePlace = $document->issue_place )
 @php( $issueDate = strtotime($document->issue_date) )
 @php( $issueDateStr = date('d', $issueDate)." de ".$months[date('n', $issueDate)-1]. " de ".date('Y', $issueDate)  )
 @php( $body = json_decode($document->body) )
-@php( $headers = [1 => "decanato" , 2 => "consejo_directivo"])
-
+@php ( $issuerSettings = $issuer->issuerSettings)
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>{{$name}}</title>
+		<title>{{$document->name}}</title>
     	<meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="https://latex.now.sh/style.css">
@@ -28,7 +19,7 @@
 			<thead class="document-header">
 				<tr>
 					<th>
-						<img src="{{ asset('assets/images/headers/'.date('Y', $issueDate).'/'.$headers[$issuerId].'.png') }}">
+						<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$fileId.'.png' }}">
 						<hr>
 					</th>
 				</tr>
@@ -37,12 +28,12 @@
 				<tr>
 					<td class="document-body-cell">
 						<div class="subheader">
-							{{mb_strtoupper($issuePlace, 'UTF-8')}}, {{$issueDateStr}} <br>
-							{{mb_strtoupper($documentTypeName, 'UTF-8')}} {{mb_strtoupper($issuerName, 'UTF-8')}} FAIF N° {{sprintf('%03s', $number)}}<br>
-							Ref: {{$subject}}
+							{{mb_strtoupper($issuer->city, 'UTF-8')}}, {{$issueDateStr}} <br>
+							NOTA {{mb_strtoupper($issuer->code, 'UTF-8')}} N° {{sprintf('%03s', $document->number)}}<br>
+							Ref: {{$$document->subject}}
 						</div>	
 						<div class="destinatary-section">
-                            {!! nl2br(e($destinatary)) !!}
+                            {!! nl2br(e($document->destinatary)) !!}
 						</div>
 						<div class="body-section">
 							{!! $body->cuerpo !!}
@@ -57,8 +48,13 @@
 					<td class="document-footer-cell">
 						<div class="footer-content">
                             <hr>
-							Buenos Aires 1400 (8300) – Neuquén — Tel. +54(0299)4490300 (int 650) — email: decanato@fi.uncoma.edu.ar
-						</div>
+							{{$issuer->address}} 
+							{{$issuer->postal_code ? ' ('.$issuer->postal_code.')' : ''}}
+							, {{$issuer->city}} 
+							{{$issuer->province ? ', '.$issuer->province : ''}} 
+							{{$issuer->phone ? ' — Tel. '.$issuer->phone : ''}}
+							{{$issuer->email ? ' — Email: '.$issuer->email : ''}}
+							{{$issuer->website_url ? ' — Sitio web: '.$issuer->website_url : ''}}
 					</td>
 					<td class="document-footer-empty-cell"></td>
 				</tr>
@@ -67,7 +63,13 @@
 		<div class="footer">
 			<div class="footer-content">
                 <hr>
-				Buenos Aires 1400 (8300) – Neuquén — Tel. +54(0299)4490300 (int 650) — email: decanato@fi.uncoma.edu.ar
+				{{$issuer->address}} 
+				{{$issuer->postal_code ? ' ('.$issuer->postal_code.')' : ''}}
+				, {{$issuer->city}} 
+				{{$issuer->province ? ', '.$issuer->province : ''}} 
+				{{$issuer->phone ? ' — Tel. '.$issuer->phone : ''}}
+				{{$issuer->email ? ' — Email: '.$issuer->email : ''}}
+				{{$issuer->website_url ? ' — Sitio web: '.$issuer->website_url : ''}}			
 			</div>
 		</div>
 	</body>		
