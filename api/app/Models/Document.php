@@ -20,9 +20,12 @@ class Document extends Model
         'destinatary',
         'subject',
         'ad_referendum',
-        'number'
-        
+        'number',
+        'operative_section_beginning'
     ];
+
+    protected $hidden = ['operative_section_beginning'];
+
 
     public function documentCopy(){
         return $this->hasOne(DocumentCopy::class);
