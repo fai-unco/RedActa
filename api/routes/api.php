@@ -10,6 +10,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\AnexoController;
 use App\Http\Controllers\IssuerSettingsController;
 use App\Http\Controllers\HeadingController;
+use App\Http\Controllers\OperativeSectionBeginningController;
 use App\Http\Controllers\StampController;
 
 
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('headings', HeadingController::class);
   Route::apiResource('document_types', DocumentTypeController::class);
   Route::apiResource('issuers', IssuerController::class);
+  Route::apiResource('operative_section_beginnings', OperativeSectionBeginningController::class);
   Route::apiResource('stamps', StampController::class);
   Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
 });
