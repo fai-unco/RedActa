@@ -28,6 +28,14 @@ class Document extends Model
     public function documentCopy(){
         return $this->hasOne(DocumentCopy::class);
     }
+
+    public function operativeSectionBeginning(){
+        return $this->hasOne(OperativeSectionBeginning::class);
+    }
+
+    public function trueCopyStamp(){
+        return $this->hasOne(Stamp::class);
+    }
   
 //belonTo
     public function documentType(){
