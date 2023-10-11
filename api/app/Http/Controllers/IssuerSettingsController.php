@@ -157,20 +157,18 @@ class IssuerSettingsController extends Controller
 
     private function validateRequest($request){
         $validator = Validator::make($request->all(), [
-            'issuer_id' => 'required|numeric',
-            'operative_section_beginning' => 'sometimes|string',
-            'ad_referendum_operative_section_beginning' => 'sometimes|string',
-            'true_copy_signatory_full_name' => 'sometimes|string',
-            'true_copy_signatory_role' => 'sometimes|string',
+            'issuer_id' => 'required|numeric|exists:issuers,id',
+            'operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
+            'ad_referendum_operative_section_beginning_id' => 'sometimes|numeric|exists:operative_section_beginnings,id',
+            'true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id'
         ], [
             'required' => 'El campo :attribute es requerido',
-            'numeric' => 'El campo :attribute debe ser un número',
-            'string' => 'El campo :attribute debe ser un string'
+            'numeric' => 'El campo :attribute debe ser un número'
         ], [
-            'operative_section_beginning' => '"Inicio de sección operativa"',
-            'ad_referendum_operative_section_beginning' => '"Inicio de sección operativa en documentos Ad-referendum"',
-            'true_copy_signatory_full_name' => '"Nombre completo del firmante de documento copia fiel"',
-            'true_copy_signatory_full_name' => '"Rol del firmante de documento copia fiel"',
+            'issuer_id' => '"Emisor"',
+            'operative_section_beginning_id' => '"Inicio de sección operativa"',
+            'ad_referendum_operative_section_beginning_id' => '"Inicio de sección operativa en documentos Ad-referendum"',
+            'true_copy_stamp_id' => '"Sello en copia fiel"'
         ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
