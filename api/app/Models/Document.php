@@ -29,14 +29,7 @@ class Document extends Model
         return $this->hasOne(DocumentCopy::class);
     }
 
-    public function operativeSectionBeginning(){
-        return $this->hasOne(OperativeSectionBeginning::class);
-    }
-
-    public function trueCopyStamp(){
-        return $this->hasOne(Stamp::class);
-    }
-  
+    
 //belonTo
     public function documentType(){
         return $this->belongsTo(DocumentType::class);
@@ -48,6 +41,14 @@ class Document extends Model
 
     public function issuer(){
         return $this->belongsTo(Issuer::class);
+    }
+
+    public function operativeSectionBeginning(){
+        return $this->belongsTo(OperativeSectionBeginning::class);
+    }
+
+    public function trueCopyStamp(){
+        return $this->belongsTo(Stamp::class);
     }
 
     /*public function anexosSectionType(){
