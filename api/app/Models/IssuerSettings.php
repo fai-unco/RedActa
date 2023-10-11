@@ -12,10 +12,9 @@ class IssuerSettings extends Model
     protected $table = 'issuer_settings';
 
     protected $fillable = [
-        'operative_section_beginning',
-        'ad_referendum_operative_section_beginning',
-        'true_copy_signatory_full_name',
-        'true_copy_signatory_role',
+        'operative_section_beginning_id',
+        'ad_referendum_operative_section_beginning_id',
+        'true_copy_stamp_id',
         'issuer_id'
     ];
 
