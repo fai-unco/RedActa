@@ -22,7 +22,7 @@ class Document extends Model
         'ad_referendum',
         'number',
         'operative_section_beginning_id',
-        'document_copy_stamp_id'
+        'true_copy_stamp_id'
     ];
     
     public function documentCopy(){
