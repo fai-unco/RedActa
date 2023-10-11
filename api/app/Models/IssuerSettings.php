@@ -22,6 +22,18 @@ class IssuerSettings extends Model
         return $this->belongsTo(Issuer::class);
     }
 
+    public function operativeSectionBeginning(){
+        return $this->hasOne(OperativeSectionBeginning::class);
+    }
+
+    public function adReferendumOperativeSectionBeginning(){
+        return $this->belongsTo(OperativeSectionBeginning::class);
+    }
+
+    public function trueCopyStamp(){
+        return $this->belongsTo(Stamp::class);
+    }
+
     public function set($data){
         foreach ($data as $key => $value) {
             $this->setAttribute($key, $value);
