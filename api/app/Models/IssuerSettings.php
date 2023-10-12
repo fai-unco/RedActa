@@ -23,7 +23,7 @@ class IssuerSettings extends Model
     }
 
     public function operativeSectionBeginning(){
-        return $this->hasOne(OperativeSectionBeginning::class);
+        return $this->belongsTo(OperativeSectionBeginning::class);
     }
 
     public function adReferendumOperativeSectionBeginning(){
