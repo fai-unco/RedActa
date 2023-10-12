@@ -48,10 +48,17 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $this->validateRequest($request);
+        $data = $this->validateRequest($request);
         try {
+            $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
+            $data['true_copy_stamp_id'] = $issuerSettings->trueCopyStamp->id;
+            if($data['ad_referendum']){
+                $data['operative_section_beginning_id'] = $issuerSettings->adReferendumOperativeSectionBeginning->id;
+            } else {
+                $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
+            }
             $document = new Document();
-            $document->set($validatedData);
+            $document->set($data);
             $document->save();
             return response()->json([
                 'status' => 201,
@@ -63,7 +70,7 @@ class DocumentController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }      
+        }
     }
 
     /**
@@ -131,8 +138,14 @@ class DocumentController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validatedData = $this->validateRequest($request);
-        //try {
+        $data = $this->validateRequest($request);
+        try {
+            $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
+            if($data['ad_referendum']){
+                $data['operative_section_beginning_id'] = $issuerSettings->adReferendumOperativeSectionBeginning->id;
+            } else {
+                $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
+            }
             $loggedInUserId = $request->user()->id;        
             $document = Document::where('id', $id)->first();
             if(!$document || $document->redactaUser->id != $loggedInUserId){
@@ -141,19 +154,19 @@ class DocumentController extends Controller
                     'message' => 'El documento que desea modificar no existe'        
                 ], 404);  
             }  
-            $document->set($validatedData);
+            $document->set($data);
             $document->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
                 'data' => $this->formatDocumentDataForRetrieving($document)           
             ]);
-        /*} catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }*/
+        }
     }
 
     /**
