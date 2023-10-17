@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamps();
             $table->bigInteger('operative_section_beginning_id')->unsigned();
             $table->foreign('operative_section_beginning_id')->references('id')->on('operative_section_beginnings')->onDelete('cascade');
-            $table->bigInteger('ad_referendum_operative_section_beginning_id')->nullable()->unsigned();
-            $table->foreign('ad_referendum_operative_section_beginning_id')->references('id')->on('operative_section_beginnings')->onDelete('cascade');
+            $table->bigInteger('ad_ref_operative_section_beginning_id')->nullable()->unsigned();
+            $table->foreign('ad_ref_operative_section_beginning_id')->references('id')->on('operative_section_beginnings')->onDelete('cascade');
             $table->bigInteger('true_copy_stamp_id')->nullable()->unsigned();
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps')->onDelete('cascade');
             $table->bigInteger('issuer_id')->unsigned();

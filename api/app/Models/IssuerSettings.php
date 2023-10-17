@@ -27,7 +27,7 @@ class IssuerSettings extends Model
     }
 
     public function adReferendumOperativeSectionBeginning(){
-        return $this->belongsTo(OperativeSectionBeginning::class);
+        return $this->belongsTo(OperativeSectionBeginning::class, 'ad_ref_operative_section_beginning_id');
     }
 
     public function trueCopyStamp(){
