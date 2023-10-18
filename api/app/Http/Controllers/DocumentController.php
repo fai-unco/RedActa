@@ -142,11 +142,6 @@ class DocumentController extends Controller
         $data = $this->validateRequest($request);
         try {
             $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
-            if($data['ad_referendum']){
-                $data['operative_section_beginning_id'] = $issuerSettings->adReferendumOperativeSectionBeginning->id;
-            } else {
-                $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
-            }
             $loggedInUserId = $request->user()->id;        
             $document = Document::where('id', $id)->first();
             if(!$document || $document->redactaUser->id != $loggedInUserId){
