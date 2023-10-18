@@ -57,6 +57,7 @@ class DocumentController extends Controller
             } else {
                 $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
             }
+            $data['heading_id'] = $issuerSettings->heading->id;
             $document = new Document();
             $document->set($data);
             $document->save();
