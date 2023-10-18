@@ -52,9 +52,9 @@ class DocumentController extends Controller
         try {
             $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
             $data['true_copy_stamp_id'] = $issuerSettings->trueCopyStamp->id;
-            if($data['ad_referendum']){
+            if($data['ad_referendum'] && $issuerSettings->adReferendumOperativeSectionBeginning){
                 $data['operative_section_beginning_id'] = $issuerSettings->adReferendumOperativeSectionBeginning->id;
-            } else {
+            } else if ($issuerSettings->operativeSectionBeginning){
                 $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
             }
             $data['heading_id'] = $issuerSettings->heading->id;
