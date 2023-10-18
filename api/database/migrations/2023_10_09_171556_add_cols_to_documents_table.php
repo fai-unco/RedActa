@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreign('operative_section_beginning_id')->references('id')->on('operative_section_beginnings')->onDelete('cascade');
             $table->bigInteger('true_copy_stamp_id')->nullable()->unsigned();
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps')->onDelete('cascade');
+            $table->bigInteger('heading_id')->nullable()->unsigned();
+            $table->foreign('heading_id')->references('id')->on('headings');
         });
     }
 

@@ -22,7 +22,8 @@ class Document extends Model
         'ad_referendum',
         'number',
         'operative_section_beginning_id',
-        'true_copy_stamp_id'
+        'true_copy_stamp_id', 
+        'heading_id'
     ];
     
     public function documentCopy(){
@@ -49,6 +50,10 @@ class Document extends Model
 
     public function trueCopyStamp(){
         return $this->belongsTo(Stamp::class);
+    }
+
+    public function heading(){
+        return $this->belongsTo(Heading::class);
     }
 
     /*public function anexosSectionType(){
