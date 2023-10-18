@@ -24,6 +24,8 @@ return new class extends Migration
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps')->onDelete('cascade');
             $table->bigInteger('issuer_id')->unsigned();
             $table->foreign('issuer_id')->references('id')->on('issuers')->onDelete('cascade');
+            $table->bigInteger('heading_id')->nullable()->unsigned();
+            $table->foreign('heading_id')->references('id')->on('headings');
         });
     }
 

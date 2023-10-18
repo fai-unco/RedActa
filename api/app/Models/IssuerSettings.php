@@ -33,6 +33,10 @@ class IssuerSettings extends Model
     public function trueCopyStamp(){
         return $this->belongsTo(Stamp::class);
     }
+    
+    public function heading(){
+        return $this->belongsTo(Heading::class);
+    }
 
     public function set($data){
         foreach ($data as $key => $value) {
