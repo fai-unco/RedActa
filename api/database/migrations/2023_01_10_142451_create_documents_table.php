@@ -15,15 +15,14 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name')->nullable();
             $table->text('body');
             $table->timestamps();
-            $table->string('issue_place');
-            $table->date('issue_date');
+            $table->date('issue_date')->nullable();
             $table->string('destinatary')->nullable();
             $table->string('subject')->nullable();
             $table->boolean('ad_referendum')->default(false);
-            $table->integer('number');
+            $table->integer('number')->nullable();
 
             $table->bigInteger('redacta_user_id')->unsigned();
             $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
