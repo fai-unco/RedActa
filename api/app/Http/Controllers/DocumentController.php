@@ -177,16 +177,10 @@ class DocumentController extends Controller
     }
 
     public function generatePDF($document, $isCopy, $loggedInUserId){      
-        $heading = Heading::where([
-            ['issuer_id', '=', $document->issuer_id],
-            ['year', '=', date('Y', strtotime($document->issue_date))]
-        ])->first();
         $html = view($document->documentType->view)->with([
             'document' => $document, 
             'isCopy' => $isCopy, 
             'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
-            'issuerSettings' => $document->issuer->issuerSettings,
-            'headingFile' => $heading->file 
         ]);
         $snappdf = new \Beganovich\Snappdf\Snappdf();
         $pdf = $snappdf
@@ -323,10 +317,6 @@ class DocumentController extends Controller
                 'document' => $document, 
                 'isCopy' => true, 
                 'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
-                'fileId' => Heading::where([
-                    ['issuer_id', '=', $document->issuer_id],
-                    ['year', '=', date('Y', strtotime($document->issue_date))]
-                ])->first()->file->id
             ]);
         } 
         return $html;
