@@ -251,12 +251,11 @@ class DocumentController extends Controller
     private function validateRequest($request) {
         $validator = Validator::make($request->all(), [
                 'document_type_id' => 'required|numeric',
-                'name' => 'required',
-                'number' => 'required|numeric',
+                'name' => 'sometimes|string|nullable',
+                'number' => 'sometimes|numeric|nullable',
                 'issuer_id' => 'required|numeric',
-                'issue_date' => 'required|date',
-                'issue_place' => 'required',
-                'ad_referendum' => 'boolean',
+                'issue_date' => 'sometimes|date|nullable',
+                'ad_referendum' => 'sometimes|boolean|nullable',
                 'body' => 'required',
                 'subject' => 'sometimes|nullable|string',
                 'destinatary' => 'sometimes|nullable|string'
@@ -272,7 +271,6 @@ class DocumentController extends Controller
                 'number' => '"número"',
                 'issuer_id' => '"dependencia emisora"',
                 'issue_date' => '"fecha de emisión"',
-                'issue_place' => '"lugar de emisión"',
                 'ad_referendum' => '"ad referendum"',
                 'subject' => '"Asunto"',
                 'destinatary' => '"Destinatario"',
