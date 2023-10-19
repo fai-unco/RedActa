@@ -61,7 +61,7 @@
 						<div class="articulos-section">
 							<div class="articulos-section-beggining">
 								<b> 
-									{{mb_strtoupper($document->operativeSectionBeginning->content, 'UTF-8')}} <br>
+									{{$document->operativeSectionBeginning ? mb_strtoupper($document->operativeSectionBeginning->content, 'UTF-8') : ''}} <br>
 									{{mb_strtoupper($document->documentType->action_in_operative_section, 'UTF-8')}}:
 								</b>
 							</div>
