@@ -193,15 +193,15 @@ class DocumentController extends Controller
     public function search(Request $request){
         try {
             $params = [
-                'documentTypeId',
+                'document_type_id',
                 'name',
                 'number',
-                'issuerId',
-                'issuePlace',
-                'adReferendum',
+                'issuer_id',
+                'issue_place',
+                'ad_referendum',
                 'subject',
                 'destinatary',
-                'id'
+                'id',
             ];
             $searchInput = [];
             $output = [];
@@ -209,18 +209,18 @@ class DocumentController extends Controller
                 if($request->has($param)){
                     if (in_array($param, ['name', 'destinatary', 'subject'])){
                         array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
-                    } else if ($param != 'issueDateStart' && $param != 'issueDateEnd') {
-                        array_push($searchInput, [Str::snake($param), '=', $request->query($param)]);
+                    } else {
+                        array_push($searchInput, [$param, '=', $request->query($param)]);
                     }
                 }
             }
             array_push($searchInput, ['redacta_user_id', '=', $request->user()->id]);
             $results = Document::with(['issuer','documentType'])->where($searchInput);
-            if($request->has('issueDateStart')){
-                $results = $results->whereDate('issue_date', '>=', $request->query('issueDateStart'));
+            if($request->has('issue_date_start')){
+                $results = $results->whereDate('issue_date', '>=', $request->query('issue_date_start'));
             }
-            if($request->has('issueDateEnd')){
-                $results = $results->whereDate('issue_date', '<=', $request->query('issueDateEnd'));
+            if($request->has('issue_date_end')){
+                $results = $results->whereDate('issue_date', '<=', $request->query('issue_date_end'));
             }
             $results = $results->get();
             foreach ($results as $document){
