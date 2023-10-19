@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('content');
             $table->bigInteger('issuer_id')->unsigned();
-            $table->foreign('issuer_id')->references('id')->on('issuers')->onDelete('cascade');
+            $table->foreign('issuer_id')->references('id')->on('issuers');
         });
     }
 

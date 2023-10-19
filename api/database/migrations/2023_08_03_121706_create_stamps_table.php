@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('position')->nullable();
             $table->bigInteger('issuer_id')->unsigned();
-            $table->foreign('issuer_id')->references('id')->on('issuers')->onDelete('cascade');
+            $table->foreign('issuer_id')->references('id')->on('issuers');
         });
 
         Schema::table('stamps', function (Blueprint $table) {

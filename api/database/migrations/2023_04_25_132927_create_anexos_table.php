@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('index');
             
             $table->bigInteger('document_id')->unsigned();
-            $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
+            $table->foreign('document_id')->references('id')->on('documents');
 
             /*$table->bigInteger('file_id')->unsigned();
             $table->foreign('file_id')->references('id')->on('files');*/
