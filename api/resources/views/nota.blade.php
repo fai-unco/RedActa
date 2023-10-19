@@ -1,7 +1,6 @@
 @php( $issuer = $document->issuer )
 @php( $months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"] )
 @php( $issueDate = strtotime($document->issue_date) )
-@php( $issueDateStr = date('d', $issueDate)." de ".$months[date('n', $issueDate)-1]. " de ".date('Y', $issueDate)  )
 @php( $body = json_decode($document->body) )
 <!DOCTYPE html>
 <html>
@@ -27,8 +26,22 @@
 				<tr>
 					<td class="document-body-cell">
 						<div class="subheader">
-							{{mb_strtoupper($issuer->city, 'UTF-8')}}, {{$issueDateStr}} <br>
-							{{mb_strtoupper($document->documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N° {{sprintf('%03s', $document->number)}}<br>
+							{{mb_strtoupper($issuer->city, 'UTF-8')}},
+							@if($document->issue_date)
+								{{date('d', $issueDate)." de ".$months[date('n', $issueDate)-1]. " de ".date('Y', $issueDate)}}
+							@else
+								@for($i = 0; $i < 9; $i++)
+									&nbsp;
+								@endfor
+							@endif
+							<br>
+							{{mb_strtoupper($document->documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N° 
+							@if($document->number)
+								{{sprintf('%03s', $document->number)}}
+							@else
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							@endif
+							<br>
 							Ref: {{$document->subject}}
 						</div>	
 						<div class="destinatary-section">

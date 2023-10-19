@@ -1,7 +1,6 @@
 @php( $issuer = $document->issuer)
 @php( $months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"] )
 @php( $issueDate = strtotime($document->issue_date) )
-@php( $issueDateStr = date('d', $issueDate)." de ".$months[date('n', $issueDate)-1]. " de ".date('Y', $issueDate) )
 @php( $hasAnexoUnico = $document->has_anexo_unico )
 @php( $body = json_decode($document->body) )
 @php( $intToRomanNumbers = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X'])
@@ -25,8 +24,21 @@
 							<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$document->heading->id.'.png' }}">
 						</div>
 						<div class="subheader">
-							{{mb_strtoupper($document->documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N° {{sprintf('%03s', $document->number)}}<br>
-							{{mb_strtoupper($document->issuer->city, 'UTF-8')}}, {{$issueDateStr}}
+							{{mb_strtoupper($document->documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N°
+							@if($document->number)
+								{{sprintf('%03s', $document->number)}}
+							@else
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							@endif 
+							<br>
+							{{mb_strtoupper($document->issuer->city, 'UTF-8')}},
+							@if($document->issue_date)
+								{{date('d', $issueDate)." de ".$months[date('n', $issueDate)-1]. " de ".date('Y', $issueDate)}}
+							@else
+								@for($i = 0; $i < 9; $i++)
+									&nbsp;
+								@endfor
+							@endif 
 						</div>
 					</th>
 				</tr>
