@@ -49,17 +49,7 @@
                             <div class="form-group">
                                 <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
                             </div>
-                            <div class="form-group">
-                                <nb-checkbox (change)="hasAnexosOnChange()" [checked]="hasAnexos">Incluye anexos</nb-checkbox>
-                            </div>
-                            <!--div class="form-group">
-                                <label class="label col-form-label">Tipo de anexo</label>
-                                <nb-select fullWidth placeholder="Seleccionar tipo" formControlName="anexosSectionTypeId" [selected]="form.get('anexosSectionTypeId')?.value" (selectedChange)="anexoSectionTypeOnChange($event)">
-                                    <nb-option *ngFor="let item of anexoTypes" [value]="item.id">{{item.description}}</nb-option>
-                                </nb-select>
-                            </div-->
                         </ng-container>
-        
                     </nb-card-body>
             </nb-card>
             <nb-card *ngIf="documentTypeId">
@@ -115,14 +105,17 @@
                     <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Considerando', formArrayName: 'considerando', itemName:'párrafo'}"></ng-container>
                     <ng-container *ngIf="documentTypeId == 1">
                         <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
-                        <nb-card *ngIf="hasAnexos">
+                        <nb-card>
                             <nb-card-header>
                                 Anexos
                             </nb-card-header>
                             <nb-card-body>
-                                <app-anexo  *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
-                                <div class="d-flex flex-row-reverse">
-                                    <button nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo" (click)="addAnexo()">
+                                <div class="form-group">
+                                    <nb-checkbox (change)="hasAnexoUnicoOnChange()">Tiene anexo único?</nb-checkbox>
+                                </div>
+                                <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
+                                <div class="d-flex justify-content-end">
+                                    <button *ngIf="(!hasAnexoUnico && anexosData.length < 10) || (hasAnexoUnico && anexosData.length < 1)" nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo" (click)="addAnexo()">
                                         <nb-icon icon="plus-outline" status="success"></nb-icon>
                                     </button>
                                 </div>

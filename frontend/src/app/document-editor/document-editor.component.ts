@@ -25,7 +25,6 @@ export class DocumentEditorComponent implements OnInit {
   documentId: string = '';
   actionResult!: string;
   formIsLoaded!: boolean;
-  hasAnexos: boolean = false; 
   anexosData: any[] = [];
   @ViewChild('errorDialog') errorDialog!: any; 
   @ViewChild('documentNameInput') documentNameInput!: ElementRef;
@@ -36,7 +35,7 @@ export class DocumentEditorComponent implements OnInit {
     Visto: 'No incluir "Visto," al inicio, ni ";y," al final. Estos son añadidos en forma automática al generar el documento',
     Considerando: 'No incluir "Que" al inicio, ni ";" al final. Estos son añadidos en forma automática al generar el documento',
   }
-
+  hasAnexoUnico = false;
   
   constructor(private fb: FormBuilder, 
               private dialogService: NbDialogService, 
@@ -49,42 +48,38 @@ export class DocumentEditorComponent implements OnInit {
               ) {}
 
   ngOnInit(): void {
-
-    this.menuSubscription = this.nbMenuService.onItemClick()
-      .subscribe((event) => {
-        if(event.item.title === 'Exportar original'){
-          this.export()
-        } else if(event.item.title === 'Exportar copia fiel'){
-          this.export(true);
-        }
-      });
-
-
+    this.menuSubscription = this.nbMenuService.onItemClick().subscribe((event) => {
+      if(event.item.title === 'Exportar original'){
+        this.export()
+      } else if(event.item.title === 'Exportar copia fiel'){
+        this.export(true);
+      }
+    });
     this.route.queryParams.subscribe(params => {
-        this.error = false;
-        this.formIsLoaded = false;
-        this.documentId = params['id'];
-        forkJoin([this.connectionService.get('document_types'), this.connectionService.get('issuers')]).subscribe({
-          next: (results: any) => {
-            this.documentTypes = results[0].data;
-            this.issuers = results[1].data;
-            if(this.documentId){  
-              this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
-                next: (res: any) => {
-                  this.initializeForm(res.data);
-                },
-                error: e => {
-                  this.errorHandler(e, '/')
-                }
-              })
-            } else {
-              this.initializeForm();
-            }
-          },
-          error: e => {
-            this.errorHandler(e, '/');
+      this.error = false;
+      this.formIsLoaded = false;
+      this.documentId = params['id'];
+      forkJoin([this.connectionService.get('document_types'), this.connectionService.get('issuers')]).subscribe({
+        next: (results: any) => {
+          this.documentTypes = results[0].data;
+          this.issuers = results[1].data;
+          if(this.documentId){  
+            this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
+              next: (res: any) => {
+                this.initializeForm(res.data);
+              },
+              error: e => {
+                this.errorHandler(e, '/')
+              }
+            })
+          } else {
+            this.initializeForm();
           }
-        });    
+        },
+        error: e => {
+          this.errorHandler(e, '/');
+        }
+      });    
     });
   }
 
@@ -129,9 +124,6 @@ export class DocumentEditorComponent implements OnInit {
             for(let anexo of data.anexos){
               this.addAnexo(anexo.id, anexo.index, anexo.title, anexo.subtitle, anexo.content, anexo.file);
             }
-            if(this.anexosData.length > 0){
-              this.hasAnexos = true;
-            }
             break;
           default:
             this.form.get(key)?.setValue(value);
@@ -149,6 +141,7 @@ export class DocumentEditorComponent implements OnInit {
     return this.form.get('body') as FormGroup;
   }
 
+  
   
   
   nameOnInput(value: string){
@@ -174,8 +167,8 @@ export class DocumentEditorComponent implements OnInit {
       this.body.addControl('cuerpo', this.fb.control(''));
     }
     this.setDocumentName();    
-    this.hasAnexos = false;
     this.resetAnexos();
+    //this.addAnexo();
   }
 
   adReferendumOnChange(){
@@ -183,13 +176,10 @@ export class DocumentEditorComponent implements OnInit {
     this.form.get('adReferendum')?.setValue(!adReferendum);  
   }
 
-  hasAnexosOnChange(){
-    this.hasAnexos = !this.hasAnexos;
-    if(!this.hasAnexos){
-      this.resetAnexos();
-    } else {
-      this.addAnexo();
-    }
+  hasAnexoUnicoOnChange(){
+    //this.form.get('hasAnexoUnico')?.setValue(!this.hasAnexoUnico);
+    this.hasAnexoUnico = !this.hasAnexoUnico;
+    this.resetAnexos();
   }
 
   private resetAnexos(){
@@ -237,9 +227,17 @@ export class DocumentEditorComponent implements OnInit {
   
   addAnexo(id='', index=this.anexosData.length, title='', subtitle='', content='', file: any = null) {
     let fileId = '';
+    let romanNumbers = ['I','II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
     if(file){
       fileId = file.id; 
     }
+    if(!title){
+      if(this.hasAnexoUnico){
+        title = 'Anexo Único';
+      } else {
+        title = 'Anexo ' + romanNumbers[index+1];
+      }
+    }  
     let newAnexo = this.fb.group({
       id: this.fb.control(id),
       index: this.fb.control(index),
