@@ -97,7 +97,6 @@ export class DocumentEditorComponent implements OnInit {
       number: ['', Validators.required],
       issuerId: ['', Validators.required],
       issueDate: ['', Validators.required],
-      issuePlace: ['', Validators.required],    
       subject: ['', Validators.required],    
       destinatary: ['', Validators.required],    
       adReferendum: [false, Validators.required],    

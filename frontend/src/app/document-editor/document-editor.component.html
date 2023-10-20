@@ -55,10 +55,7 @@
             <nb-card *ngIf="documentTypeId">
                 <nb-card-header>Encabezado</nb-card-header>
                     <nb-card-body>
-                        <div class="form-group">
-                            <label class="label col-form-label">Número</label>
-                            <input type="number" nbInput fullWidth formControlName="number" placeholder="Ingresar número" (input)="setDocumentName()">
-                        </div>
+                       
                         <div class="form-group">
                             <label class="label col-form-label">Dependencia emisora</label>
                             <nb-select fullWidth placeholder="Seleccionar dependencia" formControlName="issuerId" [selected]="form.get('issuerId')?.value">
@@ -68,15 +65,15 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label class="label col-form-label">Fecha de emisión</label>
-                                    <input nbInput fullWidth [nbDatepicker]="datepicker" placeholder="Ingresar fecha en formato dd/mm/aa" formControlName="issueDate" (keydown)="$event.preventDefault()">
-                                    <nb-datepicker #datepicker format="dd/MM/yyyy"></nb-datepicker>
+                                    <label class="label col-form-label">Número</label>
+                                    <input type="number" nbInput fullWidth formControlName="number" placeholder="Ingresar número" (input)="setDocumentName()">
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label class="label col-form-label">Lugar de emisión</label>
-                                    <input nbInput fullWidth formControlName="issuePlace" placeholder="Ingresar lugar">
+                                    <label class="label col-form-label">Fecha de emisión</label>
+                                    <input nbInput fullWidth [nbDatepicker]="datepicker" placeholder="Ingresar fecha en formato dd/mm/aa" formControlName="issueDate" (keydown)="$event.preventDefault()">
+                                    <nb-datepicker #datepicker format="dd/MM/yyyy"></nb-datepicker>
                                 </div>
                             </div>
                         </div>
