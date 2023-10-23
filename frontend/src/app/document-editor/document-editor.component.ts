@@ -32,8 +32,9 @@ export class DocumentEditorComponent implements OnInit {
   menuSubscription!: Subscription;
   exportOptions = [{ title: 'Exportar original' }, { title: 'Exportar copia fiel' }];
   hints: {[index: string]: any} = {
-    Visto: 'No incluir "Visto," al inicio, ni ";y," al final. Estos son añadidos en forma automática al generar el documento',
-    Considerando: 'No incluir "Que" al inicio, ni ";" al final. Estos son añadidos en forma automática al generar el documento',
+    Visto: 'No incluir "Visto" al inicio, se añade en forma automática al exportar el documento',
+    Considerando: '',
+    Resuelve: 'Solo ingresar el contenido del artículo, no colocar punto al finalizar'
   }
   hasAnexoUnico = false;
   
