@@ -247,7 +247,7 @@ class DocumentController extends Controller
                 'document_type_id' => 'required|numeric',
                 'name' => 'sometimes|string|nullable',
                 'number' => 'sometimes|numeric|nullable',
-                'issuer_id' => 'required|numeric',
+                'issuer_id' => 'required|numeric|exists:redacta_users,id',
                 'issue_date' => 'sometimes|date|nullable',
                 'ad_referendum' => 'sometimes|boolean|nullable',
                 'body' => 'required',

@@ -176,7 +176,7 @@ class HeadingController extends Controller
         $validator = Validator::make($request->all(), [
             'year' => 'required|numeric',
             'issuer_id' => 'required|numeric',
-            'file_id' => 'required|numeric'
+            'file_id' => 'required|numeric|exists:files,id'
         ], [
             'required' => 'El campo :attribute es requerido',
             'numeric' => 'El campo :attribute debe ser un número',

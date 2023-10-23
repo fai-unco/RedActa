@@ -178,8 +178,8 @@ class AnexoController extends Controller
     private function validateRequest($request) {
         $validator = Validator::make($request->all(), [
                 'index' => 'required|numeric',
-                'document_id' => 'required|numeric',
-                'file_id' => 'required|numeric'
+                'document_id' => 'required|numeric|exists:documents,id',
+                'file_id' => 'required|numeric|exists:files,id'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
