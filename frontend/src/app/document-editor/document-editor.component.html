@@ -41,13 +41,13 @@
                 <nb-card-header>Tipo de documento</nb-card-header>
                     <nb-card-body>
                         <div class="form-group">
-                            <nb-select fullWidth placeholder="Seleccionar tipo de documento" [selected]="documentTypeId" (selectedChange)="documentTypeOnChange($event)">
+                            <nb-select fullWidth placeholder="Seleccionar tipo de documento" [disabled]="documentId != null" [selected]="documentTypeId" (selectedChange)="documentTypeOnChange($event)">
                                 <nb-option *ngFor="let item of documentTypes" [value]="item.id">{{item.description}}</nb-option>
                             </nb-select>
                         </div>
                         <ng-container *ngIf="documentTypeId == 1">
                             <div class="form-group">
-                                <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
+                                <nb-checkbox (change)="adReferendumOnChange()" [disabled]="documentId != null" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
                             </div>
                         </ng-container>
                     </nb-card-body>
@@ -58,7 +58,7 @@
                        
                         <div class="form-group">
                             <label class="label col-form-label">Dependencia emisora</label>
-                            <nb-select fullWidth placeholder="Seleccionar dependencia" formControlName="issuerId" [selected]="form.get('issuerId')?.value">
+                            <nb-select fullWidth [disabled]="documentId != null" placeholder="Seleccionar dependencia" formControlName="issuerId" [selected]="form.get('issuerId')?.value">
                                 <nb-option *ngFor="let item of issuers" [value]="item.id">{{item.description}}</nb-option>
                             </nb-select>
                         </div>

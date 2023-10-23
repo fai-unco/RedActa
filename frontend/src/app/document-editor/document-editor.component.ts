@@ -22,7 +22,7 @@ export class DocumentEditorComponent implements OnInit {
   nameOnFocus: boolean = false;
   submitting: boolean = false;
   error: boolean = false;
-  documentId: string = '';
+  documentId: any;
   actionResult!: string;
   formIsLoaded!: boolean;
   anexosData: any[] = [];
@@ -278,7 +278,7 @@ export class DocumentEditorComponent implements OnInit {
   }
 
   cloneDocument(){
-    this.documentId = '';
+    this.documentId = null;
     this.form.get('name')?.setValue('Nuevo documento');
     this.location.replaceState('/documentos/editar');
   }
