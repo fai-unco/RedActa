@@ -44,14 +44,6 @@
     padding-bottom: 1rem;
 }
 
-.considerando-item p:before{
-    content: "Que ";
-}
-
-.considerando-item p:after{
-    content: ";"
-}
-
 .articulos-section-beggining { 
     text-align: center;
     padding-bottom: 1rem;
