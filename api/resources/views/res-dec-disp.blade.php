@@ -47,7 +47,7 @@
 				<tr>
 					<td class="document-body-cell">
 						<div class="visto-section indented">
-							<b class="visto-section-beggining">VISTO</b>, {!! $body->visto !!}; y,
+							<b class="visto-section-beggining">VISTO</b>, {!! $body->visto !!}
 						</div>	
 						<div class="considerando-section indented">
 							<b>CONSIDERANDO:</b>
