@@ -36,7 +36,6 @@ export class DocumentEditorComponent implements OnInit {
     Considerando: '',
     Resuelve: 'Solo ingresar el contenido del artículo, no colocar punto al finalizar'
   }
-  hasAnexoUnico = false;
   
   constructor(private fb: FormBuilder, 
               private dialogService: NbDialogService, 
@@ -100,7 +99,8 @@ export class DocumentEditorComponent implements OnInit {
       issueDate: ['', Validators.required],
       subject: ['', Validators.required],    
       destinatary: ['', Validators.required],    
-      adReferendum: [false, Validators.required],    
+      adReferendum: [false, Validators.required],
+      hasAnexoUnico: [false, Validators.required],    
       body: this.fb.group({}),
     });
     if(data){
@@ -141,6 +141,10 @@ export class DocumentEditorComponent implements OnInit {
     return this.form.get('body') as FormGroup;
   }
 
+  get hasAnexoUnico(){
+    return this.form.get('hasAnexoUnico')?.value;
+  }
+
   
   
   
@@ -177,8 +181,8 @@ export class DocumentEditorComponent implements OnInit {
   }
 
   hasAnexoUnicoOnChange(){
-    //this.form.get('hasAnexoUnico')?.setValue(!this.hasAnexoUnico);
-    this.hasAnexoUnico = !this.hasAnexoUnico;
+    this.form.get('hasAnexoUnico')?.setValue(!this.hasAnexoUnico);
+    //this.hasAnexoUnico = !this.hasAnexoUnico;
     this.resetAnexos();
   }
 
@@ -227,17 +231,9 @@ export class DocumentEditorComponent implements OnInit {
   
   addAnexo(id='', index=this.anexosData.length, title='', subtitle='', content='', file: any = null) {
     let fileId = '';
-    let romanNumbers = ['I','II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
     if(file){
       fileId = file.id; 
     }
-    if(!title){
-      if(this.hasAnexoUnico){
-        title = 'Anexo Único';
-      } else {
-        title = 'Anexo ' + romanNumbers[index+1];
-      }
-    }  
     let newAnexo = this.fb.group({
       id: this.fb.control(id),
       index: this.fb.control(index),
