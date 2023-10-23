@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NbDialogService } from '@nebular/theme';
 import { finalize } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
+import { ErrorDialogComponent } from 'src/app/shared/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-anexo',
@@ -18,7 +21,10 @@ export class AnexoComponent implements OnInit {
 
   
 
-  constructor(private apiConnectionService: ApiConnectionService, private fb: FormBuilder) { }
+  constructor(private apiConnectionService: ApiConnectionService, 
+              private fb: FormBuilder,
+              private dialogService: NbDialogService, 
+              private router: Router) { }
 
   ngOnInit(): void {}
 
@@ -49,7 +55,7 @@ export class AnexoComponent implements OnInit {
           this.form.get('fileId')!.setValue(res.data.id);
         },
         error: e => {
-          console.log(e);
+          this.errorHandler(e)
         }
       });
     }
@@ -67,7 +73,7 @@ export class AnexoComponent implements OnInit {
         this.form.get('fileId')!.reset();
       },
       error: e => {
-        console.log(e);
+        this.errorHandler(e)
       }
     })
     
@@ -75,6 +81,24 @@ export class AnexoComponent implements OnInit {
 
   deleteAnexo(){
     this.delete.emit('');
+  }
+
+  private errorHandler(error?: any, urlRedirect?: any) {
+    let message =  error.error.message ? error.error.message : 'Ha habido un error. Pruebe reintentar la operación'
+    this.openErrorDialog(message, urlRedirect);
+  }
+
+  openErrorDialog (errorMsg: string, urlRedirect?: any){
+    this.dialogService.open(ErrorDialogComponent, {
+      context: {
+        msg: errorMsg,
+      },
+    })
+    .onClose.subscribe(_ => {
+      if(urlRedirect){
+        this.router.navigate([urlRedirect]);
+      }
+    });
   }
 
 
