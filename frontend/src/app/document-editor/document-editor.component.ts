@@ -183,7 +183,7 @@ export class DocumentEditorComponent implements OnInit {
   hasAnexoUnicoOnChange(){
     this.form.get('hasAnexoUnico')?.setValue(!this.hasAnexoUnico);
     //this.hasAnexoUnico = !this.hasAnexoUnico;
-    this.resetAnexos();
+    //this.resetAnexos();
   }
 
   private resetAnexos(){

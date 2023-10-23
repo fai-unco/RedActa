@@ -106,8 +106,9 @@
                         <nb-card-body formArrayName="considerando">
                             <app-text-editor formControlName="0" [placeholder]="hints['Considerando']"></app-text-editor>
                         </nb-card-body>
-                    </nb-card>                        <ng-container *ngIf="documentTypeId == 1">
-                    <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+                    </nb-card>                        
+                    <ng-container *ngIf="documentTypeId == 1">
+                        <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
                         <nb-card>
                             <nb-card-header>
                                 Anexos
@@ -116,7 +117,7 @@
                                 <div class="form-group">
                                     <nb-checkbox (change)="hasAnexoUnicoOnChange()">Tiene anexo único?</nb-checkbox>
                                 </div>
-                                <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
+                                <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i+1" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
                                 <div class="d-flex justify-content-end">
                                     <button *ngIf="(!hasAnexoUnico && anexosData.length < 10) || (hasAnexoUnico && anexosData.length < 1)" nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo" (click)="addAnexo()">
                                         <nb-icon icon="plus-outline" status="success"></nb-icon>
