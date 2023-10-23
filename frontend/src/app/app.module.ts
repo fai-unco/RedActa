@@ -14,14 +14,14 @@ import { ErrorDialogComponent } from './shared/error-dialog/error-dialog.compone
 @NgModule({
   declarations: [
     AppComponent,
-    ErrorDialogComponent,
+    ErrorDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    NbThemeModule.forRoot({ name: 'default' }),
+    NbThemeModule.forRoot({ name: localStorage.getItem('uiTheme') || 'default' }),
     NbEvaIconsModule,
     PanelModule,
     NbMenuModule.forRoot(),

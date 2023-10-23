@@ -12,7 +12,7 @@ export class SidebarMenuComponent implements OnInit {
   items: NbMenuItem[]  = [
     {
       title: 'Crear documento',
-      url: 'documentos/editar',
+      link: 'documentos/editar',
       //expanded: true,
       icon: 'plus-outline'
     },
@@ -20,8 +20,15 @@ export class SidebarMenuComponent implements OnInit {
       title: 'Buscar documento',
       url: 'documentos/buscar',
       icon: 'search-outline'
+    },
+    {
+      title: 'Configuración',
+      url: 'configuracion',
+      icon: 'settings-2-outline'
     }
   ];
+
+  darkModeEnabled = localStorage.getItem('uiTheme') == 'dark';
 
   constructor (private themeService: NbThemeService) { }
 
@@ -29,11 +36,13 @@ export class SidebarMenuComponent implements OnInit {
   }
 
   changeTheme(enableDarkMode: boolean){
+    let theme = 'default';
     if(enableDarkMode) {
-      this.themeService.changeTheme('dark');
-    } else {
-      this.themeService.changeTheme('default');
+      theme = 'dark'
     }
+    this.themeService.changeTheme(theme);
+    localStorage.setItem('uiTheme', theme);
+    this.darkModeEnabled = enableDarkMode;
   }
 
 
