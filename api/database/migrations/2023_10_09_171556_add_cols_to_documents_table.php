@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps');
             $table->bigInteger('heading_id')->nullable()->unsigned();
             $table->foreign('heading_id')->references('id')->on('headings');
+            $table->boolean('has_anexo_unico')->default(false);
         });
     }
 

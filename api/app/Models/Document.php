@@ -23,7 +23,8 @@ class Document extends Model
         'number',
         'operative_section_beginning_id',
         'true_copy_stamp_id', 
-        'heading_id'
+        'heading_id',
+        'has_anexo_unico'
     ];
     
     public function documentCopy(){

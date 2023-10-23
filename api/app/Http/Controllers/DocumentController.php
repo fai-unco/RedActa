@@ -252,13 +252,15 @@ class DocumentController extends Controller
                 'ad_referendum' => 'sometimes|boolean|nullable',
                 'body' => 'required',
                 'subject' => 'sometimes|nullable|string',
-                'destinatary' => 'sometimes|nullable|string'
+                'destinatary' => 'sometimes|nullable|string',
+                'has_anexo_unico' => 'sometimes|boolean'
                 //'anexosSectionTypeId' => 'required'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
                 'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy',
                 'string' => 'El campo :attribute debe ser de tipo string',
+                'boolean' => 'El campo :attribute debe ser de tipo booleano'
             ], [
                 'document_type_id' => '"tipo de documento"',
                 'name' => '"nombre de documento"',
@@ -268,6 +270,7 @@ class DocumentController extends Controller
                 'ad_referendum' => '"ad referendum"',
                 'subject' => '"Asunto"',
                 'destinatary' => '"Destinatario"',
+                'has_anexo_unico' => '"Tiene anexo único"'
                 //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
@@ -302,7 +305,7 @@ class DocumentController extends Controller
             'adReferendum' => $data->ad_referendum,
             'subject' => $data->subject,
             'destinatary' => $data->destinatary,
-            //'anexosSectionTypeId' => $data->anexos_section_type_id,
+            'hasAnexoUnico' => $data->has_anexo_unico,
             'body' => json_decode($data->body),
             'anexos' => Anexo::with(['file'])->where('document_id', $data->id)->get()
         ];
