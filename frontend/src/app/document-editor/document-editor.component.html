@@ -99,9 +99,15 @@
                             <app-text-editor formControlName="visto" [placeholder]="hints['Visto']"></app-text-editor>
                         </nb-card-body>
                     </nb-card>
-                    <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Considerando', formArrayName: 'considerando', itemName:'párrafo'}"></ng-container>
-                    <ng-container *ngIf="documentTypeId == 1">
-                        <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+                    <nb-card>
+                        <nb-card-header>
+                            Considerando
+                        </nb-card-header>
+                        <nb-card-body formArrayName="considerando">
+                            <app-text-editor formControlName="0" [placeholder]="hints['Considerando']"></app-text-editor>
+                        </nb-card-body>
+                    </nb-card>                        <ng-container *ngIf="documentTypeId == 1">
+                    <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
                         <nb-card>
                             <nb-card-header>
                                 Anexos
