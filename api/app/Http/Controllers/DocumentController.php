@@ -61,10 +61,12 @@ class DocumentController extends Controller
             $document = new Document();
             $document->set($data);
             $document->save();
+            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+            $document->body = json_decode($document->body);
             return response()->json([
                 'status' => 201,
                 'message' => 'OK',
-                'data' => $this->formatDocumentDataForRetrieving($document)        
+                'data' => $document        
             ], 201);
         } catch (\Throwable $th) {
             return response()->json([
@@ -103,18 +105,20 @@ class DocumentController extends Controller
                     ->header('Content-Type', 'application/pdf')
                     ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
                     ->header('Access-Control-Expose-Headers', 'Content-Disposition');
-            } else if ($request->accepts(['application/json'])) {  
+            } else if ($request->accepts(['application/json'])) {
+                $document->anexos = Anexo::with(['file'])->where('document_id', $id)->get();
+                $document->body = json_decode($document->body);
                 return response()->json([
                     'status' => 200,
                     'message' => $loggedInUserId,
-                    'data' => $this->formatDocumentDataForRetrieving($document)            
+                    'data' => $document            
                 ]);  
             }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }      
+        } 
     }
 
     /**
@@ -152,10 +156,12 @@ class DocumentController extends Controller
             }  
             $document->set($data);
             $document->save();
+            $document->anexos = Anexo::with(['file'])->where('document_id', $id)->get();
+            $document->body = json_decode($document->body);
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
-                'data' => $this->formatDocumentDataForRetrieving($document)           
+                'data' => $document           
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -275,40 +281,6 @@ class DocumentController extends Controller
             ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
-    }
-
-    /*private function formatDocumentDataForStoring($data){  
-        return [
-            'document_type_id' => $data->documentTypeId,
-            'name' => $data->name,
-            'number' => $data->number,
-            'issuer_id' => $data->issuerId,
-            'issue_date' => $data->issueDate,
-            'issue_place' => $data->issuePlace,
-            'ad_referendum' => $data->adReferendum,
-            'subject' => $data->subject,
-            'destinatary' => $data->destinatary,
-            //'anexos_section_type_id' => $data->anexosSectionTypeId, 
-            'body' => json_encode($data->body)
-        ];
-    }*/
-    
-    private function formatDocumentDataForRetrieving($data){  
-        return [
-            'id' => $data->id,
-            'documentTypeId' => $data->document_type_id,
-            'name' => $data->name,
-            'number' => $data->number,
-            'issuerId' => $data->issuer_id,
-            'issueDate' => $data->issue_date,
-            'issuePlace' => $data->issue_place,
-            'adReferendum' => $data->ad_referendum,
-            'subject' => $data->subject,
-            'destinatary' => $data->destinatary,
-            'hasAnexoUnico' => $data->has_anexo_unico,
-            'body' => json_decode($data->body),
-            'anexos' => Anexo::with(['file'])->where('document_id', $data->id)->get()
-        ];
     }
 
     public function exportAnexo(Request $request, $id){
