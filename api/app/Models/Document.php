@@ -16,7 +16,6 @@ class Document extends Model
         'name',
         'body',
         'issue_date',
-        'issue_place',
         'destinatary',
         'subject',
         'ad_referendum',
