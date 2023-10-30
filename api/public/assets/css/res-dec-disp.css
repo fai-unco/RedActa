@@ -68,16 +68,7 @@
     content:".";
 }
 
-.anexo-content {
-    page-break-before: always;
-    text-align: center;
-}
-
-.anexo-content p {
-    text-align: center;
-}
-
-.normal-img {
+.anexo-normal-img {
     padding-top: 1rem;
     width: auto;
     height: auto;
@@ -86,14 +77,13 @@
     max-height: 43rem;
 }
 
-.is-copy-img {
+.anexo-true-copy-img {
     padding-top: 1rem;
     width: auto;
     height: auto;
     margin: 0 auto;
     max-width: 37rem;
     max-height: 36rem;
-   
 }
 
 ul {

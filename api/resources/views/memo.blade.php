@@ -48,6 +48,18 @@
 						</div>
 						<div class="parting-phrase">Atentamente</div>
 						<div class="signatures"></div>
+						<div class="anexos-section">
+							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))							
+							@foreach($anexos as $key=>$anexo)
+								<div class="anexo-content">
+									<p><b>ANEXO {{$hasAnexoUnico ? 'ÚNICO' : $intToRomanNumbers[$key+1]}}</b></p>
+									@php($numberOfPages = (int)shell_exec('set -- '.$anexo->file->id.'-* ; echo "$#"'))
+									@for($i = 1; $i <= $numberOfPages; $i++)
+										<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$anexo->file->id.'-'.$i.'.png'}}" class="anexo-img">
+									@endfor
+								</div>
+							@endforeach
+						</div>
 					</td>
 				</tr>
 			</tbody>

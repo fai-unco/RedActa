@@ -56,6 +56,14 @@ th, td {
     padding-bottom: 2rem;
 }
 
+.anexo-content {
+    page-break-before: always;
+    text-align: center;
+}
+
+.anexo-content p {
+    text-align: center;
+}
 
 @media print {
     body {

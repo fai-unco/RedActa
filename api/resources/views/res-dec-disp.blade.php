@@ -84,8 +84,8 @@
 									@php($numberOfPages = (int)shell_exec('set -- '.$anexo->file->id.'-* ; echo "$#"'))
 									@for($i = 1; $i <= $numberOfPages; $i++)
 										<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$anexo->file->id.'-'.$i.'.png'}}" @class([
-											'is-copy-img' => $isCopy,
-											'normal-img' => !$isCopy
+											'anexo-true-copy-img' => $isCopy,
+											'anexo-normal-img' => !$isCopy
 										])>
 									@endfor
 								</div>
