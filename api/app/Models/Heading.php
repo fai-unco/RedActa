@@ -12,7 +12,6 @@ class Heading extends Model
     use HasFactory;
 
     protected $fillable = [
-        'year',
         'issuer_id',
         'description'     
     ];
