@@ -57,7 +57,6 @@ class DocumentController extends Controller
             } else if ($issuerSettings->operativeSectionBeginning){
                 $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
             }
-            $data['heading_id'] = $issuerSettings->heading->id;
             $document = new Document();
             $document->set($data);
             $document->save();
@@ -259,8 +258,8 @@ class DocumentController extends Controller
                 'body' => 'required',
                 'subject' => 'sometimes|nullable|string',
                 'destinatary' => 'sometimes|nullable|string',
-                'has_anexo_unico' => 'sometimes|boolean'
-                //'anexosSectionTypeId' => 'required'
+                'has_anexo_unico' => 'sometimes|boolean',
+                'heading_id' => 'required|numeric'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
@@ -276,7 +275,8 @@ class DocumentController extends Controller
                 'ad_referendum' => '"ad referendum"',
                 'subject' => '"Asunto"',
                 'destinatary' => '"Destinatario"',
-                'has_anexo_unico' => '"Tiene anexo único"'
+                'has_anexo_unico' => '"Tiene anexo único"',
+                'heading_id' => '"Membrete"'
                 //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
