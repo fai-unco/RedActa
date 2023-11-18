@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->integer('year')->unsigned();
             $table->bigInteger('issuer_id')->unsigned();
+            $table->string('description');
             $table->foreign('issuer_id')->references('id')->on('issuers');
         });
     }
