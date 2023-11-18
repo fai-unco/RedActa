@@ -12,10 +12,8 @@ class Heading extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'subtitle',
-        'content',
-        'index'        
+        'year',
+        'issuer_id'       
     ];
 
     public function issuer(){
