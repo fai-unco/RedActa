@@ -50,8 +50,6 @@ class DocumentController extends Controller
     {
         $data = $this->validateRequest($request);
         try {
-            $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
-            $data['true_copy_stamp_id'] = $issuerSettings->trueCopyStamp->id;
             $document = new Document();
             $document->set($data);
             $document->save();
@@ -139,7 +137,6 @@ class DocumentController extends Controller
     {
         $data = $this->validateRequest($request);
         try {
-            $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
             $loggedInUserId = $request->user()->id;        
             $document = Document::where('id', $id)->first();
             if(!$document || $document->redactaUser->id != $loggedInUserId){
@@ -255,7 +252,8 @@ class DocumentController extends Controller
                 'destinatary' => 'sometimes|nullable|string',
                 'has_anexo_unico' => 'sometimes|boolean',
                 'heading_id' => 'required|numeric',
-                'operative_section_beginning_id' => 'required|numeric'
+                'operative_section_beginning_id' => 'required|numeric',
+                'true_copy_stamp_id' => 'sometimes|numeric|nullable'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
@@ -273,7 +271,8 @@ class DocumentController extends Controller
                 'destinatary' => '"Destinatario"',
                 'has_anexo_unico' => '"Tiene anexo único"',
                 'heading_id' => '"Membrete"',
-                'operative_section_beginning_id' => '"Inicio de sección operativa"'
+                'operative_section_beginning_id' => '"Inicio de sección operativa"',
+                'true_copy_stamp_id' => '"Firmante de copia fiel"'
                 //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
