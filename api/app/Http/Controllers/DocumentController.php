@@ -52,11 +52,6 @@ class DocumentController extends Controller
         try {
             $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
             $data['true_copy_stamp_id'] = $issuerSettings->trueCopyStamp->id;
-            if($data['ad_referendum'] && $issuerSettings->adReferendumOperativeSectionBeginning){
-                $data['operative_section_beginning_id'] = $issuerSettings->adReferendumOperativeSectionBeginning->id;
-            } else if ($issuerSettings->operativeSectionBeginning){
-                $data['operative_section_beginning_id'] = $issuerSettings->operativeSectionBeginning->id;
-            }
             $document = new Document();
             $document->set($data);
             $document->save();
@@ -259,7 +254,8 @@ class DocumentController extends Controller
                 'subject' => 'sometimes|nullable|string',
                 'destinatary' => 'sometimes|nullable|string',
                 'has_anexo_unico' => 'sometimes|boolean',
-                'heading_id' => 'required|numeric'
+                'heading_id' => 'required|numeric',
+                'operative_section_beginning_id' => 'required|numeric'
             ], [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
@@ -276,7 +272,8 @@ class DocumentController extends Controller
                 'subject' => '"Asunto"',
                 'destinatary' => '"Destinatario"',
                 'has_anexo_unico' => '"Tiene anexo único"',
-                'heading_id' => '"Membrete"'
+                'heading_id' => '"Membrete"',
+                'operative_section_beginning_id' => '"Inicio de sección operativa"'
                 //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
