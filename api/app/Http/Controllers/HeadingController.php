@@ -20,7 +20,6 @@ class HeadingController extends Controller
         /* Accepted query parameters:
             - include_file (boolean): send data of the associated file in response
             - issuer_id (number): the id of the issuer whose headings will be returned
-            - year (number): response will contain only headings of the specified year
         */  
         try {       
             $searchParameters = [];
@@ -32,10 +31,7 @@ class HeadingController extends Controller
             if($request->has('issuer_id')){
                 array_push($searchParameters, ['issuer_id', '=', $request->query('issuer_id')]);
             }
-            if($request->has('year')){
-                array_push($searchParameters, ['year', '=', $request->query('year')]);
-            }
-            $headings = $headings->where($searchParameters)->first();
+            $headings = $headings->where($searchParameters)->get();
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
@@ -174,14 +170,14 @@ class HeadingController extends Controller
 
     private function validateRequest($request){
         $validator = Validator::make($request->all(), [
-            'year' => 'required|numeric',
+            'description' => 'required|string',
             'issuer_id' => 'required|numeric',
             'file_id' => 'required|numeric|exists:files,id'
         ], [
             'required' => 'El campo :attribute es requerido',
-            'numeric' => 'El campo :attribute debe ser un número',
+            'string' => 'El campo :attribute debe ser una cadena de texto',
         ], [
-            'year' => '"Año"',
+            'description' => '"Descripción"',
             'file_id' => '"Seleccionar archivo"'
         ])->stopOnFirstFailure(true);
         $validator->validate();
