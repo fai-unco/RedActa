@@ -26,16 +26,15 @@ class HeadingController extends Controller
             if($request->boolean('include_file', false)){
                 $headings = Heading::with(['file']);
             } else {
-                $headings = Heading::all();
+                $headings = Heading::query();
             }
             if($request->has('issuer_id')){
-                array_push($searchParameters, ['issuer_id', '=', $request->query('issuer_id')]);
+                $headings = $headings->where('issuer_id', $request->query('issuer_id'));
             }
-            $headings = $headings->where($searchParameters)->get();
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
-                'data' => $headings           
+                'data' => $headings->get()          
             ]);
         } catch (\Throwable $th) {
             return response()->json([
