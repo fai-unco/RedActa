@@ -8,13 +8,15 @@ import { TextEditorComponent } from './text-editor/text-editor.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NbMomentDateModule } from '@nebular/moment';
 import { AnexoComponent } from './anexo/anexo.component';
+import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
 
 
 @NgModule({
   declarations: [
     DocumentEditorComponent,
     TextEditorComponent,
-    AnexoComponent
+    AnexoComponent,
+    InitSettingsDialogComponent
   ],
   imports: [
     CommonModule,
