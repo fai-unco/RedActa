@@ -1,11 +1,12 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbMenuService} from '@nebular/theme';
 import { DatePipe, Location } from '@angular/common';
 import { ApiConnectionService } from '../api-connection.service';
 import { Subscription, finalize, forkJoin } from 'rxjs';
 import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.component';
+import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
 
 @Component({
   selector: 'app-document-editor',
@@ -15,22 +16,24 @@ import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.compon
 })
 
 export class DocumentEditorComponent implements OnInit {
-
-  issuers: any;
-  documentTypes: any;
+  issuer: any;
+  documentType: any;
   form!: FormGroup; 
   nameOnFocus: boolean = false;
   submitting: boolean = false;
   error: boolean = false;
   documentId: any;
   actionResult!: string;
-  formIsLoaded!: boolean;
+  state = '';
   anexosData: any[] = [];
   @ViewChild('errorDialog') errorDialog!: any; 
   @ViewChild('documentNameInput') documentNameInput!: ElementRef;
   anexosToBeRemoved: any = [];   
   menuSubscription!: Subscription;
-  exportOptions = [{ title: 'Exportar original' }, { title: 'Exportar copia fiel' }];
+  exportOptions = [
+    { title: 'Exportar original' }, 
+    { title: 'Exportar copia fiel' }
+  ];
   hints: {[index: string]: any} = {
     Visto: 'No incluir "Visto" al inicio, se añade en forma automática al exportar el documento',
     Considerando: '',
@@ -55,88 +58,100 @@ export class DocumentEditorComponent implements OnInit {
         this.export(true);
       }
     });
-    this.route.queryParams.subscribe(params => {
-      this.error = false;
-      this.formIsLoaded = false;
-      this.documentId = params['id'];
-      forkJoin([this.connectionService.get('document_types'), this.connectionService.get('issuers')]).subscribe({
-        next: (results: any) => {
-          this.documentTypes = results[0].data;
-          this.issuers = results[1].data;
-          if(this.documentId){  
-            this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
-              next: (res: any) => {
-                this.initializeForm(res.data);
-              },
-              error: e => {
-                this.errorHandler(e, '/')
-              }
-            })
-          } else {
-            this.initializeForm();
-          }
-        },
+    this.route.queryParams.subscribe(params => this.documentId = params['id']);
+    if (!this.documentId) {
+      this.dialogService.open(InitSettingsDialogComponent).onClose.subscribe(data => {
+        if(data){
+          this.state = 'loading'
+          this.initialize(data);
+        } else {
+          this.router.navigateByUrl('/');
+        }
+      });
+    } else {
+      this.state = 'loading';
+      this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
+        next: (res: any) => this.initialize(res.data), 
         error: e => {
           this.errorHandler(e, '/');
+          this.state = '';
         }
-      });    
-    });
+      });
+    }
   }
-
-
-  
 
   ngOnDestroy(): void {
-    this.menuSubscription.unsubscribe();
-  }
-
-  private initializeForm(data?: any){
-    this.form = this.fb.group({
-      name: ['Nuevo documento'],
-      documentTypeId: ['', Validators.required],
-      number: ['', Validators.required],
-      issuerId: ['', Validators.required],
-      issueDate: ['', Validators.required],
-      subject: ['', Validators.required],    
-      destinatary: ['', Validators.required],    
-      adReferendum: [false, Validators.required],
-      hasAnexoUnico: [false, Validators.required],    
-      body: this.fb.group({}),
-    });
-    if(data){
-      for(let [key, value] of Object.entries(data)) {
-        switch(key){
-          case 'body':
-            for (let [key, value] of Object.entries(data.body)) {
-              if(Array.isArray(value)){
-                let formArray = this.fb.array([]);
-                this.body.addControl(key, formArray);            
-                value?.forEach((elem) => formArray.push(this.fb.control(elem)));
-              } else {
-                this.body.addControl(key, this.fb.control(value));
-              }
-            }
-            break;
-          case 'issueDate':
-            this.form.get('issueDate')?.setValue(new Date (value + 'T00:00:00-03:00'));
-            break;
-          case 'anexos':
-            for(let anexo of data.anexos){
-              this.addAnexo(anexo.id, anexo.index, anexo.title, anexo.subtitle, anexo.content, anexo.file);
-            }
-            break;
-          default:
-            this.form.get(key)?.setValue(value);
-        }
-      }
+    if(this.menuSubscription){
+      this.menuSubscription.unsubscribe();
     }
-    this.formIsLoaded = true;
   }
 
-  get documentTypeId() {
-    return this.form.get('documentTypeId')?.value;
+  private initialize(data?: any){
+    let requests = [
+      this.connectionService.get('document_types', data.documentTypeId), 
+      this.connectionService.get('issuers', data.issuerId),
+    ];
+    forkJoin(requests).subscribe({
+      next: (res: any) => {
+        let formArrayControlInitContent = [];
+        this.documentType = res[0].data;
+        this.issuer = res[1].data;
+        this.form = this.fb.group({
+          name: ['Nuevo documento'],
+          documentTypeId: ['', Validators.required],
+          number: ['', Validators.required],
+          issuerId: ['', Validators.required],
+          issueDate: ['', Validators.required],
+          subject: ['', Validators.required],    
+          destinatary: ['', Validators.required],    
+          adReferendum: [false, Validators.required],
+          hasAnexoUnico: [false, Validators.required],
+          headingId: ['1', Validators.required],    
+          operativeSectionBeginningId: ['1', Validators.required],    
+          body: this.fb.group({})
+        });
+        if(!this.documentId){
+          formArrayControlInitContent.push('');
+        }
+        if([1, 2, 3].includes(data.documentTypeId)){ //si el documento es una resolución, disposición o declaración
+          this.body.addControl('visto', this.fb.control(''));
+          this.body.addControl('considerando', this.fb.array(formArrayControlInitContent));
+          this.body.addControl('articulos', this.fb.array(formArrayControlInitContent));
+        } else if([4, 5, 6].includes(data.documentTypeId)){ //si el documento es un acta, memo o nota 
+          this.body.addControl('cuerpo', this.fb.control(''));
+        } 
+        for(let [key, value] of Object.entries(data)) {
+          switch(key){
+            case 'body':
+              for (let [key, value] of Object.entries(data.body)) {
+                if(Array.isArray(value)){
+                  value?.forEach((elem) => (this.body.get(key) as FormArray).push(this.fb.control(elem)));
+                } else {
+                  this.body.get(key)?.setValue(value);
+                }
+              }
+              break;
+            case 'issueDate':
+              this.form.get('issueDate')?.setValue(new Date (value + 'T00:00:00-03:00'));
+              break;
+            case 'anexos':
+              for(let anexo of data.anexos){
+                this.addAnexo(anexo.id, anexo.index, anexo.title, anexo.subtitle, anexo.content, anexo.file);
+              }
+              break;
+            default:
+              this.form.get(key)?.setValue(value);
+          }
+        }
+        this.state = 'showForm';
+      },
+      error: e => {
+        this.state = '';
+        this.errorHandler(e, '/');
+      }
+    });
   }
-
+  
   get body(){
     return this.form.get('body') as FormGroup;
   }
@@ -145,9 +160,6 @@ export class DocumentEditorComponent implements OnInit {
     return this.form.get('hasAnexoUnico')?.value;
   }
 
-  
-  
-  
   nameOnInput(value: string){
     this.form.get('name')?.setValue(value);
   }
@@ -159,22 +171,6 @@ export class DocumentEditorComponent implements OnInit {
     this.nameOnFocus = false;
   }
 
-  documentTypeOnChange(documentTypeId: any){
-    this.initializeForm();
-    this.form.get('documentTypeId')?.setValue(documentTypeId); 
-    if([1, 2, 3].includes(documentTypeId)){ //1: resolucion, 2: declaracion, 3: disposicion
-      this.body.addControl('visto', this.fb.control(''));
-      this.body.addControl('considerando', this.fb.array(['']));
-      this.body.addControl('articulos', this.fb.array(['']));
-    }
-    if([4, 5, 6].includes(this.documentTypeId)){ //4: acta, 5: memo, 6: nota
-      this.body.addControl('cuerpo', this.fb.control(''));
-    }
-    this.setDocumentName();    
-    this.resetAnexos();
-    //this.addAnexo();
-  }
-
   adReferendumOnChange(){
     let adReferendum = this.form.get('adReferendum')?.value;
     this.form.get('adReferendum')?.setValue(!adReferendum);  
@@ -182,43 +178,6 @@ export class DocumentEditorComponent implements OnInit {
 
   hasAnexoUnicoOnChange(){
     this.form.get('hasAnexoUnico')?.setValue(!this.hasAnexoUnico);
-    //this.hasAnexoUnico = !this.hasAnexoUnico;
-    //this.resetAnexos();
-  }
-
-  private resetAnexos(){
-    for (let item of this.anexosData){
-      if(item.form.get('id').value != ''){
-        this.anexosToBeRemoved.push(item.form.get('id').value);
-      }
-    }
-    this.anexosData = [];
-  }
-
-  setDocumentName() {
-    let documentTypesAbbreviatures: any = {
-      1: 'resol',
-      2: 'dec',
-      3: 'disp',
-      4: 'acta',
-      5: 'memo',
-      6: 'nota'
-    };
-    let documentTypeAbbreviature = documentTypesAbbreviatures[this.documentTypeId];
-    let documentNumber = this.form.get('number')?.value;
-    let currentYear = new Date().getFullYear()
-    if(documentNumber){
-      this.form.get('name')?.setValue(`${documentTypeAbbreviature}_${this.padLeft(documentNumber.toString(), 3)}_${currentYear}`);
-    } else {
-      this.form.get('name')?.setValue(`${documentTypeAbbreviature}_000_${currentYear}`);
-    }
-  }
-
-  private padLeft(num: string, size:number) {
-    while (num.length < size){
-      num = "0" + num;
-    } 
-    return num;
   }
 
   getBodyFormArray(formControlName: string) {
@@ -342,16 +301,15 @@ export class DocumentEditorComponent implements OnInit {
   }
 
   removeAnexo(dialog: TemplateRef<any>, index: number,  item: string) {
-    this.dialogService.open(dialog, {context: {index: index, item: item}})
-      .onClose.subscribe(remove => {
-        if(remove){
-          let anexoId = this.anexosData[index].form.get('id').value;
-          this.anexosData.splice(index, 1);
-          if(anexoId != ''){
-            this.anexosToBeRemoved.push(anexoId);
-          }
+    this.dialogService.open(dialog, {context: {index: index, item: item}}).onClose.subscribe(remove => {
+      if(remove){
+        let anexoId = this.anexosData[index].form.get('id').value;
+        this.anexosData.splice(index, 1);
+        if(anexoId != ''){
+          this.anexosToBeRemoved.push(anexoId);
         }
-      });
+      }
+    });
   }
 
   export(isCopy = false){
