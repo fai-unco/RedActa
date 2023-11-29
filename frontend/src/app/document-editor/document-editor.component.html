@@ -1,13 +1,13 @@
-<nb-card class="h-100" *ngIf="!(formIsLoaded || error)" [nbSpinner]="true" nbSpinnerStatus="primary">
+<nb-card class="h-100" *ngIf="state == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
     <nb-card-body></nb-card-body>
 </nb-card>
-<form *ngIf="formIsLoaded" [formGroup]="form">
+<form *ngIf="state == 'showForm'" [formGroup]="form">
     <div class="flex-container">
         <div class="d-flex justify-content-between">
             <div class="mb-3 h3 document-name-input" nbTooltip="Cambiar nombre del documento" [nbTooltipDisabled]="nameOnFocus" contenteditable="true" 
                 (input)="nameOnInput($any($event.target).innerText)" (blur)="nameOnBlur()" (focus)="nameOnFocus = true" [textContent]="form.get('name')?.value">
             </div>
-            <div *ngIf="documentTypeId" class="d-flex align-items-center text-align-center">
+            <div *ngIf="documentType.id" class="d-flex align-items-center text-align-center">
                 <ng-container *ngIf="!submitting">
                     <div *ngIf="actionResult" class="action-result fade-out">
                         {{actionResult}}   
@@ -23,10 +23,10 @@
                         </button>
                     </div>
                     <div nbTooltip="Exportar como PDF"> 
-                        <button *ngIf='documentTypeId==1' [disabled]="!documentId" class="ghost-btn" nbButton ghost [nbContextMenu]="exportOptions">
+                        <button *ngIf='documentType.id==1' [disabled]="!documentId" class="ghost-btn" nbButton ghost [nbContextMenu]="exportOptions">
                             <nb-icon icon="download-outline" status="primary"></nb-icon>
                         </button>
-                        <button *ngIf='[2, 3, 4, 5, 6].includes(documentTypeId)' [disabled]="!documentId" class="ghost-btn" nbButton ghost (click)="export()">
+                        <button *ngIf='[2, 3, 4, 5, 6].includes(documentType.id)' [disabled]="!documentId" class="ghost-btn" nbButton ghost (click)="export()">
                             <nb-icon icon="download-outline" status="primary"></nb-icon>
                         </button>
                     </div>
@@ -38,31 +38,27 @@
         </div>
         <div class="scrollable">
             <nb-card>
-                <nb-card-header>Tipo de documento</nb-card-header>
+                <nb-card-header>Datos del documento</nb-card-header>
                     <nb-card-body>
                         <div class="form-group">
-                            <nb-select fullWidth placeholder="Seleccionar tipo de documento" [disabled]="documentId != null" [selected]="documentTypeId" (selectedChange)="documentTypeOnChange($event)">
-                                <nb-option *ngFor="let item of documentTypes" [value]="item.id">{{item.description}}</nb-option>
-                            </nb-select>
+                            <label class="label col-form-label">Tipo de documento:&nbsp;</label>
+                            <strong>{{documentType.description}}</strong>
                         </div>
-                        <ng-container *ngIf="documentTypeId == 1">
+                        <div class="form-group">
+                            <label class="label col-form-label">Dependencia emisora:&nbsp;</label>
+                            <strong>{{issuer.description}}</strong>
+                        </div>
+                        <ng-container *ngIf="documentType.id == 1">
                             <div class="form-group">
-                                <nb-checkbox (change)="adReferendumOnChange()" [disabled]="documentId != null" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
+                                <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
                             </div>
                         </ng-container>
                     </nb-card-body>
             </nb-card>
-            <ng-container *ngIf="documentTypeId">
+            <ng-container *ngIf="documentType.id">
                 <nb-card>
                     <nb-card-header>Encabezado</nb-card-header>
                         <nb-card-body>
-                           
-                            <div class="form-group">
-                                <label class="label col-form-label">Dependencia emisora</label>
-                                <nb-select fullWidth [disabled]="documentId != null" placeholder="Seleccionar dependencia" formControlName="issuerId" [selected]="form.get('issuerId')?.value">
-                                    <nb-option *ngFor="let item of issuers" [value]="item.id">{{item.description}}</nb-option>
-                                </nb-select>
-                            </div>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
@@ -78,7 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ng-container *ngIf="[4, 5, 6].includes(documentTypeId)">
+                            <ng-container *ngIf="[4, 5, 6].includes(documentType.id)">
                                 <div class="form-group">
                                     <label class="label col-form-label">Asunto</label>
                                     <input  nbInput fullWidth placeholder="Ingresar asunto" formControlName="subject">           
@@ -90,7 +86,7 @@
                     </nb-card-body>
                 </nb-card>          
                 <ng-container formGroupName="body">
-                    <ng-container *ngIf="[1, 2, 3].includes(documentTypeId)">
+                    <ng-container *ngIf="[1, 2, 3].includes(documentType.id)">
                         <nb-card>
                             <nb-card-header>
                                 Visto
@@ -107,17 +103,17 @@
                                 <app-text-editor formControlName="0" [placeholder]="hints['Considerando']"></app-text-editor>
                             </nb-card-body>
                         </nb-card>                        
-                        <ng-container *ngIf="documentTypeId == 1">
+                        <ng-container *ngIf="documentType.id == 1">
                             <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
                         </ng-container>
-                        <ng-container *ngIf="documentTypeId == 2">
+                        <ng-container *ngIf="documentType.id == 2">
                             <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Declara' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
                         </ng-container>
-                        <ng-container *ngIf="documentTypeId == 3">
+                        <ng-container *ngIf="documentType.id == 3">
                             <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Dispone' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
                         </ng-container>
                     </ng-container>
-                    <ng-container *ngIf="[4, 5, 6].includes(documentTypeId)" >
+                    <ng-container *ngIf="[4, 5, 6].includes(documentType.id)" >
                         <nb-card>
                             <nb-card-header>Cuerpo</nb-card-header>
                             <nb-card-body>
