@@ -19,6 +19,8 @@ export class DocumentEditorComponent implements OnInit {
   issuer: any;
   documentType: any;
   form!: FormGroup; 
+  operativeSectionBeginnings: any;
+  headings: any;
   nameOnFocus: boolean = false;
   submitting: boolean = false;
   error: boolean = false;
@@ -90,12 +92,19 @@ export class DocumentEditorComponent implements OnInit {
     let requests = [
       this.connectionService.get('document_types', data.documentTypeId), 
       this.connectionService.get('issuers', data.issuerId),
+      this.connectionService.get('headings?issuer_id=' + data.issuerId),
+      this.connectionService.get('operative_section_beginnings?issuer_id=' + data.issuerId)
     ];
+    if (!this.documentId){
+      requests.push(this.connectionService.get('issuers_settings?issuer_id=' + data.issuerId));
+    }
     forkJoin(requests).subscribe({
       next: (res: any) => {
         let formArrayControlInitContent = [];
         this.documentType = res[0].data;
         this.issuer = res[1].data;
+        this.headings = res[2].data;
+        this.operativeSectionBeginnings = res[3].data;
         this.form = this.fb.group({
           name: ['Nuevo documento'],
           documentTypeId: ['', Validators.required],
@@ -106,12 +115,14 @@ export class DocumentEditorComponent implements OnInit {
           destinatary: ['', Validators.required],    
           adReferendum: [false, Validators.required],
           hasAnexoUnico: [false, Validators.required],
-          headingId: ['1', Validators.required],    
-          operativeSectionBeginningId: ['1', Validators.required],    
+          headingId: ['', Validators.required],    
+          operativeSectionBeginningId: ['', Validators.required],    
           body: this.fb.group({})
         });
         if(!this.documentId){
           formArrayControlInitContent.push('');
+          this.form.get('headingId')?.setValue(res[4].data.suggestedHeadingId);
+          this.form.get('operativeSectionBeginningId')?.setValue(res[4].data.suggestedOperativeSectionBeginningId);
         }
         if([1, 2, 3].includes(data.documentTypeId)){ //si el documento es una resolución, disposición o declaración
           this.body.addControl('visto', this.fb.control(''));
@@ -158,6 +169,14 @@ export class DocumentEditorComponent implements OnInit {
 
   get hasAnexoUnico(){
     return this.form.get('hasAnexoUnico')?.value;
+  }
+
+  get operativeSectionBeginningIdFc(){
+    return this.form.get('operativeSectionBeginningId') as FormControl;
+  }
+
+  get headingIdFc(){
+    return this.form.get('headingId') as FormControl;
   }
 
   nameOnInput(value: string){

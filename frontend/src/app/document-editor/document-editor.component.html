@@ -59,6 +59,12 @@
                 <nb-card>
                     <nb-card-header>Encabezado</nb-card-header>
                         <nb-card-body>
+                            <div class="form-group">
+                                <label class="label col-form-label">Membrete</label>
+                                <nb-select fullWidth placeholder="Seleccionar membrete" [formControl]="headingIdFc">
+                                    <nb-option *ngFor="let item of headings" [value]="item.id">{{item.description}}</nb-option>
+                                </nb-select>
+                            </div>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
@@ -103,14 +109,21 @@
                                 <app-text-editor formControlName="0" [placeholder]="hints['Considerando']"></app-text-editor>
                             </nb-card-body>
                         </nb-card>                        
-                        <ng-container *ngIf="documentType.id == 1">
-                            <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Resuelve' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
-                        </ng-container>
-                        <ng-container *ngIf="documentType.id == 2">
-                            <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Declara' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
-                        </ng-container>
-                        <ng-container *ngIf="documentType.id == 3">
-                            <ng-container *ngTemplateOutlet="sectionWithMultipleItems; context: {sectionTitle: 'Dispone' , formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+                        <ng-container>
+                            <nb-card>
+                                <nb-card-header>
+                                    Sección operativa
+                                </nb-card-header>
+                                <nb-card-body>
+                                    <div class="form-group">
+                                        <label class="label col-form-label">Inicio de sección operativa</label>
+                                        <nb-select fullWidth placeholder="Seleccionar inicio" [formControl]="operativeSectionBeginningIdFc">
+                                            <nb-option *ngFor="let item of operativeSectionBeginnings" [value]="item.id">{{item.content}}</nb-option>
+                                        </nb-select>
+                                    </div>
+                                    <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+                                </nb-card-body>
+                            </nb-card>
                         </ng-container>
                     </ng-container>
                     <ng-container *ngIf="[4, 5, 6].includes(documentType.id)" >
@@ -140,27 +153,20 @@
                 
                     <ng-template #sectionWithMultipleItems let-formArrayName="formArrayName" let-sectionTitle="sectionTitle" let-itemName="itemName">
                         <ng-container [formArrayName]="formArrayName">
-                            <nb-card>
-                                <nb-card-header>
-                                    {{sectionTitle}}
-                                </nb-card-header>
-                                <nb-card-body>
-                                    <ng-container *ngFor="let item of getBodyFormArray(formArrayName).controls; let i=index">
-                                        <label class="label col-form-label">{{itemName | titlecase}} {{i + 1}}</label>
-                                        <div class="d-flex justify-content-between">
-                                            <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints[sectionTitle]"></app-text-editor>   
-                                            <button *ngIf="getBodyFormArray(formArrayName).controls.length > 1" nbButton ghost nbTooltip="Eliminar {{itemName}}" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, formArrayName, itemName)">
-                                                <nb-icon icon="close-outline" status="danger"></nb-icon>
-                                            </button>
-                                        </div>
-                                    </ng-container>
-                                    <div class="d-flex flex-row-reverse">
-                                        <button nbButton ghost class="ghost-btn" nbTooltip="Agregar {{itemName}}" (click)="addItemToBodyFormArray('', formArrayName)">
-                                            <nb-icon icon="plus-outline" status="success"></nb-icon>
-                                        </button>
-                                    </div>
-                                </nb-card-body>
-                            </nb-card>
+                            <ng-container *ngFor="let item of getBodyFormArray(formArrayName).controls; let i=index">
+                                <label class="label col-form-label">{{itemName | titlecase}} {{i + 1}}</label>
+                                <div class="d-flex justify-content-between">
+                                    <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints[sectionTitle]"></app-text-editor>   
+                                    <button *ngIf="getBodyFormArray(formArrayName).controls.length > 1" nbButton ghost nbTooltip="Eliminar {{itemName}}" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, formArrayName, itemName)">
+                                        <nb-icon icon="close-outline" status="danger"></nb-icon>
+                                    </button>
+                                </div>
+                            </ng-container>
+                            <div class="d-flex flex-row-reverse">
+                                <button nbButton ghost class="ghost-btn" nbTooltip="Agregar {{itemName}}" (click)="addItemToBodyFormArray('', formArrayName)">
+                                    <nb-icon icon="plus-outline" status="success"></nb-icon>
+                                </button>
+                            </div>
                         </ng-container>
                     </ng-template>
                 </ng-container>
