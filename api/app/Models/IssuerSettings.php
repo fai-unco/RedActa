@@ -13,7 +13,6 @@ class IssuerSettings extends Model
 
     protected $fillable = [
         'operative_section_beginning_id',
-        'ad_referendum_operative_section_beginning_id',
         'true_copy_stamp_id',
         'issuer_id'
     ];
@@ -24,10 +23,6 @@ class IssuerSettings extends Model
 
     public function operativeSectionBeginning(){
         return $this->belongsTo(OperativeSectionBeginning::class);
-    }
-
-    public function adReferendumOperativeSectionBeginning(){
-        return $this->belongsTo(OperativeSectionBeginning::class, 'ad_ref_operative_section_beginning_id');
     }
 
     public function trueCopyStamp(){

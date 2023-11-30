@@ -18,7 +18,7 @@ class IssuerSettingsController extends Controller
     {
         try {    
             if($request->has('issuer_id')){
-                $results = IssuerSettings::where('issuer_id', $request->query('issuer_id'))->get();
+                $results = IssuerSettings::where('issuer_id', $request->query('issuer_id'))->first();
             } else {
                 $results = IssuerSettings::all();
             }
@@ -159,7 +159,6 @@ class IssuerSettingsController extends Controller
         $validator = Validator::make($request->all(), [
             'issuer_id' => 'required|numeric|exists:issuers,id',
             'operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
-            'ad_referendum_operative_section_beginning_id' => 'sometimes|numeric|exists:operative_section_beginnings,id',
             'true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id'
         ], [
             'required' => 'El campo :attribute es requerido',
@@ -167,7 +166,6 @@ class IssuerSettingsController extends Controller
         ], [
             'issuer_id' => '"Emisor"',
             'operative_section_beginning_id' => '"Inicio de sección operativa"',
-            'ad_referendum_operative_section_beginning_id' => '"Inicio de sección operativa en documentos Ad-referendum"',
             'true_copy_stamp_id' => '"Sello en copia fiel"'
         ])->stopOnFirstFailure(true);
         $validator->validate();
