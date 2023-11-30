@@ -12,7 +12,7 @@ class IssuerSettings extends Model
     protected $table = 'issuer_settings';
 
     protected $fillable = [
-        'operative_section_beginning_id',
+        'suggested_operative_section_beginning_id',
         'true_copy_stamp_id',
         'issuer_id'
     ];
@@ -21,7 +21,7 @@ class IssuerSettings extends Model
         return $this->belongsTo(Issuer::class);
     }
 
-    public function operativeSectionBeginning(){
+    public function suggestedOperativeSectionBeginning(){
         return $this->belongsTo(OperativeSectionBeginning::class);
     }
 

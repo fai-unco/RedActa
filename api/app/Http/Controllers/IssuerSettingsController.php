@@ -158,14 +158,14 @@ class IssuerSettingsController extends Controller
     private function validateRequest($request){
         $validator = Validator::make($request->all(), [
             'issuer_id' => 'required|numeric|exists:issuers,id',
-            'operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
+            'suggested_operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
             'true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id'
         ], [
             'required' => 'El campo :attribute es requerido',
             'numeric' => 'El campo :attribute debe ser un número'
         ], [
             'issuer_id' => '"Emisor"',
-            'operative_section_beginning_id' => '"Inicio de sección operativa"',
+            'suggested_operative_section_beginning_id' => '"Inicio de sección operativa sugerido"',
             'true_copy_stamp_id' => '"Sello en copia fiel"'
         ])->stopOnFirstFailure(true);
         $validator->validate();

@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('issuer_settings', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->bigInteger('operative_section_beginning_id')->unsigned();
-            $table->foreign('operative_section_beginning_id')->references('id')->on('operative_section_beginnings');
+            $table->bigInteger('suggested_operative_section_beginning_id')->unsigned();
+            $table->foreign('suggested_operative_section_beginning_id')->references('id')->on('operative_section_beginnings');
             $table->bigInteger('true_copy_stamp_id')->nullable()->unsigned();
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps');
             $table->bigInteger('issuer_id')->unsigned();
