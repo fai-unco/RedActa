@@ -13,7 +13,7 @@ class IssuerSettings extends Model
 
     protected $fillable = [
         'suggested_operative_section_beginning_id',
-        'true_copy_stamp_id',
+        'suggested_true_copy_stamp_id',
         'issuer_id',
         'suggested_heading_id'
     ];
@@ -26,7 +26,7 @@ class IssuerSettings extends Model
         return $this->belongsTo(OperativeSectionBeginning::class);
     }
 
-    public function trueCopyStamp(){
+    public function suggestedTrueCopyStamp(){
         return $this->belongsTo(Stamp::class);
     }
     

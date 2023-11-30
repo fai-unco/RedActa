@@ -159,7 +159,7 @@ class IssuerSettingsController extends Controller
         $validator = Validator::make($request->all(), [
             'issuer_id' => 'required|numeric|exists:issuers,id',
             'suggested_operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
-            'true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id',
+            'suggested_true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id',
             'suggested_heading_id' => 'required|numeric|exists:headings,id',
 
         ], [
@@ -168,7 +168,7 @@ class IssuerSettingsController extends Controller
         ], [
             'issuer_id' => '"Emisor"',
             'suggested_operative_section_beginning_id' => '"Inicio de sección operativa sugerido"',
-            'true_copy_stamp_id' => '"Sello en copia fiel"',
+            'suggested_true_copy_stamp_id' => '"Sello en copia fiel sugerido"',
             'suggested_heading_id' => '"Membrete sugerido"',
         ])->stopOnFirstFailure(true);
         $validator->validate();
