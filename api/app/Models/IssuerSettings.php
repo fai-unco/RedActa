@@ -14,7 +14,8 @@ class IssuerSettings extends Model
     protected $fillable = [
         'suggested_operative_section_beginning_id',
         'true_copy_stamp_id',
-        'issuer_id'
+        'issuer_id',
+        'suggested_heading_id'
     ];
 
     public function issuer(){
@@ -29,7 +30,7 @@ class IssuerSettings extends Model
         return $this->belongsTo(Stamp::class);
     }
     
-    public function heading(){
+    public function suggestedHeading(){
         return $this->belongsTo(Heading::class);
     }
 

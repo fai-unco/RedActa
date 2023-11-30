@@ -22,8 +22,8 @@ return new class extends Migration
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps');
             $table->bigInteger('issuer_id')->unsigned();
             $table->foreign('issuer_id')->references('id')->on('issuers');
-            $table->bigInteger('heading_id')->nullable()->unsigned();
-            $table->foreign('heading_id')->references('id')->on('headings');
+            $table->bigInteger('suggested_heading_id')->nullable()->unsigned();
+            $table->foreign('suggested_heading_id')->references('id')->on('headings');
         });
     }
 
