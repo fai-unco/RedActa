@@ -12,29 +12,25 @@ class IssuerSettings extends Model
     protected $table = 'issuer_settings';
 
     protected $fillable = [
-        'operative_section_beginning_id',
-        'ad_referendum_operative_section_beginning_id',
-        'true_copy_stamp_id',
-        'issuer_id'
+        'suggested_operative_section_beginning_id',
+        'suggested_true_copy_stamp_id',
+        'issuer_id',
+        'suggested_heading_id'
     ];
 
     public function issuer(){
         return $this->belongsTo(Issuer::class);
     }
 
-    public function operativeSectionBeginning(){
+    public function suggestedOperativeSectionBeginning(){
         return $this->belongsTo(OperativeSectionBeginning::class);
     }
 
-    public function adReferendumOperativeSectionBeginning(){
-        return $this->belongsTo(OperativeSectionBeginning::class, 'ad_ref_operative_section_beginning_id');
-    }
-
-    public function trueCopyStamp(){
+    public function suggestedTrueCopyStamp(){
         return $this->belongsTo(Stamp::class);
     }
     
-    public function heading(){
+    public function suggestedHeading(){
         return $this->belongsTo(Heading::class);
     }
 

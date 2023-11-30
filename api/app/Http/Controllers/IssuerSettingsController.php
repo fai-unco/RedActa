@@ -18,7 +18,7 @@ class IssuerSettingsController extends Controller
     {
         try {    
             if($request->has('issuer_id')){
-                $results = IssuerSettings::where('issuer_id', $request->query('issuer_id'))->get();
+                $results = IssuerSettings::where('issuer_id', $request->query('issuer_id'))->first();
             } else {
                 $results = IssuerSettings::all();
             }
@@ -158,17 +158,18 @@ class IssuerSettingsController extends Controller
     private function validateRequest($request){
         $validator = Validator::make($request->all(), [
             'issuer_id' => 'required|numeric|exists:issuers,id',
-            'operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
-            'ad_referendum_operative_section_beginning_id' => 'sometimes|numeric|exists:operative_section_beginnings,id',
-            'true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id'
+            'suggested_operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
+            'suggested_true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id',
+            'suggested_heading_id' => 'required|numeric|exists:headings,id',
+
         ], [
             'required' => 'El campo :attribute es requerido',
             'numeric' => 'El campo :attribute debe ser un número'
         ], [
             'issuer_id' => '"Emisor"',
-            'operative_section_beginning_id' => '"Inicio de sección operativa"',
-            'ad_referendum_operative_section_beginning_id' => '"Inicio de sección operativa en documentos Ad-referendum"',
-            'true_copy_stamp_id' => '"Sello en copia fiel"'
+            'suggested_operative_section_beginning_id' => '"Inicio de sección operativa sugerido"',
+            'suggested_true_copy_stamp_id' => '"Sello en copia fiel sugerido"',
+            'suggested_heading_id' => '"Membrete sugerido"',
         ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
