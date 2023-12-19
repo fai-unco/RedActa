@@ -47,4 +47,9 @@ class RedactaUser extends Authenticatable
         return $this->hasMany(DocumentStateHistoryItem::class);
     }
 
+    public function stamps()
+    {
+        return $this->hasMany(Stamp::class);
+    }
+
 }

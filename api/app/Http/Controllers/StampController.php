@@ -49,6 +49,7 @@ class StampController extends Controller
     public function store(Request $request)
     {
         $validatedData = $this->validateRequest($request);
+        array_push($validatedData, ['redacta_user_id' => $request->user()->id]);
         try {  
             $stamp = Stamp::create($validatedData);
             return response()->json([
@@ -156,7 +157,7 @@ class StampController extends Controller
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string',
             'position' => 'sometimes|string',
-            'issuer_id'=> $presence.'|numeric|exists:issuers,id'
+            'issuer_id'=> $presence.'|numeric|exists:issuers,id',
         ], [
             'required' => 'El campo :attribute es requerido',
             'string' => 'El campo :attribute debe ser un string',
