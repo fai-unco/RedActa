@@ -150,22 +150,15 @@ class StampController extends Controller
     }
 
     private function validateRequest($request){
-        $presence = 'required';
-        if ($request->isMethod('patch')) {
-            $presence = 'sometimes';
-        }
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string',
             'position' => 'sometimes|string',
-            'issuer_id'=> $presence.'|numeric|exists:issuers,id',
         ], [
             'required' => 'El campo :attribute es requerido',
             'string' => 'El campo :attribute debe ser un string',
-            'issuer_id.exists' => 'El emisor especificado no existe'
         ], [
             'full_name' => '"Nombre completo"',
             'position' => '"Cargo"',
-            'issuer_id' => '"Emisor"'
         ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();

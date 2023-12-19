@@ -13,7 +13,6 @@ class Stamp extends Model
     protected $fillable = [
         'full_name',
         'position',
-        'issuer_id',
         'redacta_user_id'
     ];
 
