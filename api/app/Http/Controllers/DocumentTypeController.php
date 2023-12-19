@@ -15,12 +15,19 @@ class DocumentTypeController extends Controller
      */
     public function index()
     {
-        $documentTypes = DocumentType::all();
-        return response()->json([
-            'status' => 200,
-            'description' => 'OK',
-            'data' => $documentTypes        
-        ]);
+        try {  
+            $documentTypes = DocumentType::all();
+            return response()->json([
+                'status' => 200,
+                'description' => 'OK',
+                'data' => $documentTypes        
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
 
     }
 
@@ -54,6 +61,25 @@ class DocumentTypeController extends Controller
     public function show($id)
     {
         //
+        try {  
+            $documentType = DocumentType::find($id);
+            if(!$documentType){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'El recurso al que desea acceder no existe'        
+                ], 404);
+            }
+            return response()->json([
+                'status' => 200,
+                'description' => 'OK',
+                'data' => $documentType        
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
     }
 
     /**
