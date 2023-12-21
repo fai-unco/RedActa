@@ -18,19 +18,13 @@ export class AuthService {
     setSession(authResult: any) {
         localStorage.setItem('access_token', authResult.accessToken);
         localStorage.setItem('username', authResult.username);
-        this.router.navigate(['/'])
+        this.router.navigate(['/']);
     }          
 
     logout() {
-        this.http.post(environment.API_URL_BASE + '/logout',{}).subscribe({
-            next: _ => {
-                localStorage.removeItem("access_token");
-                this.router.navigate(['/login']);
-            },
-            error: e => {
-                console.log(e);
-            }
-        }) 
+        localStorage.removeItem("access_token");
+        this.router.navigate(['/login']);
+        this.http.post(environment.API_URL_BASE + '/logout',{})
     }
 
     isLoggedIn() {
