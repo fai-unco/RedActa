@@ -18,7 +18,6 @@ class Document extends Model
         'issue_date',
         'destinatary',
         'subject',
-        'ad_referendum',
         'number',
         'operative_section_beginning_id',
         'true_copy_stamp_id', 
