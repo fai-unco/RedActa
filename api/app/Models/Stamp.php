@@ -13,7 +13,8 @@ class Stamp extends Model
     protected $fillable = [
         'full_name',
         'position',
-        'redacta_user_id'
+        'redacta_user_id',
+        'description'
     ];
 
     public function redactaUser(){
