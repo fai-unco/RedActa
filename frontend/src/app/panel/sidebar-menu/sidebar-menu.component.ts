@@ -12,7 +12,7 @@ export class SidebarMenuComponent implements OnInit {
   items: NbMenuItem[]  = [
     {
       title: 'Crear documento',
-      link: 'documentos/editar',
+      url: 'documentos/editar',
       //expanded: true,
       icon: 'plus-outline'
     },
@@ -21,11 +21,11 @@ export class SidebarMenuComponent implements OnInit {
       url: 'documentos/buscar',
       icon: 'search-outline'
     },
-    {
+    /*{
       title: 'Configuración',
       url: 'configuracion',
       icon: 'settings-2-outline'
-    }
+    }*/
   ];
 
   darkModeEnabled = localStorage.getItem('uiTheme') == 'dark';
