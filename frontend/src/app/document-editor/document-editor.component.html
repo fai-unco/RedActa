@@ -48,11 +48,6 @@
                             <label class="label col-form-label">Dependencia emisora:&nbsp;</label>
                             <strong>{{issuer.description}}</strong>
                         </div>
-                        <ng-container *ngIf="documentType.id == 1">
-                            <div class="form-group">
-                                <nb-checkbox (change)="adReferendumOnChange()" [checked]="form.get('adReferendum')?.value">Ad-referendum</nb-checkbox>
-                            </div>
-                        </ng-container>
                     </nb-card-body>
             </nb-card>
             <ng-container *ngIf="documentType.id">
