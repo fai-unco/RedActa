@@ -21,7 +21,7 @@
 				<tr>
 					<th>
 						<div class="top-header">
-							<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$document->heading->id.'.png' }}">
+							<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$document->heading->file->id.'.png' }}">
 						</div>
 						<div class="subheader">
 							{{mb_strtoupper($document->documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N°
