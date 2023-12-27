@@ -41,7 +41,7 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        //$this->validateRequest($request);
+        $this->validateRequest($request);
         try {
             $file = $request->file('file');
             $name = $file->getClientOriginalName();
@@ -54,13 +54,12 @@ class FileController extends Controller
             $file->save();
             $currentPath = getcwd();
             chdir($uploadsDirPath);
-            //$fileExtension = pathinfo($name, PATHINFO_EXTENSION);
-            //if($fileExtension == 'pdf'){
-            shell_exec('pdftoppm -png -r 300 "'.$name.'" '.$file->id.'; rm "'.$name.'"');
-            //}
-            /*else if($fileExtension == 'jpg' || $fileExtension == 'png'){
-                shell_exec('mv '.$name.' '.$file->id.'-1.'.$fileExtension);
-            }*/
+            $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
+            if($fileExtension == 'pdf'){
+                shell_exec("pdftoppm -png -r 300 \"$name\" \"$file->id\"; rm \"$name.\"");
+            } else {
+                shell_exec("mv \"$name\" \"$file->id.$fileExtension\"");
+            }
             chdir($currentPath);
             return response()->json([
                 'status' => 200,
@@ -75,7 +74,7 @@ class FileController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }   
+        }
     }
 
     /**
@@ -145,7 +144,7 @@ class FileController extends Controller
 
     public function validateRequest($request) {
         $validator = Validator::make($request->all(), [
-            'file' => 'mimes:pdf,jpeg,jpg,png',
+            'file' => 'mimes:pdf,png',
         ])->validate();
     }
 }
