@@ -190,6 +190,7 @@ class DocumentController extends Controller
     public function search(Request $request){
         try {
             $params = [
+                'keywords',
                 'document_type_id',
                 'name',
                 'number',
@@ -205,6 +206,8 @@ class DocumentController extends Controller
                 if($request->has($param)){
                     if (in_array($param, ['name', 'destinatary', 'subject'])){
                         array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
+                    } else if ($param == 'keywords'){
+                        array_push($searchInput, ['body', 'REGEXP', preg_replace('/\s+/', '|', $request->query($param))]);
                     } else {
                         array_push($searchInput, [$param, '=', $request->query($param)]);
                     }
