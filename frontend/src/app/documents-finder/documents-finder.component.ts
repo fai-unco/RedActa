@@ -41,6 +41,7 @@ export class DocumentsFinderComponent implements OnInit {
         }
     }),
     this.searchForm = this.fb.group({
+      keywords: this.fb.control(''),
       number: this.fb.control(''),
       name: this.fb.control(''),
       documentTypeId: this.fb.control(''),
