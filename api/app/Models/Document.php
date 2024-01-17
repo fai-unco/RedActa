@@ -73,6 +73,10 @@ class Document extends Model
         return $this->hasMany(Anexo::class);
     }
 
+    public function signatures(){
+        return $this->hasMany(Signature::class);
+    }
+
     public function set($data){
         $issuer = Issuer::find($data['issuer_id']);
         $user = RedactaUser::find(Auth::id());
