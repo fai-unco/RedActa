@@ -50,6 +50,10 @@ class DocumentController extends Controller
     {
         $data = $this->validateRequest($request);
         try {
+            if(!isset($data['true_copy_stamp_id'])){
+                $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
+                $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
+            }
             $document = new Document();
             $document->set($data);
             $document->save();
