@@ -7,14 +7,12 @@ import { NbThemeModule, NbMenuModule, NbSidebarModule, NbDatepickerModule, NbDia
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { AuthInterceptor } from './auth/auth.interceptor';
-
 import { PanelModule } from './panel/panel.module';
-import { ErrorDialogComponent } from './shared/error-dialog/error-dialog.component';
+
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ErrorDialogComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
