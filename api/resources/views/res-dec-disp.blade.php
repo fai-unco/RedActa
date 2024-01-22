@@ -100,10 +100,9 @@
 						<td class="document-footer-cell">
 							<p>ES COPIA FIEL</p>
 							<div style="display: flex; flex-flow: row-reverse;">
-								<p style="text-align: center">
-									Fdo. {{$document->trueCopyStamp->full_name}} <br>
-									{{$document->trueCopyStamp->position}}
-								</p>
+								<div class="stamp">
+									{!! $document->trueCopyStamp->content !!}
+								</div>
 							</div>
 						</td>
 						<td class="document-footer-empty-cell"></td>
@@ -115,10 +114,9 @@
 			<div class="footer">
 				<p>ES COPIA FIEL</p>
 				<div style="display: flex; flex-flow: row-reverse;">
-					<p style="text-align: center">
-						Fdo. {{$document->trueCopyStamp->full_name}} <br>
-						{{$document->trueCopyStamp->position}}
-					</p>
+					<div style="text-align: center">
+						{!! $document->trueCopyStamp->content !!}
+					</div>
 				</div>
 			</div>
 		@endif
