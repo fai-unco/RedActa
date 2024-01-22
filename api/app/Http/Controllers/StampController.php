@@ -151,15 +151,13 @@ class StampController extends Controller
 
     private function validateRequest($request){
         $validator = Validator::make($request->all(), [
-            'full_name' => 'required|string',
-            'position' => 'sometimes|string',
+            'content' => 'required|string',
             'description' => 'required|string',
         ], [
             'required' => 'El campo :attribute es requerido',
             'string' => 'El campo :attribute debe ser un string',
         ], [
-            'full_name' => '"Nombre completo"',
-            'position' => '"Cargo"',
+            'content' => '"Contenido"',
             'description' => '"Descripción"',
         ])->stopOnFirstFailure(true);
         $validator->validate();
