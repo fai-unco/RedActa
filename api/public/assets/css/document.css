@@ -102,3 +102,8 @@ th, td {
 .signatures {
     height: 10rem;
 }
+
+.stamp p{
+    text-align: center;
+    line-height: 0.5rem;
+}

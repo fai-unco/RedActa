@@ -11,8 +11,7 @@ class Stamp extends Model
     use HasFactory, SoftDeletes;
     
     protected $fillable = [
-        'full_name',
-        'position',
+        'content',
         'redacta_user_id',
         'description'
     ];
