@@ -49,7 +49,7 @@ class StampController extends Controller
     public function store(Request $request)
     {
         $validatedData = $this->validateRequest($request);
-        array_push($validatedData, ['redacta_user_id' => $request->user()->id]);
+        $validatedData['redacta_user_id'] = $request->user()->id;
         try {  
             $stamp = Stamp::create($validatedData);
             return response()->json([
@@ -99,7 +99,7 @@ class StampController extends Controller
         $validatedData = $this->validateRequest($request);
         try { 
             $stamp = Stamp::find($id);
-            if (!$stamp) {
+            if (!$stamp || $stamp->redacta_user_id != $request->user()->id) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'El recurso al que desea acceder no existe'        
