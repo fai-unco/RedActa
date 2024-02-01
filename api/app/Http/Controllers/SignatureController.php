@@ -38,7 +38,7 @@ class SignatureController extends Controller
     public function store(Request $request)
     {
         $validatedData = $this->validateRequest($request);
-        array_push($validatedData, ['redacta_user_id' => $request->user()->id]);
+        $validatedData['redacta_user_id'] = $request->user()->id;
         try {  
             $signature = Signature::create($validatedData);
             return response()->json([
