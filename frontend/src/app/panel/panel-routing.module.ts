@@ -18,6 +18,10 @@ const routes: Routes = [
             loadChildren: () => import('../documents-finder/documents-finder.module').then(m => m.DocumentsFinderModule) 
           }
         ]
+      },
+      {
+        path: 'sellos',
+        loadChildren: () => import('../stamps/stamps.module').then(m => m.StampsModule) 
       }
     ]
   }
