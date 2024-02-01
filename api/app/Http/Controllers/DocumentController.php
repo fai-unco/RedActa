@@ -9,6 +9,7 @@ use App\Models\Issuer;
 use App\Models\Anexo;
 use App\Models\DocumentType;
 use App\Models\Heading;
+use App\Models\Signature;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -58,6 +59,7 @@ class DocumentController extends Controller
             $document->set($data);
             $document->save();
             $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+            $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
             return response()->json([
                 'status' => 201,
@@ -102,7 +104,8 @@ class DocumentController extends Controller
                     ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
                     ->header('Access-Control-Expose-Headers', 'Content-Disposition');
             } else if ($request->accepts(['application/json'])) {
-                $document->anexos = Anexo::with(['file'])->where('document_id', $id)->get();
+                $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+                $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
                 $document->body = json_decode($document->body);
                 return response()->json([
                     'status' => 200,
@@ -114,7 +117,7 @@ class DocumentController extends Controller
             return response()->json([
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        } 
+        }
     }
 
     /**
@@ -151,7 +154,8 @@ class DocumentController extends Controller
             }  
             $document->set($data);
             $document->save();
-            $document->anexos = Anexo::with(['file'])->where('document_id', $id)->get();
+            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+            $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
             return response()->json([
                 'status' => 200,
@@ -282,7 +286,7 @@ class DocumentController extends Controller
         $validator->validate();
         return $validator->validated();
     }
-
+    
     public function exportAnexo(Request $request, $id){
         $document = Document::where('id', $id)->first();
         $html = "";
