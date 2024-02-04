@@ -4,7 +4,6 @@
 @php( $hasAnexoUnico = $document->has_anexo_unico )
 @php( $body = json_decode($document->body) )
 @php( $intToRomanNumbers = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X'])
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -76,6 +75,13 @@
 								</div>
 							@endforeach
 						</div>
+						<div class="signatures-container">
+							@foreach($document->signatures as $signature)
+								<div class="stamp">
+									{!! $signature->stamp->content !!}	
+								</div>								
+							@endforeach
+						</div>
 						<div class="anexos-section">
 							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))							
 							@foreach($anexos as $key=>$anexo)
@@ -100,7 +106,7 @@
 						<td class="document-footer-cell">
 							<p>ES COPIA FIEL</p>
 							<div style="display: flex; flex-flow: row-reverse;">
-								<div class="stamp">
+								<div class="stamp true-copy-stamp">
 									{!! $document->trueCopyStamp->content !!}
 								</div>
 							</div>
@@ -114,7 +120,7 @@
 			<div class="footer">
 				<p>ES COPIA FIEL</p>
 				<div style="display: flex; flex-flow: row-reverse;">
-					<div style="text-align: center">
+					<div class="stamp true-copy-stamp">
 						{!! $document->trueCopyStamp->content !!}
 					</div>
 				</div>
