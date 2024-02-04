@@ -54,6 +54,9 @@
 								</div>								
 							@endforeach
 						</div>
+						@if($blankPageAtEnd)
+							<div class="page-break"></div>
+						@endif
 						<div class="anexos-section">
 							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))							
 							@foreach($anexos as $key=>$anexo)

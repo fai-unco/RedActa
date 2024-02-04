@@ -123,3 +123,7 @@ th, td {
     max-height: 150px !important; 
     margin: 0 auto !important;     
 }
+
+.page-break {
+    break-after: page;
+}
