@@ -47,6 +47,7 @@ export class TextEditorComponent implements AfterViewInit, ControlValueAccessor 
             //{ 'list': 'ordered'},
             { list: 'bullet' },
           ],
+          ['image']
           //['link'],
           
           //[{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }]
