@@ -1,0 +1,65 @@
+<nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+</nb-card>
+<ng-container *ngIf="viewState == 'rendering'">
+    <h1>Administrar sellos</h1>
+    <button class="mb-4" status="primary" nbButton (click)="open(dialog)">Cargar nuevo sello</button>
+    <nb-card>
+        <nb-card-header>
+            Mis sellos
+        </nb-card-header>
+        <nb-list>
+            <nb-list-item *ngIf="stamps.length == 0">
+                No se han cargado sellos aún
+            </nb-list-item>
+            <nb-list-item *ngFor="let stamp of stamps; let i=index">
+                <div class="w-100 d-flex flex-column">
+                    <div class="w-100 d-flex justify-content-between">
+                        {{stamp.description}} 
+                        <div class="d-flex">
+                            <div class="mr-2" nbTooltip="Editar">
+                                <button class="ghost-btn" nbButton ghost (click)="open(dialog, i)">
+                                    <nb-icon icon="edit-outline" status="primary"></nb-icon>
+                                </button>
+                            </div>
+                            <div class="mr-2" nbTooltip="Eliminar">
+                                <button class="ghost-btn" nbButton ghost (click)="remove(stamp.id)">
+                                    <nb-icon icon="close-outline" status="primary"></nb-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nb-list-item>
+        </nb-list>
+    </nb-card>
+</ng-container>
+<ng-template #dialog let-action let-ref="dialogRef">
+    <nb-card class="h-100" *ngIf="dialogState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
+        <nb-card-body></nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="dialogState == 'rendering'">
+        <nb-card-header>
+            <ng-container *ngIf="action == 'create'">Crear sello</ng-container>
+            <ng-container *ngIf="action == 'update'">Editar sello</ng-container>
+        </nb-card-header>
+        <nb-card-body>
+            <ng-container [formGroup]="form">
+                <div class="form-group">
+                    <label class="label col-form-label">Descripción</label>
+                    <input type="text" fullWidth nbInput formControlName="description" placeholder="Ejemplo: Sello Miguel Gonzalez - Decano">
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Contenido</label>
+                    <app-text-editor formControlName="content"></app-text-editor>
+                </div>
+            </ng-container>
+        </nb-card-body>
+        <nb-card-footer>
+            <div class="d-flex">
+                <button nbButton status="primary" (click)="submit(ref)" class="mr-2">Guardar</button>
+                <button nbButton status="danger" (click)="ref.close()">Cancelar</button>
+            </div>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>

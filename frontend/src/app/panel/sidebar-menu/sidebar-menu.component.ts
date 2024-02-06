@@ -21,6 +21,11 @@ export class SidebarMenuComponent implements OnInit {
       url: 'documentos/buscar',
       icon: 'search-outline'
     },
+    {
+      title: 'Administrar sellos',
+      url: 'sellos',
+      icon: 'settings-2-outline'
+    }
     /*{
       title: 'Configuración',
       url: 'configuracion',
