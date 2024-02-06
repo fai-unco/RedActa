@@ -99,11 +99,31 @@ th, td {
 
 /* Document body styles*/
 
-.signatures {
-    height: 10rem;
+.signatures-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    break-inside: avoid;
 }
 
-.stamp p{
+.stamp p {
     text-align: center;
     line-height: 0.5rem;
+}
+
+.true-copy-stamp p {
+    line-height: 0.75rem;
+}
+
+.stamp img{
+    max-width: 150px !important;
+    max-height: 150px !important; 
+    margin: 0 auto !important;     
+}
+
+.page-break {
+    break-after: page;
 }

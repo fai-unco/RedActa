@@ -94,12 +94,13 @@ class DocumentController extends Controller
             } 
             if ($request->accepts(['application/pdf'])) {                
                 $isCopy = $request->boolean('is_copy', false);
+                $blankPageAtEnd = $request->boolean('blank_page_at_end', false);
                 $filename = 'documento';
                 $filename = $document->name;
                 if($isCopy){
                     $filename = $filename.'_copia';
                 }
-                return response($this->generatePDF($document, $isCopy, $loggedInUserId))
+                return response($this->generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd))
                     ->header('Content-Type', 'application/pdf')
                     ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
                     ->header('Access-Control-Expose-Headers', 'Content-Disposition');
@@ -181,11 +182,12 @@ class DocumentController extends Controller
         //
     }
 
-    public function generatePDF($document, $isCopy, $loggedInUserId){      
+    public function generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd){      
         $html = view($document->documentType->view)->with([
             'document' => $document, 
             'isCopy' => $isCopy, 
             'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
+            'blankPageAtEnd' => $blankPageAtEnd
         ]);
         $snappdf = new \Beganovich\Snappdf\Snappdf();
         $pdf = $snappdf
@@ -296,6 +298,7 @@ class DocumentController extends Controller
                 'document' => $document, 
                 'isCopy' => true, 
                 'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
+                'blankPageAtEnd' =>  $request->boolean('blank_page_at_end', false)
             ]);
         } 
         return $html;

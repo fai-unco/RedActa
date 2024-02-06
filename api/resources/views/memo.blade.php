@@ -47,7 +47,16 @@
 							{!! $body->cuerpo !!}
 						</div>
 						<div class="parting-phrase">Atentamente</div>
-						<div class="signatures"></div>
+						<div class="signatures-container">
+							@foreach($document->signatures as $signature)
+								<div class="stamp">
+									{!! $signature->stamp->content !!}	
+								</div>								
+							@endforeach
+						</div>
+						@if($blankPageAtEnd)
+							<div class="page-break"></div>
+						@endif
 						<div class="anexos-section">
 							@php(chdir(env('STATIC_FILES_DIRECTORY').'/uploads'))							
 							@foreach($anexos as $key=>$anexo)
