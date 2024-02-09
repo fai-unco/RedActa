@@ -1,67 +1,8 @@
-.label {
+nb-tab {
     padding-left: 0;
-}
-
-.full-width {
-    width: 100%;
-}
-
-.ghost-btn {
-    height: fit-content;
-    width: fit-content;
-}
-
-.document-name-input {
-    max-width: 17rem;
-    display: inline-block;
-}
-
-.ghost-card {
-    margin: 0;
-    border: 0;
-}
-
-.error-dialog {
-    max-width: 40rem;
-}
-
-.error-dialog nb-card-footer {
-    text-align: right;
-}
-
-.action-result {
-    color: var(--text-primary-color);
-    font-weight: 550;
-}
-
-.fade-out {
-    animation: fadeOut ease 2.5s;
-    animation-fill-mode: forwards;
-    animation-delay: 4s;
-}
-
-@keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-    
-    100% {
-        opacity: 0;
-    }
-}
-
-.flex-container {
-    flex: 1;
-    display: flex;
-    flex-flow: column;
-    height: calc(100vh - 10rem);
-}
-
-.scrollable {
-    overflow-y: auto;
-    flex-grow: 1; 
-}
-
-.scrollable nb-card:last-child {
+    padding-right: 0;
+    height: calc(100vh - 11rem);
+    overflow-y: hidden;
+    margin-top: 0;
     margin-bottom: 0;
 }
