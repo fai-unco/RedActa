@@ -1,26 +1,24 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { DocumentEditorRoutingModule } from './document-editor-routing.module';
-import { DocumentEditorComponent } from './document-editor.component';
-import { NbInputModule, NbCardModule, NbButtonModule, NbActionsModule, NbUserModule, NbCheckboxModule, NbRadioModule, NbDatepickerModule, NbSelectModule, NbIconModule, NbTooltipModule, NbSpinnerModule, NbDialogModule, NbContextMenuModule, NbTabsetModule } from '@nebular/theme';
+import { DocumentContentComponent } from './document-content.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NbMomentDateModule } from '@nebular/moment';
+import { NbInputModule, NbCardModule, NbButtonModule, NbActionsModule, NbUserModule, NbCheckboxModule, NbRadioModule, NbDatepickerModule, NbSelectModule, NbIconModule, NbTooltipModule, NbSpinnerModule, NbContextMenuModule, NbTabsetModule, NbDialogModule } from '@nebular/theme';
+import { DocumentEditorRoutingModule } from '../../document-editor/document-editor-routing.module';
+import { SharedModule } from '../../shared/shared.module';
 import { AnexoComponent } from './anexo/anexo.component';
 import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
-import { SharedModule } from '../shared/shared.module';
-import { DocumentContentModule } from './document-content/document-content.module';
-import { DocumentSignaturesModule } from './document-signatures/document-signatures.module';
 
 
 
 @NgModule({
   declarations: [
-    DocumentEditorComponent,
+    DocumentContentComponent,
     AnexoComponent,
     InitSettingsDialogComponent
   ],
   imports: [
+    CommonModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -42,8 +40,9 @@ import { DocumentSignaturesModule } from './document-signatures/document-signatu
     NbContextMenuModule,
     SharedModule,
     NbTabsetModule,
-    DocumentSignaturesModule,
-    DocumentContentModule
+  ], 
+  exports: [
+    DocumentContentComponent
   ]
 })
-export class DocumentEditorModule { }
+export class DocumentContentModule { }
