@@ -1,12 +1,12 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import { Component, OnInit, TemplateRef} from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbMenuService} from '@nebular/theme';
 import { DatePipe, Location } from '@angular/common';
 import { ApiConnectionService } from '../../api-connection.service';
 import { Subscription, filter, finalize, forkJoin } from 'rxjs';
-import { ErrorDialogComponent } from '../../shared/error-dialog/error-dialog.component';
 import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
+import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
   selector: 'app-document-content',
@@ -23,13 +23,10 @@ export class DocumentContentComponent implements OnInit {
   headings: any;
   nameOnFocus: boolean = false;
   submitting: boolean = false;
-  error: boolean = false;
   documentId: any;
   actionResult!: string;
   state = '';
   anexosData: any[] = [];
-  @ViewChild('errorDialog') errorDialog!: any; 
-  @ViewChild('documentNameInput') documentNameInput!: ElementRef;
   anexosToBeRemoved: any = [];   
   menuSubscription!: Subscription;
   exportOptions = [
@@ -49,7 +46,8 @@ export class DocumentContentComponent implements OnInit {
               private datePipe: DatePipe, 
               private connectionService: ApiConnectionService,
               private nbMenuService: NbMenuService, 
-              private location: Location
+              private location: Location,
+              private errorHandler: ErrorHandlerService
               ) {}
 
   ngOnInit(): void {
@@ -79,7 +77,7 @@ export class DocumentContentComponent implements OnInit {
       this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
         next: (res: any) => this.initialize(res.data), 
         error: e => {
-          this.errorHandler(e, '/');
+          this.errorHandler.handle(e, '/');
           this.state = '';
         }
       });
@@ -161,7 +159,7 @@ export class DocumentContentComponent implements OnInit {
       },
       error: e => {
         this.state = '';
-        this.errorHandler(e, '/');
+        this.errorHandler.handle(e, '/');
       }
     });
   }
@@ -236,24 +234,6 @@ export class DocumentContentComponent implements OnInit {
       });
   }
 
-  private errorHandler(error?: any, urlRedirect?: any) {
-    this.error = true;
-    this.openErrorDialog(error.error.message, urlRedirect);
-  }
-
-  openErrorDialog (errorMsg: string, urlRedirect?: any){
-    this.dialogService.open(ErrorDialogComponent, {
-      context: {
-        msg: errorMsg,
-      },
-    })
-    .onClose.subscribe(_ => {
-      if(urlRedirect){
-        this.router.navigateByUrl(urlRedirect);
-      }
-    });
-  }
-
   cloneDocument(){
     this.documentId = null;
     this.form.get('name')?.setValue('Nuevo documento');
@@ -261,7 +241,6 @@ export class DocumentContentComponent implements OnInit {
   }
 
   submit() {
-    this.error = false;
     let data = this.form.value;
     let request;
     this.actionResult = '';
@@ -288,7 +267,7 @@ export class DocumentContentComponent implements OnInit {
         }
       },
       error: e => {
-        this.errorHandler(e);
+        this.errorHandler.handle(e);
       }
     })
   } 
@@ -317,7 +296,7 @@ export class DocumentContentComponent implements OnInit {
         this.actionResult = 'Guardado!';
       },
       error: e => {
-        this.errorHandler(e);
+        this.errorHandler.handle(e);
       }
     }); 
   }
@@ -336,7 +315,6 @@ export class DocumentContentComponent implements OnInit {
 
   export(isCopy = false){
     this.actionResult = '';
-    this.error = false;
     this.submitting = true;
     this.connectionService.get('documents', this.documentId, {headers: {accept:'application/pdf'}, responseType: 'blob', observe: 'response', params: {is_copy: isCopy}})
       .pipe(
@@ -362,8 +340,8 @@ export class DocumentContentComponent implements OnInit {
           link.click();
           this.actionResult = 'PDF generado!';
         },
-        error: e => {
-          this.errorHandler({error:{message: 'Error en el servidor. Reintente la operación'}});
+        error: _ => {
+          this.errorHandler.handle();
         }
       })
   }

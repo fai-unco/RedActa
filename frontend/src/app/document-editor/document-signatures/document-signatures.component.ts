@@ -1,12 +1,11 @@
-import { InputModalityDetector } from '@angular/cdk/a11y';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NbDialogService, NbMenuService } from '@nebular/theme';
 import { ApiConnectionService } from '../../api-connection.service';
 import { SignatureSelectorComponent } from './signature-selector/signature-selector.component';
-import { ErrorDialogComponent } from '../../shared/error-dialog/error-dialog.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { DocumentService } from '../../shared/document.service';
 import { Subscription, filter, finalize } from 'rxjs';
+import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
   selector: 'app-document-signatures',
@@ -29,10 +28,10 @@ export class DocumentSignaturesComponent implements OnInit {
 
   constructor(private dialogService: NbDialogService,
               private connectionService: ApiConnectionService,
-              private router: Router,
               private route: ActivatedRoute,
               private documentService: DocumentService,
-              private nbMenuService: NbMenuService) { }
+              private nbMenuService: NbMenuService,
+              private errorHandler: ErrorHandlerService) { }
 
 
   ngOnInit(): void {
@@ -79,7 +78,7 @@ export class DocumentSignaturesComponent implements OnInit {
       },
       error: e => {
         this.viewState = '';
-        this.errorHandler(e, '/');
+        this.errorHandler.handle(e, '/');
       }
     });  
   }
@@ -92,27 +91,11 @@ export class DocumentSignaturesComponent implements OnInit {
       },
       error: e => {
         this.viewState = 'error';
-
       }
     });
   }
 
-  private errorHandler(error?: any, urlRedirect?: any) {
-    this.openErrorDialog(error.error.message, urlRedirect);
-  }
-
-  openErrorDialog (errorMsg: string, urlRedirect?: any){
-    this.dialogService.open(ErrorDialogComponent, {
-      context: {
-        msg: errorMsg,
-      },
-    })
-    .onClose.subscribe(_ => {
-      if(urlRedirect){
-        this.router.navigateByUrl(urlRedirect);
-      }
-    });
-  }
+  
 
   export(trueCopy = false){
     this.viewState = 'loading';
@@ -120,7 +103,7 @@ export class DocumentSignaturesComponent implements OnInit {
       .pipe(finalize(()=> this.viewState = 'rendering'))
       .subscribe({
         error: _ => {
-          this.errorHandler({error:{message: 'Error en el servidor. Reintente la operación'}});
+          this.errorHandler.handle();
         }
       })
   }

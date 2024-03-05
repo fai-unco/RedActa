@@ -4,6 +4,7 @@ import { NbDialogRef, NbDialogService } from '@nebular/theme';
 import { forkJoin } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
 import { ErrorDialogComponent } from 'src/app/shared/error-dialog/error-dialog.component';
+import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
   selector: 'app-init-settings-dialog',
@@ -19,9 +20,8 @@ export class InitSettingsDialogComponent implements OnInit {
   viewState = 'loading';
   
   constructor(private connectionService: ApiConnectionService, 
-              private dialogService: NbDialogService, 
               protected dialogRef: NbDialogRef<InitSettingsDialogComponent>,
-              private router: Router) { }
+              private errorHandler: ErrorHandlerService) { }
 
   ngOnInit(): void {
     forkJoin([this.connectionService.get('document_types'), this.connectionService.get('issuers')]).subscribe({
@@ -31,7 +31,8 @@ export class InitSettingsDialogComponent implements OnInit {
         this.viewState = 'rendering';
       },
       error: e => {
-        this.errorHandler(e, '/');
+        this.dialogRef.close();
+        this.errorHandler.handle(e, '/');
       }
     });
   }
@@ -42,23 +43,6 @@ export class InitSettingsDialogComponent implements OnInit {
     } else {
       this.dialogRef.close();
     }
-  }
-
-  private errorHandler(error?: any, urlRedirect?: any) {
-    this.openErrorDialog(error.error.message, urlRedirect);
-  }
-
-  openErrorDialog (errorMsg: string, urlRedirect?: any){
-    this.dialogService.open(ErrorDialogComponent, {
-      context: {
-        msg: errorMsg,
-      },
-    })
-    .onClose.subscribe(_ => {
-      if(urlRedirect){
-        this.router.navigateByUrl(urlRedirect);
-      }
-    });
   }
 
 }

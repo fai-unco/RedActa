@@ -1,10 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NbDialogRef, NbDialogService } from '@nebular/theme';
+import { NbDialogRef } from '@nebular/theme';
 import { finalize, forkJoin } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
-import { ErrorDialogComponent } from 'src/app/shared/error-dialog/error-dialog.component';
+import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
   selector: 'app-signature-selector',
@@ -20,10 +19,9 @@ export class SignatureSelectorComponent implements OnInit {
   viewState = 'loading';
 
   constructor(private connectionService: ApiConnectionService,
-    private dialogService: NbDialogService,
     protected dialogRef: NbDialogRef<SignatureSelectorComponent>,
-    private router: Router,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private errorHandler: ErrorHandlerService) { }
  
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -47,7 +45,7 @@ export class SignatureSelectorComponent implements OnInit {
           }
         },
         error: e => {
-          this.errorHandler(e);
+          this.errorHandler.handle(e);
           this.cancel();
         }
       });
@@ -72,30 +70,13 @@ export class SignatureSelectorComponent implements OnInit {
           this.dialogRef.close(true);
         },
         error: e => {
-          this.errorHandler(e);
+          this.errorHandler.handle(e);
         }
       })
   }
 
   cancel(){
     this.dialogRef.close(false);
-  }
-
-  private errorHandler(error?: any, urlRedirect?: any) {
-    this.openErrorDialog(error.error.message, urlRedirect);
-  }
-
-  openErrorDialog (errorMsg: string, urlRedirect?: any){
-    this.dialogService.open(ErrorDialogComponent, {
-      context: {
-        msg: errorMsg,
-      },
-    })
-    .onClose.subscribe(_ => {
-      if(urlRedirect){
-        this.router.navigateByUrl(urlRedirect);
-      }
-    });
   }
 
 }

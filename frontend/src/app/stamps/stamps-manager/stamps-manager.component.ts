@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
 import { finalize } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
-import { ErrorDialogComponent } from 'src/app/shared/error-dialog/error-dialog.component';
+import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
   selector: 'app-stamps-manager',
@@ -22,7 +22,8 @@ export class StampsManagerComponent implements OnInit {
   constructor(private apiConnectionService: ApiConnectionService, 
               private fb: FormBuilder,
               private dialogService: NbDialogService, 
-              private router: Router) { }
+              private router: Router,
+              private errorHandler: ErrorHandlerService) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -36,7 +37,7 @@ export class StampsManagerComponent implements OnInit {
           this.stamps = results.data;
         },
         error: e => {
-          this.errorHandler(e);
+          this.errorHandler.handle(e, '/');
         }
       });
 
@@ -68,7 +69,7 @@ export class StampsManagerComponent implements OnInit {
           this.reload();
         },
         error: e => {
-          this.errorHandler(e);
+          this.errorHandler.handle(e);
         }
       });
   }
@@ -82,7 +83,7 @@ export class StampsManagerComponent implements OnInit {
           this.reload();
         },
         error: e => {
-          this.errorHandler(e);
+          this.errorHandler.handle(e);
         }
       });
   }
@@ -93,23 +94,4 @@ export class StampsManagerComponent implements OnInit {
     this.router.onSameUrlNavigation = 'reload';
     this.router.navigate(['/sellos']);
   }
-
-  private errorHandler(error?: any, urlRedirect?: any) {
-    let message =  error.error.message ? error.error.message : 'Ha habido un error. Pruebe reintentar la operación'
-    this.openErrorDialog(message, urlRedirect);
-  }
-
-  openErrorDialog (errorMsg: string, urlRedirect?: any){
-    this.dialogService.open(ErrorDialogComponent, {
-      context: {
-        msg: errorMsg,
-      },
-    })
-    .onClose.subscribe(_ => {
-      if(urlRedirect){
-        this.router.navigate([urlRedirect]);
-      }
-    });
-  }
-
 }
