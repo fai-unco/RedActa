@@ -239,7 +239,8 @@ class DocumentController extends Controller
                     'documentType' => $document->documentType->description,
                     'name' => $document->name,
                     'issueDate' => $document->issue_date,
-                    'number' => $document->number
+                    'number' => $document->number,
+                    'updated_at' => $document->updated_at
                 ]);
             }
             return $output; 
