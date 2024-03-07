@@ -231,7 +231,7 @@ class DocumentController extends Controller
             if($request->has('issue_date_end')){
                 $results = $results->whereDate('issue_date', '<=', $request->query('issue_date_end'));
             }
-            $results = $results->get();
+            $results = $results->orderBy('updated_at', 'desc')->get();
             foreach ($results as $document){
                 array_push($output, [
                     'id' => $document->id,
