@@ -24,6 +24,9 @@ return new class extends Migration
             $table->foreign('issuer_id')->references('id')->on('issuers');
             $table->bigInteger('suggested_heading_id')->nullable()->unsigned();
             $table->foreign('suggested_heading_id')->references('id')->on('headings');
+            $table->string('suggested_operative_section_last_article')->nullable();
+            $table->string('suggested_starting_phrase')->nullable();
+            $table->string('suggested_parting_phrase')->nullable();
         });
     }
 

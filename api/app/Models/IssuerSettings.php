@@ -15,7 +15,10 @@ class IssuerSettings extends Model
         'suggested_operative_section_beginning_id',
         'suggested_true_copy_stamp_id',
         'issuer_id',
-        'suggested_heading_id'
+        'suggested_heading_id',
+        'suggested_operative_section_last_article',
+        'suggested_starting_phrase',
+        'suggested_parting_phrase'
     ];
 
     public function issuer(){
