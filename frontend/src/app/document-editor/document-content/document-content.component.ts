@@ -130,6 +130,10 @@ export class DocumentContentComponent implements OnInit {
           this.body.addControl('considerando', this.fb.array(formArrayControlInitContent));
           this.body.addControl('articulos', this.fb.array(formArrayControlInitContent));
         } else if([4, 5, 6].includes(data.documentTypeId)){ //si el documento es un acta, memo o nota 
+          if(data.documentTypeId == '6'){
+            this.body.addControl('startingPhrase', this.fb.control(''));
+            this.body.addControl('partingPhrase', this.fb.control(''));
+          }
           this.body.addControl('cuerpo', this.fb.control(''));
         } 
         for(let [key, value] of Object.entries(data)) {

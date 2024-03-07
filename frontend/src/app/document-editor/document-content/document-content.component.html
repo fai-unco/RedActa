@@ -124,11 +124,27 @@
                                             </nb-card>
                                         </ng-container>
                                     </ng-container>
+                                    <ng-container *ngIf="documentType.id == 6" >
+                                        <nb-card>
+                                            <nb-card-header>Frase inicial</nb-card-header>
+                                            <nb-card-body>
+                                                <input  nbInput fullWidth placeholder="Ingresar frase inicial" formControlName="startingPhrase">
+                                            </nb-card-body>
+                                        </nb-card>
+                                    </ng-container> 
                                     <ng-container *ngIf="[4, 5, 6].includes(documentType.id)" >
                                         <nb-card>
                                             <nb-card-header>Cuerpo</nb-card-header>
                                             <nb-card-body>
                                                 <app-text-editor formControlName="cuerpo"></app-text-editor>
+                                            </nb-card-body>
+                                        </nb-card>
+                                    </ng-container> 
+                                    <ng-container *ngIf="documentType.id == 6" >
+                                        <nb-card>
+                                            <nb-card-header>Frase final</nb-card-header>
+                                            <nb-card-body>
+                                                <input  nbInput fullWidth placeholder="Ingresar frase final" formControlName="partingPhrase">
                                             </nb-card-body>
                                         </nb-card>
                                     </ng-container> 
