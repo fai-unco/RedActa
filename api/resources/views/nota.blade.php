@@ -47,17 +47,20 @@
 						<div class="destinatary-section">
                             {!! nl2br(e($document->destinatary)) !!}
 						</div>
-						<div class="body-section">
+						<p>{{$body->starting_phrase}}</p>
+						<div class="body-section indented">
 							{!! $body->cuerpo !!}
 						</div>
-						<div class="parting-phrase">Atentamente</div>
-						<div class="signatures-container">
-							@foreach($document->signatures as $signature)
-								<div class="stamp">
-									{!! $signature->stamp->content !!}	
-								</div>								
-							@endforeach
-						</div>
+						<div class="parting-phrase">{{$body->parting_phrase}}</div>
+						@if(count($document->signatures) >  0)
+							<div class="signatures-container">
+								@foreach($document->signatures as $signature)
+									<div class="stamp">
+										{!! $signature->stamp->content !!}	
+									</div>								
+								@endforeach
+							</div>
+						@endif
 						@if($blankPageAtEnd)
 							<div class="page-break"></div>
 						@endif

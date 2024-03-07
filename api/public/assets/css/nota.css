@@ -17,7 +17,7 @@
 }
 
 .parting-phrase {
-    padding: 2.5rem 0 2.5rem 20rem;
+    padding: 2.5rem 0 1rem 20rem;
 }
 
 .anexo-img {
@@ -34,4 +34,8 @@
 .footer-content {
     font-size: x-small;
     text-align: center;
+}
+
+.indented p{
+    text-indent: 5rem;
 }
