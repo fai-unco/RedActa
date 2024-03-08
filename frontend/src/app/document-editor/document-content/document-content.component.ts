@@ -35,8 +35,6 @@ export class DocumentContentComponent implements OnInit {
   ];
   hints: {[index: string]: any} = {
     Visto: 'No incluir "Visto" al inicio, se añade en forma automática al exportar el documento',
-    Considerando: '',
-    Resuelve: 'Solo ingresar el contenido del artículo, no colocar punto al finalizar'
   }
   
   constructor(private fb: FormBuilder, 
@@ -95,14 +93,12 @@ export class DocumentContentComponent implements OnInit {
       this.connectionService.get('document_types', data.documentTypeId), 
       this.connectionService.get('issuers', data.issuerId),
       this.connectionService.get('headings?issuer_id=' + data.issuerId),
-      this.connectionService.get('operative_section_beginnings?issuer_id=' + data.issuerId)
+      this.connectionService.get('operative_section_beginnings?issuer_id=' + data.issuerId),
+      this.connectionService.get('issuers_settings?issuer_id=' + data.issuerId)
     ];
-    if (!this.documentId){
-      requests.push(this.connectionService.get('issuers_settings?issuer_id=' + data.issuerId));
-    }
+    
     forkJoin(requests).subscribe({
       next: (res: any) => {
-        let formArrayControlInitContent = [];
         this.documentType = res[0].data;
         this.issuer = res[1].data;
         this.headings = res[2].data;
@@ -121,18 +117,17 @@ export class DocumentContentComponent implements OnInit {
           body: this.fb.group({})
         });
         if(!this.documentId){
-          formArrayControlInitContent.push('');
           this.form.get('headingId')?.setValue(res[4].data.suggestedHeadingId);
           this.form.get('operativeSectionBeginningId')?.setValue(res[4].data.suggestedOperativeSectionBeginningId);
         }
         if([1, 2, 3].includes(data.documentTypeId)){ //si el documento es una resolución, disposición o declaración
           this.body.addControl('visto', this.fb.control(''));
-          this.body.addControl('considerando', this.fb.array(formArrayControlInitContent));
-          this.body.addControl('articulos', this.fb.array(formArrayControlInitContent));
+          this.body.addControl('considerando', this.fb.array(this.documentId ? [] : ['']));
+          this.body.addControl('articulos', this.fb.array(this.documentId ? [] : [res[4].data.suggestedOperativeSectionLastArticle]));
         } else if([4, 5, 6].includes(data.documentTypeId)){ //si el documento es un acta, memo o nota 
           if(data.documentTypeId == '6'){
-            this.body.addControl('startingPhrase', this.fb.control(''));
-            this.body.addControl('partingPhrase', this.fb.control(''));
+            this.body.addControl('startingPhrase', this.fb.control(res[4].data.suggestedStartingPhrase));
+            this.body.addControl('partingPhrase', this.fb.control(res[4].data.suggestedPartingPhrase));
           }
           this.body.addControl('cuerpo', this.fb.control(''));
         } 
@@ -205,11 +200,15 @@ export class DocumentContentComponent implements OnInit {
   }
 
   getBodyFormArray(formControlName: string) {
-    return this.body.get(formControlName) as FormArray;
+    return this.body.controls[formControlName] as FormArray;
   }
 
-  addItemToBodyFormArray(item: any, formArrayName: string) {
-    (this.body.get(formArrayName) as FormArray).push(this.fb.control(item));
+  addItemToBodyFormArray(item: any, formArrayName: string, position?: number) {
+    if (position != null){
+      (this.body.get(formArrayName) as FormArray).insert(position, this.fb.control(item));
+    } else {
+      (this.body.get(formArrayName) as FormArray).push(this.fb.control(item));
+    }
   }
   
   addAnexo(id='', index=this.anexosData.length, title='', subtitle='', content='', file: any = null) {

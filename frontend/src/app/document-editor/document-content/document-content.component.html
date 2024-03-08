@@ -89,7 +89,7 @@
                                             </ng-container>
                                     </nb-card-body>
                                 </nb-card>          
-                                <ng-container formGroupName="body">
+                                <ng-container [formGroup]="body">
                                     <ng-container *ngIf="[1, 2, 3].includes(documentType.id)">
                                         <nb-card>
                                             <nb-card-header>
@@ -119,7 +119,22 @@
                                                             <nb-option *ngFor="let item of operativeSectionBeginnings" [value]="item.id">{{item.content}}</nb-option>
                                                         </nb-select>
                                                     </div>
-                                                    <ng-container  *ngTemplateOutlet="sectionWithMultipleItems; context: {formArrayName: 'articulos', itemName:'artículo'}"></ng-container>
+                                                    <ng-container formArrayName="articulos">
+                                                        <ng-container *ngFor="let item of getBodyFormArray('articulos').controls; let i=index">
+                                                            <label class="label col-form-label">Artículo {{i + 1}}</label>
+                                                            <div class="d-flex justify-content-between">
+                                                                <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints['articulos']"></app-text-editor>   
+                                                                <button *ngIf="getBodyFormArray('articulos').controls.length > 1" nbButton ghost nbTooltip="Eliminar artículo" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, 'articulos', 'artículo')">
+                                                                    <nb-icon icon="close-outline" status="danger"></nb-icon>
+                                                                </button>
+                                                            </div>
+                                                        </ng-container>
+                                                        <div class="d-flex flex-row-reverse">
+                                                            <button nbButton ghost class="ghost-btn" nbTooltip="Agregar artículo" (click)="addItemToBodyFormArray('', 'articulos', getBodyFormArray('articulos').controls.length - 1)">
+                                                                <nb-icon icon="plus-outline" status="success"></nb-icon>
+                                                            </button>
+                                                        </div>
+                                                    </ng-container>                                                
                                                 </nb-card-body>
                                             </nb-card>
                                         </ng-container>
@@ -164,24 +179,6 @@
                                             </div>
                                         </nb-card-body>
                                     </nb-card>
-                                    <ng-template #sectionWithMultipleItems let-formArrayName="formArrayName" let-sectionTitle="sectionTitle" let-itemName="itemName">
-                                        <ng-container [formArrayName]="formArrayName">
-                                            <ng-container *ngFor="let item of getBodyFormArray(formArrayName).controls; let i=index">
-                                                <label class="label col-form-label">{{itemName | titlecase}} {{i + 1}}</label>
-                                                <div class="d-flex justify-content-between">
-                                                    <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints[sectionTitle]"></app-text-editor>   
-                                                    <button *ngIf="getBodyFormArray(formArrayName).controls.length > 1" nbButton ghost nbTooltip="Eliminar {{itemName}}" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, formArrayName, itemName)">
-                                                        <nb-icon icon="close-outline" status="danger"></nb-icon>
-                                                    </button>
-                                                </div>
-                                            </ng-container>
-                                            <div class="d-flex flex-row-reverse">
-                                                <button nbButton ghost class="ghost-btn" nbTooltip="Agregar {{itemName}}" (click)="addItemToBodyFormArray('', formArrayName)">
-                                                    <nb-icon icon="plus-outline" status="success"></nb-icon>
-                                                </button>
-                                            </div>
-                                        </ng-container>
-                                    </ng-template>
                                 </ng-container>
                             </ng-container>
                         </div>
