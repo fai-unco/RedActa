@@ -179,7 +179,26 @@ class DocumentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try { 
+            $document = Document::find($id);
+            if (!$document) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'El recurso al que desea acceder no existe'        
+                ], 404);
+            }
+            $document->delete();
+            return response()->json([
+                'status' => 200,
+                'message' => 'OK',
+                'data' => $document           
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
     }
 
     public function generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd){      
