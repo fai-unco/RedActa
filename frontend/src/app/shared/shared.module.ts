@@ -4,12 +4,14 @@ import { NbButtonModule, NbCardModule, NbDialogModule, NbIconModule, NbInputModu
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
+import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 
 
 @NgModule({
   declarations: [
     TextEditorComponent,
-    ErrorDialogComponent
+    ErrorDialogComponent,
+    DeleteDialogComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,8 @@ import { TextEditorComponent } from './text-editor/text-editor.component';
   ],
   exports: [
     TextEditorComponent,
-    ErrorDialogComponent
+    ErrorDialogComponent,
+    DeleteDialogComponent
   ]
 })
 export class SharedModule { }
