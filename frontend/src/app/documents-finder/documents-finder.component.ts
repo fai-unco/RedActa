@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { finalize, forkJoin} from 'rxjs';
 import { DatePipe } from '@angular/common'
 import { ErrorHandlerService } from '../shared/error-handler/error-handler.service';
+import { NbDialogService } from '@nebular/theme';
+import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
 
 @Component({
   selector: 'app-documents-finder',
@@ -22,7 +24,8 @@ export class DocumentsFinderComponent implements OnInit {
   constructor(private connectionService: ApiConnectionService, 
               private fb: FormBuilder, 
               private datePipe: DatePipe,
-              private errorHandler: ErrorHandlerService) { }
+              private errorHandler: ErrorHandlerService,
+              private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
     this.loadingForm = true;
@@ -81,6 +84,21 @@ export class DocumentsFinderComponent implements OnInit {
           }
         })
     }
+  }
+
+  removeDocument(documentId: any){
+    this.dialogService.open(DeleteDialogComponent).onClose.subscribe(remove => {
+      if(remove){
+        this.connectionService.delete('documents', documentId).subscribe({
+          next: _ => {
+            this.search();
+          },
+          error: (e) => {
+            this.errorHandler.handle(e);
+          }
+        })
+      }
+    });
   }
 
 }

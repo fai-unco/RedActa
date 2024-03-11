@@ -67,8 +67,8 @@
                 No existen documentos con los parámetros de búsqueda ingresados
             </nb-list-item>
             <nb-list-item *ngFor="let document of documents">
-                <div class="d-flex flex-column">
-                    <div class="w-100">
+                <div class="d-flex justify-content-between w-100">
+                    <div class="">
                         <a [routerLink]="['/documentos','editar']" [queryParams]="{id: document.id}">
                             <b>{{document.name}}</b>
                         </a> <br>
@@ -77,6 +77,11 @@
                         Emisor: {{document.issuer}}<br>
                         Fecha de emisión: {{document.issueDate}}<br>
                         Última modificación: {{document.updatedAt}}<br>
+                    </div>
+                    <div>
+                        <button class="ghost-btn" nbButton ghost nbTooltip="Eliminar documento" (click)="removeDocument(document.id)">
+                            <nb-icon icon="close-outline" status="primary"></nb-icon>
+                        </button>
                     </div>
                 </div>
             </nb-list-item>
