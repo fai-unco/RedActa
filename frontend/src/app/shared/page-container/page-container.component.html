@@ -1,0 +1,17 @@
+<nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+</nb-card>
+<ng-container *ngIf="viewState == 'rendering'">
+    <div class="flex-container">
+        <h1 *ngIf="title">{{title}}</h1>
+        <div class="d-flex justify-content-end pb-2">
+            <div class="action-result fade-out">
+                {{actionResult}}   
+            </div>
+            <ng-content select="[actions]"></ng-content>
+        </div>
+        <div class="scrollable">
+            <ng-content select="[main]"></ng-content>
+        </div>
+    </div>
+</ng-container>

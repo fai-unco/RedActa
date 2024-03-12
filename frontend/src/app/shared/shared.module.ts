@@ -5,13 +5,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
+import { PageContainerComponent } from './page-container/page-container.component';
 
 
 @NgModule({
   declarations: [
     TextEditorComponent,
     ErrorDialogComponent,
-    DeleteDialogComponent
+    DeleteDialogComponent,
+    PageContainerComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +30,8 @@ import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
   exports: [
     TextEditorComponent,
     ErrorDialogComponent,
-    DeleteDialogComponent
+    DeleteDialogComponent,
+    PageContainerComponent
   ]
 })
 export class SharedModule { }
