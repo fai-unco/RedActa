@@ -13,6 +13,7 @@ use App\Http\Controllers\HeadingController;
 use App\Http\Controllers\OperativeSectionBeginningController;
 use App\Http\Controllers\StampController;
 use App\Http\Controllers\SignatureController;
+use App\Http\Controllers\DocumentSharedAccessingController;
 
 
 /*
@@ -38,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('operative_section_beginnings', OperativeSectionBeginningController::class);
   Route::apiResource('stamps', StampController::class);
   Route::apiResource('signatures', SignatureController::class);
+  Route::apiResource('documents_shared_accessing', DocumentSharedAccessing::class);
   Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
 });
 
