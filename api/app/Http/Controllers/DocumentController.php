@@ -10,6 +10,7 @@ use App\Models\Anexo;
 use App\Models\DocumentType;
 use App\Models\Heading;
 use App\Models\Signature;
+use App\Models\DocumentSharedAccess;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -55,6 +56,7 @@ class DocumentController extends Controller
                 $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
                 $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
             }
+            $data['redacta_user_id'] = $request->user()->id;
             $document = new Document();
             $document->set($data);
             $document->save();
@@ -85,13 +87,13 @@ class DocumentController extends Controller
     {
         try {
             $document = Document::find($id);
-            $loggedInUserId = $request->user()->id;        
-            if(!$document || $document->redactaUser->id != $loggedInUserId){
+            $loggedInUserId = $request->user()->id;
+            if (!$document || !$this->userHasAccessToDocument($loggedInUserId, $document)) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'El documento que desea modificar no existe'        
+                    'message' => 'Recurso inexistente'        
                 ], 404);
-            } 
+            }                  
             if ($request->accepts(['application/pdf'])) {                
                 $isCopy = $request->boolean('is_copy', false);
                 $blankPageAtEnd = $request->boolean('blank_page_at_end', false);
@@ -145,13 +147,12 @@ class DocumentController extends Controller
     {
         $data = $this->validateRequest($request);
         try {
-            $loggedInUserId = $request->user()->id;        
-            $document = Document::where('id', $id)->first();
-            if(!$document || $document->redactaUser->id != $loggedInUserId){
+            $document = Document::find($id);
+            if (!$document || !$this->userHasAccessToDocument($request->user()->id, $document)) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'El documento que desea modificar no existe'        
-                ], 404);  
+                    'message' => 'Recurso inexistente'        
+                ], 404);
             }  
             $document->set($data);
             $document->save();
@@ -174,17 +175,18 @@ class DocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         try { 
             $document = Document::find($id);
-            if (!$document) {
+            if (!$document || $document->redactaUser->id != $loggedInUserId) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
+                    'message' => 'Recurso inexistente'        
                 ], 404);
             }
             $document->delete();
@@ -226,13 +228,21 @@ class DocumentController extends Controller
                 'issuer_id',
                 'issue_place',
                 'subject',
-                'destinatary',
-                'id',
+                'destinatary'
             ];
             $searchInput = [];
             $output = [];
-            foreach($params as $param){
-                if($request->has($param)){
+
+            $isCopy = $request->boolean('is_copy', false);
+            $query =  Document::with(['issuer','documentType']);
+            if ($request->boolean('shared', false)) {
+                $documentsId = DocumentSharedAccess::where('redacta_user_id', $request->user()->id)->pluck('document_id')->all();
+                $query = Document::whereIn('id', $documentsId);
+            } else {
+                $query = Document::where('redacta_user_id', $request->user()->id);
+            }
+            foreach ($params as $param) {
+                if ($request->has($param)) { 
                     if (in_array($param, ['name', 'destinatary', 'subject'])){
                         array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
                     } else if ($param == 'keywords'){
@@ -242,15 +252,14 @@ class DocumentController extends Controller
                     }
                 }
             }
-            array_push($searchInput, ['redacta_user_id', '=', $request->user()->id]);
-            $results = Document::with(['issuer','documentType'])->where($searchInput);
+            $query = $query->where($searchInput);
             if($request->has('issue_date_start')){
-                $results = $results->whereDate('issue_date', '>=', $request->query('issue_date_start'));
+                $query = $query->whereDate('issue_date', '>=', $request->query('issue_date_start'));
             }
             if($request->has('issue_date_end')){
-                $results = $results->whereDate('issue_date', '<=', $request->query('issue_date_end'));
+                $query = $query->whereDate('issue_date', '<=', $request->query('issue_date_end'));
             }
-            $results = $results->orderBy('updated_at', 'desc')->get();
+            $results = $query->orderBy('updated_at', 'desc')->get();
             foreach ($results as $document){
                 array_push($output, [
                     'id' => $document->id,
@@ -268,7 +277,7 @@ class DocumentController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }  
+        }
     }
 
     private function validateRequest($request) {
@@ -303,17 +312,28 @@ class DocumentController extends Controller
                 'heading_id' => '"Membrete"',
                 'operative_section_beginning_id' => '"Inicio de sección operativa"',
                 'true_copy_stamp_id' => '"Firmante de copia fiel"'
-                //'anexosSectionTypeId' => '"tipo de anexo"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
+    }
+
+    private function userHasAccessToDocument($loggedInUserId, $document){
+        if ($document->redactaUser->id != $loggedInUserId) {
+            $documentSharedAccess = DocumentSharedAccess::where([
+                ['redacta_user_id', '=', $loggedInUserId],
+                ['document_id', '=', $document->id]
+            ])->get();
+            if (count($documentSharedAccess) == 0) {
+                return false;
+            }
+        }
+        return true; 
     }
     
     public function exportAnexo(Request $request, $id){
         $document = Document::where('id', $id)->first();
         $html = "";
         if($document) {
-            //$html = view($document->documentType->view)->with(['document' => $document, 'isCopy' => true, 'anexos' => Anexo::with(['file'])->where('document_id', $id)->get()]);
             $html = view($document->documentType->view)->with([
                 'document' => $document, 
                 'isCopy' => true, 
@@ -322,17 +342,6 @@ class DocumentController extends Controller
             ]);
         } 
         return $html;
-        /*$snappdf = new \Beganovich\Snappdf\Snappdf();
-        $pdf = $snappdf
-            ->setHtml($html->render())
-            ->waitBeforePrinting(10000) 
-            ->generate();
-        return response($pdf)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
-            ->header('Access-Control-Expose-Headers', 'Content-Disposition');
-
-       */
     }
 
    

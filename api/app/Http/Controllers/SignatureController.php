@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Signature;
+use App\Models\DocumentSharedAccess;
+use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,6 +42,20 @@ class SignatureController extends Controller
         $validatedData = $this->validateRequest($request);
         $validatedData['redacta_user_id'] = $request->user()->id;
         try {  
+            $stamp = Stamp::find($validatedData['stamp_id']);
+            if ($stamp->redactaUser->id != $request->user()->id) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => 'Sello inválido'        
+                ], 422);
+            }
+            $document = Document::find($validatedData['document_id']);
+            if (!$this->userHasAccessToDocument($request->user()->id, $document)) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => 'Documento inválido'        
+                ], 422);
+            }
             $signature = Signature::create($validatedData);
             return response()->json([
                 'status' => 201,
@@ -57,17 +73,18 @@ class SignatureController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try { 
             $signature = Signature::find($id);
-            if(!$signature){
+            if (!$signature || !$this->userHasAccessToDocument($request->user()->id, $signature->document)) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
+                    'message' => 'Recurso inexistente'        
                 ], 404);
             }
             return response()->json([
@@ -110,17 +127,18 @@ class SignatureController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         try {
             $signature = Signature::find($id);
-            if (!$signature) {
+            if (!$signature || $signature->redactaUser->id != $request->user()->id) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
+                    'message' => 'Recurso inexistente'        
                 ], 404);
             }
             $signature->delete();
@@ -135,6 +153,19 @@ class SignatureController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         }
+    }
+
+    private function userHasAccessToDocument($loggedInUserId, $document){
+        if ($document->redactaUser->id != $loggedInUserId) {
+            $documentSharedAccess = DocumentSharedAccess::where([
+                ['redacta_user_id', '=', $loggedInUserId],
+                ['document_id', '=', $document->id]
+            ])->get();
+            if (count($documentSharedAccess) == 0) {
+                return false;
+            }
+        }
+        return true; 
     }
 
     private function validateRequest($request){
