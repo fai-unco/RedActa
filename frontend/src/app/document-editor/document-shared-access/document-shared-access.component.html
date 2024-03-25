@@ -1,0 +1,51 @@
+<div class="h-100">
+    <nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
+        <nb-card-body></nb-card-body>
+    </nb-card>
+    <div *ngIf="viewState == 'rendering'">
+        <div class="flex-container">
+            <div class="d-flex justify-content-end pb-2">
+                        <div class="d-flex align-items-center text-align-center">
+                            <div class="mr-2" nbTooltip="Añadir cuenta">
+                                <button class="ghost-btn" nbButton ghost (click)="addDocumentSharedAccess()">
+                                    <nb-icon icon="plus-outline" status="primary"></nb-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            <div class="scrollable">
+                <nb-card>
+                    <nb-card-header>
+                        Accesos compartidos a este documento 
+                    </nb-card-header>
+                    <nb-list>
+                        <nb-list-item *ngIf="documentSharedAccesses.length == 0">
+                            Este documento no tiene accesos compartidos
+                        </nb-list-item>
+                        <nb-list-item *ngFor="let sharedAccess of documentSharedAccesses; let i=index">
+                            <div class="w-100 d-flex flex-column">
+                                <div class="w-100 d-flex justify-content-between">
+                                    {{sharedAccess['redactaUser']['name']}} {{sharedAccess['redactaUser']['lastName']}}
+                                    <div class="d-flex">
+                                        <div class="mr-2" nbTooltip="Eliminar">
+                                            <button class="ghost-btn" nbButton ghost>
+                                                <nb-icon icon="close-outline" status="primary" (click)="removeDocumentSharedAccess(sharedAccess.id)"></nb-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </nb-list-item>
+                    </nb-list>
+                </nb-card>
+            </div>
+        </div>
+        <!--div class="d-flex flex-column flex-sm-row">
+            <button nbButton (click)="export()" status="primary">Exportar original</button>
+            <button nbButton (click)="export(true)" status="primary" class="mt-3 mt-sm-0 ml-sm-3">Exportar copia fiel</button>
+        </div-->
+    </div>
+    <div *ngIf="viewState == 'error'">
+        Ha habido un problema al cargar las firmas de este documento. Intente recargar la página
+    </div>
+</div>

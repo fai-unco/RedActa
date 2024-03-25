@@ -6,3 +6,8 @@ nb-tab {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+nb-tabset {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}

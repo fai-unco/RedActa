@@ -9,6 +9,7 @@ import { NbMomentDateModule } from '@nebular/moment';
 import { SharedModule } from '../shared/shared.module';
 import { DocumentContentModule } from './document-content/document-content.module';
 import { DocumentSignaturesModule } from './document-signatures/document-signatures.module';
+import { DocumentSharedAccessModule } from './document-shared-access/document-shared-access.module';
 
 
 
@@ -39,7 +40,8 @@ import { DocumentSignaturesModule } from './document-signatures/document-signatu
     SharedModule,
     NbTabsetModule,
     DocumentSignaturesModule,
-    DocumentContentModule
+    DocumentContentModule,
+    DocumentSharedAccessModule
   ]
 })
 export class DocumentEditorModule { }
