@@ -52,4 +52,9 @@ class RedactaUser extends Authenticatable
         return $this->hasMany(Stamp::class);
     }
 
+    public function documentsSharedAccesses()
+    {
+        return $this->hasMany(DocumentSharedAccess::class);
+    }
+
 }
