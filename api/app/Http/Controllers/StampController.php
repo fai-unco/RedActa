@@ -11,12 +11,13 @@ class StampController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {    
-            $results = Stamp::all();
+            $results = Stamp::where('redacta_user_id', '=', $request->user()->id)->get();
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
@@ -129,7 +130,7 @@ class StampController extends Controller
     {
         try { 
             $stamp = Stamp::find($id);
-            if (!$stamp) {
+            if (!$stamp || $stamp->redacta_user_id != $request->user()->id) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'El recurso al que desea acceder no existe'        
