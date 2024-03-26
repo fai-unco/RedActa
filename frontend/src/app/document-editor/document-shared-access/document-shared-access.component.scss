@@ -1,0 +1,19 @@
+.buttons-container {
+    line-height: 3rem;
+}
+
+.flex-container {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+    height: calc(100vh - 12rem);
+}
+
+.scrollable {
+    overflow-y: auto;
+    flex-grow: 1; 
+}
+
+.scrollable nb-card:last-child {
+    margin-bottom: 0;
+}

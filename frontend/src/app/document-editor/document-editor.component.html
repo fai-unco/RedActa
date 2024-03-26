@@ -7,4 +7,7 @@
             <app-document-signatures></app-document-signatures>
         </ng-template>
     </nb-tab>
+    <nb-tab tabTitle="Acceso compartido" *ngIf="documentId" class="signatures-tab">
+        <app-document-shared-access></app-document-shared-access>
+    </nb-tab>
 </nb-tabset>  
