@@ -76,13 +76,17 @@ class Document extends Model
     public function signatures(){
         return $this->hasMany(Signature::class);
     }
-
+    
+    public function documentSharedAccesses(){
+        return $this->hasMany(DocumentSharedAccess::class);
+    }
+    
     public function set($data){
         $issuer = Issuer::find($data['issuer_id']);
-        $user = RedactaUser::find(Auth::id());
+        //$user = RedactaUser::find(Auth::id());
         $documentType = DocumentType::find($data['document_type_id']);
         //$anexosSectionType = AnexosSectionType::find($data['anexos_section_type_id']);        
-        $this->redactaUser()->associate($user);
+        //$this->redactaUser()->associate($user);
         
         foreach ($data as $key => $value) {
             if ($key == 'document_type_id'){
