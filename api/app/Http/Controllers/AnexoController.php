@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\File;
 use App\Models\Document;
 use App\Models\Anexo;
+use App\Models\DocumentSharedAccess;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -41,24 +42,20 @@ class AnexoController extends Controller
     public function store(Request $request)
     {
         $this->validateRequest($request);
-        //try {
-            $document = Document::find($request->document_id);
-            $file = null;
-            if(!$document || $request->user()->id != $document->redactaUser->id){
+        try {
+            $file = File::find($request->file_id);
+            if (!$file || $file->redactaUser->id != $request->user()->id) {
                 return response()->json([
-                    'status' => 404,
-                    'message' => 'Documento inexistente',       
-                ], 404);  
+                    'status' => 422,
+                    'message' => 'Archivo inválido'        
+                ], 422);
             }
-            if($request->file_id){ 
-                $file = File::find($request->file_id);
-            
-                if(!$file || $file->redactaUser->id != $request->user()->id){ // || $request->user()->id != $file->user->id
-                    return response()->json([
-                        'status' => 404,
-                        'message' => 'Archivo inexistente',       
-                    ], 404);  
-                }  
+            $document = Document::find($request->document_id);
+            if (!$this->userHasAccessToDocument($request->user()->id, $document)) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => 'Documento inválido'        
+                ], 422);
             }
             $anexo = new Anexo();
             $anexo->set($request->index, $request->title, $request->subtitle, $request->content, $document, $file);
@@ -69,12 +66,12 @@ class AnexoController extends Controller
                     'id' => $anexo->id
                 ]       
             ], 201);    
-        /*} catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        } */   
+        }  
     }
 
     /**
@@ -110,22 +107,20 @@ class AnexoController extends Controller
     {
         $this->validateRequest($request);
         try {
-            $anexo =  Anexo::find($id);
-            $file = null;
-            if(!$anexo || $anexo->document->redactaUser->id != $request->user()->id){
+            $anexo = Anexo::find($id);
+            if (!$anexo || !$this->userHasAccessToDocument($request->user()->id, $anexo->document)) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'Anexo inexistente',       
+                    'message' => 'Recurso inexistente',       
                 ], 404);  
             }
-            if($request->file_id){
-                $file = File::find($request->file_id);
-                if(!$file || $request->user()->id != $file->redactaUser->id){ 
-                    return response()->json([
-                        'status' => 404,
-                        'message' => 'Archivo inexistente',       
-                    ], 404);  
-                }
+            $file = File::find($request->file_id);
+            if (!$file || !$this->userHasAccessToDocument($file->redactaUser->id, $anexo->document)) {
+                //|| ($request->user()->id != $file->redactaUser->id) { 
+                return response()->json([
+                    'status' => 422,
+                    'message' => 'Archivo inválido',       
+                ], 422);  
             }
             $anexo->set($request->index, $request->title, $request->subtitle, $request->content, $anexo->document, $file);
             return response()->json([
@@ -140,7 +135,7 @@ class AnexoController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }   
+        }
     }
 
     /**
@@ -153,10 +148,10 @@ class AnexoController extends Controller
     {
         try {
             $anexo =  Anexo::find($id);
-            if(!$anexo || $anexo->document->redactaUser->id != $request->user()->id){
+            if(!$anexo || !$this->userHasAccessToDocument($request->user()->id, $anexo->document)){
                 return response()->json([
                     'status' => 404,
-                    'message' => 'Anexo inexistente',       
+                    'message' => 'Recurso inexistente',       
                 ], 404);     
             } 
             $anexo->delete();
@@ -188,27 +183,18 @@ class AnexoController extends Controller
             ])->stopOnFirstFailure(true);
         $validator->validate();
     }
-}
 
-/*$anexo->index = $request->index;
-            $anexo->title = $request->title;
-            $anexo->subtitle = $request->subtitle;
-            $anexo->content = $request->content;
-            $anexo->document()->associate($document);
-            $anexo->save();*/
-
-
-            /*$anexo->index = $request->index;
-            $anexo->title = $request->title;
-            $anexo->subtitle = $request->subtitle;
-            $anexo->content = $request->content;
-            $anexo->save();
-            if($file && $anexo->file != $file){
-                if($anexo->file != null){
-                    $anexo->file()->update(['anexo_id' => null]);
-                }
-                $anexo->file()->save($file);
-                if($request->file_id){
-                $anexo->file()->save($file);
+    private function userHasAccessToDocument($loggedInUserId, $document) {
+        if ($document->redactaUser->id != $loggedInUserId) {
+            $documentSharedAccess = DocumentSharedAccess::where([
+                ['redacta_user_id', '=', $loggedInUserId],
+                ['document_id', '=', $document->id]
+            ])->get();
+            if (count($documentSharedAccess) == 0) {
+                return false;
             }
-            }*/
+        }
+        return true; 
+    }
+
+}

@@ -2,22 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Signature;
+use Illuminate\Http\Request;
 use App\Models\DocumentSharedAccess;
 use App\Models\Document;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SignatureController extends Controller
+
+class DocumentSharedAccessController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {       
+            if ($request->has('document_id')) {
+                if (!$this->userHasAccessToDocument($request->user()->id, Document::find($request->query('document_id')))) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Documento inválido'        
+                    ], 422);
+                }
+                $result = DocumentSharedAccess::where('document_id', $request->query('document_id'))->get();
+            } else {
+                $result = $request->user()->documentsSharedAccesses;
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'OK',
+                'data' => $result        
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
     }
 
     /**
@@ -28,7 +51,6 @@ class SignatureController extends Controller
     public function create()
     {
         //
-        
     }
 
     /**
@@ -40,27 +62,25 @@ class SignatureController extends Controller
     public function store(Request $request)
     {
         $validatedData = $this->validateRequest($request);
-        $validatedData['redacta_user_id'] = $request->user()->id;
-        try {  
-            $stamp = Stamp::find($validatedData['stamp_id']);
-            if ($stamp->redactaUser->id != $request->user()->id) {
-                return response()->json([
-                    'status' => 422,
-                    'message' => 'Sello inválido'        
-                ], 422);
-            }
+        try {
             $document = Document::find($validatedData['document_id']);
-            if (!$this->userHasAccessToDocument($request->user()->id, $document)) {
+            if ($document->redactaUser->id != $request->user()->id) {
                 return response()->json([
                     'status' => 422,
                     'message' => 'Documento inválido'        
                 ], 422);
             }
-            $signature = Signature::create($validatedData);
+            if ($this->userHasAccessToDocument($validatedData['redacta_user_id'], $document)) {
+                return response()->json([
+                    'status' => 409,
+                    'message' => 'La cuenta seleccionada ya tiene actualmente permisos de acceso a este documento'        
+                ], 409);
+            }
+            $documentSharedAccess = DocumentSharedAccess::create($validatedData);
             return response()->json([
                 'status' => 201,
                 'message' => 'OK',
-                'data' => $signature         
+                'data' => $documentSharedAccess           
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -79,9 +99,10 @@ class SignatureController extends Controller
      */
     public function show(Request $request, $id)
     {
-        try { 
-            $signature = Signature::find($id);
-            if (!$signature || !$this->userHasAccessToDocument($request->user()->id, $signature->document)) {
+        try {
+            $documentSharedAccess = DocumentSharedAccess::find($id);
+            if (!$documentSharedAccess || 
+                !$this->userHasAccessToDocument($request->user()->id, $documentSharedAccess->document)) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'Recurso inexistente'        
@@ -90,7 +111,7 @@ class SignatureController extends Controller
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
-                'data' => $signature           
+                'data' => $documentSharedAccess           
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -121,7 +142,6 @@ class SignatureController extends Controller
     public function update(Request $request, $id)
     {
         //
-        
     }
 
     /**
@@ -133,19 +153,21 @@ class SignatureController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        try {
-            $signature = Signature::find($id);
-            if (!$signature || $signature->redactaUser->id != $request->user()->id) {
+        try { 
+            $documentSharedAccess = DocumentSharedAccess::find($id);
+            if (!$documentSharedAccess || 
+                ($documentSharedAccess->redactaUser->id != $request->user()->id &&
+                    $documentSharedAccess->document->redactaUser->id != $request->user()->id)) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'Recurso inexistente'        
                 ], 404);
             }
-            $signature->delete();
+            $documentSharedAccess->delete();
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
-                'data' => $signature           
+                'data' => $documentSharedAccess           
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -155,7 +177,22 @@ class SignatureController extends Controller
         }
     }
 
-    private function userHasAccessToDocument($loggedInUserId, $document){
+    private function validateRequest($request) {
+        $validator = Validator::make($request->all(), [
+            'redacta_user_id' => 'required|numeric|exists:redacta_users,id',
+            'document_id' => 'required|numeric|exists:documents,id',
+        ], [
+            'required' => 'El campo :attribute es requerido',
+            'numeric' => 'El campo :attribute debe ser numérico',
+        ], [
+            'redacta_user_id' => '"Usuario"',
+            'document_id' => '"Documento"'
+        ])->stopOnFirstFailure(true);
+        $validator->validate();
+        return $validator->validated();
+    }
+
+    private function userHasAccessToDocument($loggedInUserId, $document) {
         if ($document->redactaUser->id != $loggedInUserId) {
             $documentSharedAccess = DocumentSharedAccess::where([
                 ['redacta_user_id', '=', $loggedInUserId],
@@ -166,20 +203,5 @@ class SignatureController extends Controller
             }
         }
         return true; 
-    }
-
-    private function validateRequest($request){
-        $validator = Validator::make($request->all(), [
-            'document_id' => 'required|numeric|exists:documents,id',
-            'stamp_id' => 'required|numeric|exists:stamps,id',
-        ], [
-            'required' => 'El campo :attribute es requerido',
-            'numeric' => 'El campo :attribute debe ser un número entero',
-        ], [
-            'document_id' => '"Documento"',
-            'stamp_id' => '"Sello"',
-        ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
     }
 }
