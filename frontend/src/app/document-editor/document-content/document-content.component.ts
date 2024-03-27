@@ -240,7 +240,12 @@ export class DocumentContentComponent implements OnInit {
   cloneDocument(){
     this.documentId = null;
     this.form.get('name')?.setValue('Nuevo documento');
-    this.location.replaceState('/documentos/editar');
+    this.router.navigate([], 
+      {
+        relativeTo: this.route,
+        queryParams: null,
+      }
+    );
   }
 
   submit() {
@@ -261,7 +266,13 @@ export class DocumentContentComponent implements OnInit {
       next: (res: any) => {
         if(res.status == '201'){
           this.documentId = res.data.id;
-          this.location.replaceState('/documentos/editar?id=' + this.documentId);
+          this.router.navigate([], 
+            {
+              relativeTo: this.route,
+              queryParams: { id: this.documentId },
+              queryParamsHandling: 'merge'
+            }
+          );
         }
         if(this.anexosData.length > 0 || this.anexosToBeRemoved.length > 0){
           this.saveAnexos();
