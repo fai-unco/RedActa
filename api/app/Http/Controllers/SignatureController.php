@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Signature;
 use App\Models\DocumentSharedAccess;
 use App\Models\Document;
+use App\Models\Stamp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,7 +42,7 @@ class SignatureController extends Controller
     {
         $validatedData = $this->validateRequest($request);
         $validatedData['redacta_user_id'] = $request->user()->id;
-        try {  
+        //try {  
             $stamp = Stamp::find($validatedData['stamp_id']);
             if ($stamp->redactaUser->id != $request->user()->id) {
                 return response()->json([
@@ -62,12 +63,12 @@ class SignatureController extends Controller
                 'message' => 'OK',
                 'data' => $signature         
             ]);
-        } catch (\Throwable $th) {
+        /*} catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }
+        }*/
     }
 
     /**
