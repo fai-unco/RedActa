@@ -183,7 +183,7 @@ class DocumentController extends Controller
     {
         try { 
             $document = Document::find($id);
-            if (!$document || $document->redactaUser->id != $loggedInUserId) {
+            if (!$document || $document->redactaUser->id != $request->user()->id) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'Recurso inexistente'        
