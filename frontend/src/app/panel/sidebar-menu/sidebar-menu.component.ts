@@ -48,6 +48,7 @@ export class SidebarMenuComponent implements OnInit {
     this.themeService.changeTheme(theme);
     localStorage.setItem('uiTheme', theme);
     this.darkModeEnabled = enableDarkMode;
+    window.dispatchEvent(new Event('uiTheme'))
   }
 
 

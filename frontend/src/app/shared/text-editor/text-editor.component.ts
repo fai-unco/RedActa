@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -7,8 +7,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import Quill from 'quill';
-import QuillCursors from 'quill-cursors';
 
 @Component({
   selector: 'app-text-editor',
@@ -21,56 +19,59 @@ import QuillCursors from 'quill-cursors';
       useExisting: TextEditorComponent
     }]
   })
-export class TextEditorComponent implements AfterViewInit, ControlValueAccessor {
+
+export class TextEditorComponent implements OnInit, ControlValueAccessor {
   @Input('placeholder') placeholder: string = "";
   @ViewChild('container') container!: ElementRef;
-  quillInstance: any;
-  onChange = (content: any) => {};
   onTouched = () => {};
   touched = false;
   disabled = false;
-  content: string ="";
+  content: string = '';
+  onChange = (content: any) => {this.content = content};
+  render: boolean = true;
+  callback =  (cb: any, value: any, meta: any) => {
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.onchange = function (e?: any) {
+      let file = e.target.files[0];
+      let reader: any = new FileReader();
+      reader.onload = function (event: any) {
+        //var id = 'blobid' + (new Date()).getTime();
+        var blobCache =  event.target.result;
+        //var base64 = reader.result.split(',')[1];
+        var blobInfo = blobCache;
+        //blobCache.add(blobInfo);
+        cb(blobInfo, { title: file.name });
+      };
+      reader.readAsDataURL(file);
+    };
 
-  constructor() {}
-
-  ngAfterViewInit(): void {
-    Quill.register('modules/cursors', QuillCursors);
-    this.quillInstance = new Quill(this.container.nativeElement, {
-      modules: {
-        cursors: true,
-        toolbar: [
-          // adding some basic Quill content features
-          //[{ header: [1, 2, false] }],
-          ['bold', 'italic', 'underline'],
-
-          [
-            //{ 'list': 'ordered'},
-            { list: 'bullet' },
-          ],
-          ['image']
-          //['link'],
-          
-          //[{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }]
-        ],
-        history: {
-          // Local undo shouldn't undo changes
-          // from remote users
-          userOnly: true,
-        },
-      },
-      placeholder: this.placeholder,
-      theme: 'snow', // 'bubble' is also great
-    });
-
-    this.quillInstance.on('text-change', (delta: any, oldDelta: any, source: any) => {
-      this.onTextChange();
-    });
-
-    this.quillInstance.root.innerHTML = this.content;
+    input.click();
   }
 
-  private onTextChange(){
-    this.content = this.quillInstance.root.innerHTML;
+  ngOnInit(): void { 
+    if (window.addEventListener) {
+      window.addEventListener("uiTheme", _ => {
+        this.render = false;
+        this.changeDetectorRef.detectChanges();
+        this.render = true;
+      });
+    }
+  }
+
+  get skin() {
+    return localStorage.getItem('uiTheme') == 'dark'? 'oxide-dark' : 'oxide';
+  }
+
+  get contentCss() {
+    return localStorage.getItem('uiTheme') == 'dark'? 'dark' : 'default';
+  }
+
+  constructor(private changeDetectorRef: ChangeDetectorRef) {
+  }
+
+  onTextChange(e: any){
     this.markAsTouched();
     if (!this.disabled) {
       this.onChange(this.content);
@@ -79,9 +80,6 @@ export class TextEditorComponent implements AfterViewInit, ControlValueAccessor 
 
   writeValue(content: any) {
     this.content = content;
-    if(this.quillInstance?.root){
-      this.quillInstance.root.innerHTML = content;
-    }
   }
 
   registerOnChange(onChange: any) {
@@ -103,5 +101,3 @@ export class TextEditorComponent implements AfterViewInit, ControlValueAccessor 
     this.disabled = disabled;
   }
 }
-
-

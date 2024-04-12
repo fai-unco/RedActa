@@ -6,7 +6,7 @@ import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 import { PageContainerComponent } from './page-container/page-container.component';
-
+import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 
 @NgModule({
   declarations: [
@@ -26,12 +26,16 @@ import { PageContainerComponent } from './page-container/page-container.componen
     NbSpinnerModule,
     NbListModule,
     NbDialogModule.forChild(),
+    EditorModule
   ],
   exports: [
     TextEditorComponent,
     ErrorDialogComponent,
     DeleteDialogComponent,
     PageContainerComponent
-  ]
+  ],
+  providers: [
+    { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' },
+  ],
 })
 export class SharedModule { }
