@@ -143,7 +143,9 @@ export class DocumentContentComponent implements OnInit {
               }
               break;
             case 'issueDate':
-              this.form.get('issueDate')?.setValue(new Date (value + 'T00:00:00-03:00'));
+              if (value) {
+                this.form.get('issueDate')?.setValue(new Date (value + 'T00:00:00-03:00'));
+              }
               break;
             case 'anexos':
               for(let anexo of data.anexos){
