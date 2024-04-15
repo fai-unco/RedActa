@@ -1,1 +1,24 @@
-<div class="editor mb-3" #container></div>
+<!--div class="editor mb-3" #container></div-->
+<editor *ngIf="render"
+   [init]="{
+      license_key: 'gpl',
+      language: 'es',
+      height: 250,
+      menubar: false,
+      skin: skin,
+      content_css: contentCss,
+      plugins:
+         'advlist autolink lists link image anchor \
+         searchreplace insertdatetime media table',
+      toolbar:
+         'undo redo | formatselect | bold italic | \
+         alignleft aligncenter alignright alignjustify | \
+         bullist numlist | table | image',
+         automatic_uploads: true,
+         file_picker_types: 'image',
+         file_picker_callback: callback
+      }" [(ngModel)]="content" modelEvents="change input nodechange undo redo" (onChange)="onTextChange($event)">
+</editor>
+
+
+
