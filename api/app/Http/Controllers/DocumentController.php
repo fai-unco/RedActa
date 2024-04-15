@@ -60,7 +60,7 @@ class DocumentController extends Controller
             $document = new Document();
             $document->set($data);
             $document->save();
-            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
             $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
             return response()->json([
@@ -107,7 +107,7 @@ class DocumentController extends Controller
                     ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
                     ->header('Access-Control-Expose-Headers', 'Content-Disposition');
             } else if ($request->accepts(['application/json'])) {
-                $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+                $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
                 $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
                 $document->body = json_decode($document->body);
                 return response()->json([
@@ -156,7 +156,7 @@ class DocumentController extends Controller
             }  
             $document->set($data);
             $document->save();
-            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->get();
+            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
             $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
             return response()->json([
@@ -207,7 +207,7 @@ class DocumentController extends Controller
         $html = view($document->documentType->view)->with([
             'document' => $document, 
             'isCopy' => $isCopy, 
-            'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
+            'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get(),
             'blankPageAtEnd' => $blankPageAtEnd
         ]);
         $snappdf = new \Beganovich\Snappdf\Snappdf();
@@ -337,7 +337,7 @@ class DocumentController extends Controller
             $html = view($document->documentType->view)->with([
                 'document' => $document, 
                 'isCopy' => true, 
-                'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->get(),
+                'anexos' => Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get(),
                 'blankPageAtEnd' =>  $request->boolean('blank_page_at_end', false)
             ]);
         } 
