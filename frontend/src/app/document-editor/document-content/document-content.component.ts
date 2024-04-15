@@ -251,7 +251,6 @@ export class DocumentContentComponent implements OnInit {
   submit() {
     let data = this.form.value;
     let request;
-    this.actionResult = '';
     data.issueDate = this.datePipe.transform(this.form.get('issueDate')?.value, 'yyyy-MM-dd');
     this.submitting = true;
     if(!this.documentId){
@@ -278,6 +277,9 @@ export class DocumentContentComponent implements OnInit {
           this.saveAnexos();
         } else {
           this.actionResult = 'Guardado!';
+          setTimeout(() => {
+            this.actionResult = '';
+          }, 6000);
         }
       },
       error: e => {
@@ -307,7 +309,6 @@ export class DocumentContentComponent implements OnInit {
           }
         }; 
         this.anexosToBeRemoved = [];
-        this.actionResult = 'Guardado!';
       },
       error: e => {
         this.errorHandler.handle(e);
@@ -328,7 +329,6 @@ export class DocumentContentComponent implements OnInit {
   }
 
   export(isCopy = false){
-    this.actionResult = '';
     this.submitting = true;
     this.connectionService.get('documents', this.documentId, {headers: {accept:'application/pdf'}, responseType: 'blob', observe: 'response', params: {is_copy: isCopy}})
       .pipe(
@@ -353,6 +353,9 @@ export class DocumentContentComponent implements OnInit {
           link!.download = filename;
           link.click();
           this.actionResult = 'PDF generado!';
+          setTimeout(() => {
+            this.actionResult = '';
+          }, 6000);
         },
         error: _ => {
           this.errorHandler.handle();
