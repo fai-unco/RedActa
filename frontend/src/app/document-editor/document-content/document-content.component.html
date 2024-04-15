@@ -122,7 +122,7 @@
                                                     <ng-container formArrayName="articulos">
                                                         <ng-container *ngFor="let item of getBodyFormArray('articulos').controls; let i=index">
                                                             <label class="label col-form-label">Artículo {{i + 1}}</label>
-                                                            <div class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-between pb-2">
                                                                 <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints['articulos']"></app-text-editor>   
                                                                 <button *ngIf="getBodyFormArray('articulos').controls.length > 1" nbButton ghost nbTooltip="Eliminar artículo" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, 'articulos', 'artículo')">
                                                                     <nb-icon icon="close-outline" status="danger"></nb-icon>
