@@ -266,7 +266,7 @@ class DocumentController extends Controller
                     'issuer' => $document->issuer->description,
                     'documentType' => $document->documentType->description,
                     'name' => $document->name,
-                    'issueDate' => date('d-m-Y', strtotime($document->issue_date)),
+                    'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
                     'number' => $document->number,
                     'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at))
                 ]);
