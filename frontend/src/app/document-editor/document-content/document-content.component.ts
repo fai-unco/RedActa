@@ -251,6 +251,7 @@ export class DocumentContentComponent implements OnInit {
   }
 
   submit() {
+    this.actionResult = '';
     let data = this.form.value;
     let request;
     data.issueDate = this.datePipe.transform(this.form.get('issueDate')?.value, 'yyyy-MM-dd');
@@ -311,6 +312,10 @@ export class DocumentContentComponent implements OnInit {
           }
         }; 
         this.anexosToBeRemoved = [];
+        this.actionResult = 'Guardado!';
+          setTimeout(() => {
+            this.actionResult = '';
+          }, 6000);
       },
       error: e => {
         this.errorHandler.handle(e);
