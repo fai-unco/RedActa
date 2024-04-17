@@ -169,7 +169,7 @@
                                         </nb-card-header>
                                         <nb-card-body>
                                             <div class="form-group">
-                                                <nb-checkbox (change)="hasAnexoUnicoOnChange()">Tiene anexo único?</nb-checkbox>
+                                                <nb-checkbox (change)="hasAnexoUnicoOnChange()" [checked]="hasAnexoUnico">Tiene anexo único?</nb-checkbox>
                                             </div>
                                             <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i+1" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
                                             <div class="d-flex justify-content-end">
