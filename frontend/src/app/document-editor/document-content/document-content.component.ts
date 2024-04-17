@@ -1,10 +1,10 @@
-import { Component, OnInit, TemplateRef} from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbMenuService} from '@nebular/theme';
-import { DatePipe, Location } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ApiConnectionService } from '../../api-connection.service';
-import { Subscription, filter, finalize, forkJoin } from 'rxjs';
+import { Subscription, filter, finalize, forkJoin, map } from 'rxjs';
 import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
@@ -28,11 +28,26 @@ export class DocumentContentComponent implements OnInit {
   state = '';
   anexosData: any[] = [];
   anexosToBeRemoved: any = [];   
-  menuSubscription!: Subscription;
+  exportOptionsMenuSubscription!: Subscription;
+  articleMenuSubscriptions: Subscription[] = [];
+  anexosMenuSubscriptions: Subscription[] = [];
+  @ViewChild('removeItemDialog', { read: TemplateRef }) removeItemDialog!:TemplateRef<any>;
+  issuerSettings: any;
+  @ViewChild('scrollable') scrollable!: ElementRef;
+
+  
   exportOptions = [
     { title: 'Exportar original' }, 
     { title: 'Exportar copia fiel' }
   ];
+  
+  articleActions = [
+    { title: 'Agregar 1 arriba' }, 
+    { title: 'Agregar 1 abajo' },
+    { title: 'Insertar últ. artículo predef.'},
+    { title: 'Eliminar' }
+  ];
+
   hints: {[index: string]: any} = {
     Visto: 'No incluir "Visto" al inicio, se añade en forma automática al exportar el documento',
   }
@@ -44,22 +59,21 @@ export class DocumentContentComponent implements OnInit {
               private datePipe: DatePipe, 
               private connectionService: ApiConnectionService,
               private nbMenuService: NbMenuService, 
-              private location: Location,
               private errorHandler: ErrorHandlerService
-              ) {}
+            ) {}
 
   ngOnInit(): void {
-    this.menuSubscription = this.nbMenuService.onItemClick()
-    .pipe(
-      filter(({ tag }) => tag === 'document-content-export-menu'),
-    )
-    .subscribe((event) => {
-      if(event.item.title === 'Exportar original'){
-        this.export()
-      } else if(event.item.title === 'Exportar copia fiel'){
-        this.export(true);
-      }
-    });
+    this.exportOptionsMenuSubscription = this.nbMenuService.onItemClick()
+      .pipe(
+        filter(({ tag }) => tag === 'document-content-export-menu'),
+      )
+      .subscribe((event) => {
+        if(event.item.title === 'Exportar original'){
+          this.export()
+        } else if(event.item.title === 'Exportar copia fiel'){
+          this.export(true);
+        }
+      });
     this.route.queryParams.subscribe(params => {this.documentId = params['id']});
     if (!this.documentId) {
       this.dialogService.open(InitSettingsDialogComponent).onClose.subscribe(data => {
@@ -83,8 +97,8 @@ export class DocumentContentComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    if(this.menuSubscription){
-      this.menuSubscription.unsubscribe();
+    if(this.exportOptionsMenuSubscription){
+      this.exportOptionsMenuSubscription.unsubscribe();
     }
   }
 
@@ -103,6 +117,7 @@ export class DocumentContentComponent implements OnInit {
         this.issuer = res[1].data;
         this.headings = res[2].data;
         this.operativeSectionBeginnings = res[3].data;
+        this.issuerSettings = res[4].data;
         this.form = this.fb.group({
           name: ['Nuevo documento'],
           documentTypeId: ['', Validators.required],
@@ -117,17 +132,20 @@ export class DocumentContentComponent implements OnInit {
           body: this.fb.group({})
         });
         if(!this.documentId){
-          this.form.get('headingId')?.setValue(res[4].data.suggestedHeadingId);
-          this.form.get('operativeSectionBeginningId')?.setValue(res[4].data.suggestedOperativeSectionBeginningId);
+          this.form.get('headingId')?.setValue(this.issuerSettings.suggestedHeadingId);
+          this.form.get('operativeSectionBeginningId')?.setValue(this.issuerSettings.suggestedOperativeSectionBeginningId);
         }
         if([1, 2, 3].includes(data.documentTypeId)){ //si el documento es una resolución, disposición o declaración
           this.body.addControl('visto', this.fb.control(''));
           this.body.addControl('considerando', this.fb.array(this.documentId ? [] : ['']));
-          this.body.addControl('articulos', this.fb.array(this.documentId ? [] : [res[4].data.suggestedOperativeSectionLastArticle]));
+          this.body.addControl('articulos', this.fb.array([]));
+          if (!this.documentId) {
+            this.addArticulo('', 0);
+          }
         } else if([4, 5, 6].includes(data.documentTypeId)){ //si el documento es un acta, memo o nota 
           if(data.documentTypeId == '6'){
-            this.body.addControl('startingPhrase', this.fb.control(res[4].data.suggestedStartingPhrase));
-            this.body.addControl('partingPhrase', this.fb.control(res[4].data.suggestedPartingPhrase));
+            this.body.addControl('startingPhrase', this.fb.control(this.issuerSettings.suggestedStartingPhrase));
+            this.body.addControl('partingPhrase', this.fb.control(this.issuerSettings.suggestedPartingPhrase));
           }
           this.body.addControl('cuerpo', this.fb.control(''));
         } 
@@ -135,8 +153,12 @@ export class DocumentContentComponent implements OnInit {
           switch(key){
             case 'body':
               for (let [key, value] of Object.entries(data.body)) {
-                if(Array.isArray(value)){
-                  value?.forEach((elem) => (this.body.get(key) as FormArray).push(this.fb.control(elem)));
+                if (Array.isArray(value)) {
+                  if (key == 'articulos') {
+                    value?.forEach((elem: any) => (this.addArticulo(elem)));
+                  } else {
+                    value?.forEach((elem: any) => (this.body.get(key) as FormArray).push(this.fb.control(elem)));
+                  }  
                 } else {
                   this.body.get(key)?.setValue(value);
                 }
@@ -205,15 +227,31 @@ export class DocumentContentComponent implements OnInit {
     return this.body.controls[formControlName] as FormArray;
   }
 
-  addItemToBodyFormArray(item: any, formArrayName: string, position?: number) {
-    if (position != null){
-      (this.body.get(formArrayName) as FormArray).insert(position, this.fb.control(item));
-    } else {
-      (this.body.get(formArrayName) as FormArray).push(this.fb.control(item));
-    }
+  addArticulo(item: any,  position?: number) {
+    let articles = this.body.get('articulos') as FormArray;
+    let articlesLength = articles.length
+    if (position == null) {
+      position = articlesLength;
+    }  
+    let subscription = this.nbMenuService.onItemClick().pipe(
+        filter (({ tag }) => tag =='article-menu-' + articlesLength),
+      ).subscribe ((event: any) => {
+        let action = event.item.title;
+        if (action == 'Eliminar'){
+          this.removeArticulo(articlesLength);
+        } else if (action == 'Agregar 1 arriba') {
+          this.addArticulo ('', articlesLength);
+        } else if (action == 'Agregar 1 abajo') {
+          this.addArticulo ('', articlesLength + 1);
+        } else {
+          this.body.get('articulos')?.get(articlesLength.toString())?.setValue(this.issuerSettings.suggestedOperativeSectionLastArticle);
+        }
+      });
+    this.articleMenuSubscriptions.push(subscription);
+    articles.insert(position, this.fb.control(item));
   }
   
-  addAnexo(id='', index=this.anexosData.length, title='', subtitle='', content='', file: any = null) {
+  addAnexo(id = '', index = this.anexosData.length, title = '', subtitle = '', content = '', file: any = null) {
     let fileId = '';
     if(file){
       fileId = file.id; 
@@ -227,14 +265,20 @@ export class DocumentContentComponent implements OnInit {
       content: this.fb.control(content),
       documentId: this.fb.control(this.documentId) 
     });
-    this.anexosData.push({form: newAnexo, fileData: file});
+    this.anexosData.splice(index, 0, {form: newAnexo, fileData: file});
+    setTimeout(() => {
+      if (index + 1 == this.anexosData.length) {
+        this.scrollable.nativeElement.scrollTop = this.scrollable.nativeElement.scrollHeight;
+      }
+    }, 50);
   }
    
-  removeItemFromBodyFormArray(dialog: TemplateRef<any>, index: number, formArrayName: string, item: string) {
-    this.dialogService.open(dialog, {context: {index: index, item: item}})
+  removeArticulo(index: number) {
+    this.dialogService.open(this.removeItemDialog, {context: {index: index, item: 'articulo'}})
       .onClose.subscribe(remove => {
         if(remove){
-          (this.body.get(formArrayName) as FormArray).removeAt(index);
+          (this.body.get('articulos') as FormArray).removeAt(index);
+          this.articleMenuSubscriptions.pop();
         }
       });
   }

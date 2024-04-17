@@ -35,7 +35,7 @@
                                 </nb-card>
                             </div>
                         </div>
-                        <div class="scrollable">
+                        <div class="scrollable" #scrollable>
                             <nb-card>
                                 <nb-card-header>Datos primarios</nb-card-header>
                                     <nb-card-body>
@@ -121,20 +121,22 @@
                                                     </div>
                                                     <ng-container formArrayName="articulos">
                                                         <ng-container *ngFor="let item of getBodyFormArray('articulos').controls; let i=index">
-                                                            <label class="label col-form-label">Artículo {{i + 1}}</label>
                                                             <div class="d-flex justify-content-between pb-2">
-                                                                <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints['articulos']"></app-text-editor>   
-                                                                <button *ngIf="getBodyFormArray('articulos').controls.length > 1" nbButton ghost nbTooltip="Eliminar artículo" class="ghost-btn" (click)="removeItemFromBodyFormArray(dialog, i, 'articulos', 'artículo')">
-                                                                    <nb-icon icon="close-outline" status="danger"></nb-icon>
-                                                                </button>
+                                                                <label class="label col-form-label">Artículo {{i + 1}}</label>
+                                                                <div nbTooltip="Acciones">
+                                                                    <button class="ghost-btn" nbButton ghost [nbContextMenu]="articleActions" [nbContextMenuTag]="'article-menu-' + i">
+                                                                        <nb-icon icon="more-vertical-outline" status="primary"></nb-icon>
+                                                                    </button>
+                                                                </div>
                                                             </div>
+                                                            <app-text-editor class="full-width pr-2" [formControlName]="i" [placeholder]="hints['articulos']"></app-text-editor>
                                                         </ng-container>
-                                                        <div class="d-flex flex-row-reverse">
-                                                            <button nbButton ghost class="ghost-btn" nbTooltip="Agregar artículo" (click)="addItemToBodyFormArray('', 'articulos', getBodyFormArray('articulos').controls.length - 1)">
-                                                                <nb-icon icon="plus-outline" status="success"></nb-icon>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button class="mr-2" nbButton ghost (click)="addArticulo('', getBodyFormArray('articulos').controls.length)" nbTooltip="Agregar artículo a continuación">
+                                                                <nb-icon icon="plus-outline" status="primary"></nb-icon>
                                                             </button>
                                                         </div>
-                                                    </ng-container>                                                
+                                                    </ng-container>                                                       
                                                 </nb-card-body>
                                             </nb-card>
                                         </ng-container>
@@ -171,10 +173,10 @@
                                             <div class="form-group">
                                                 <nb-checkbox (change)="hasAnexoUnicoOnChange()" [checked]="hasAnexoUnico">Tiene anexo único?</nb-checkbox>
                                             </div>
-                                            <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i+1" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(dialog, i, 'anexo')"></app-anexo>
-                                            <div class="d-flex justify-content-end">
-                                                <button *ngIf="(!hasAnexoUnico && anexosData.length < 10) || (hasAnexoUnico && anexosData.length < 1)" nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo" (click)="addAnexo()">
-                                                    <nb-icon icon="plus-outline" status="success"></nb-icon>
+                                            <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(removeItemDialog, i, 'anexo')" (onInsert)="addAnexo('', $event)"></app-anexo>
+                                            <div class="d-flex justify-content-end" #anexosBottom>
+                                                <button *ngIf="(!hasAnexoUnico && anexosData.length < 10) || (hasAnexoUnico && anexosData.length < 1)" nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo a continuación" (click)="addAnexo()">
+                                                    <nb-icon icon="plus-outline" status="primary"></nb-icon>
                                                 </button>
                                             </div>
                                         </nb-card-body>
@@ -187,7 +189,7 @@
     </div>
 </div>
 
-<ng-template #dialog let-data let-ref="dialogRef">
+<ng-template #removeItemDialog let-data let-ref="dialogRef">
     <nb-card>
         <nb-card-header>Eliminar {{data.item}} {{data.index+1}}?</nb-card-header>
         <nb-card-footer>
