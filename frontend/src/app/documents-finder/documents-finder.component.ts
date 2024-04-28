@@ -47,7 +47,8 @@ export class DocumentsFinderComponent implements OnInit {
       documentTypeId: this.fb.control(''),
       issuerId: this.fb.control(''),
       issueDateStart: this.fb.control(''),
-      issueDateEnd: this.fb.control('')
+      issueDateEnd: this.fb.control(''),
+      shared: this.fb.control('0')
     });
        
   }

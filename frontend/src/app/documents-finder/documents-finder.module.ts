@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DocumentsFinderComponent } from './documents-finder.component';
 import { DocumentsFinderRoutingModule } from './documents-finder-routing.module';
-import { NbButtonModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbListModule, NbSelectModule, NbSpinnerModule, NbTooltipComponent, NbTooltipModule } from '@nebular/theme';
+import { NbButtonModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbListModule, NbRadioModule, NbSelectModule, NbSpinnerModule, NbTooltipComponent, NbTooltipModule } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NbMomentDateModule } from '@nebular/moment';
 
@@ -25,7 +25,8 @@ import { NbMomentDateModule } from '@nebular/moment';
     NbMomentDateModule,
     NbSelectModule,
     NbIconModule,
-    NbTooltipModule
+    NbTooltipModule,
+    NbRadioModule,
   ]
 })
 export class DocumentsFinderModule { }
