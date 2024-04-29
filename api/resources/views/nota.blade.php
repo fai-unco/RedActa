@@ -68,7 +68,7 @@
 							@foreach($anexos as $key=>$anexo)
 								<div class="anexo-content">
 									<p><b>ANEXO {{$hasAnexoUnico ? 'ÚNICO' : $intToRomanNumbers[$key+1]}}</b></p>
-									@php($files = glob(env('STATIC_FILES_DIRECTORY').'/uploads/'.$anexo->file->id.'-*.png'))
+									@php($files = glob(env('STATIC_FILES_DIRECTORY').'/uploads/'.$anexo->file->id.'[-,.]*'))
 									@foreach($files as $file)
 										<img src="{{ $file }}" class="anexo-img">
 									@endforeach

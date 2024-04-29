@@ -144,7 +144,7 @@ class FileController extends Controller
 
     public function validateRequest($request) {
         $validator = Validator::make($request->all(), [
-            'file' => 'mimes:pdf,png',
+            'file' => 'mimes:pdf,png,jpg,jpeg',
         ])->validate();
     }
 }
