@@ -62,30 +62,29 @@ export class StampsManagerComponent implements OnInit {
     } else {
       request = this.apiConnectionService.post('stamps', this.form.value);
     } 
-    request.pipe(finalize(() => this.dialogState = 'rendering'))
-      .subscribe({
-        next: _ => {
-          ref.close();
-          this.reload();
-        },
-        error: e => {
-          this.errorHandler.handle(e);
-        }
-      });
+    request.subscribe({
+      next: _ => {
+        ref.close();
+        this.reload();
+      },
+      error: e => {
+        this.dialogState = 'rendering';
+        this.errorHandler.handle(e);
+      }
+    });
   }
 
   remove(stampId: any){
     this.viewState = 'loading';
-    this.apiConnectionService.delete('stamps', stampId)
-      .pipe(finalize(() => this.dialogState = 'rendering'))
-      .subscribe({
-        next: _ => {
-          this.reload();
-        },
-        error: e => {
-          this.errorHandler.handle(e);
-        }
-      });
+    this.apiConnectionService.delete('stamps', stampId).subscribe({
+      next: _ => {
+        this.reload();
+      },
+      error: e => {
+        this.viewState = 'rendering'
+        this.errorHandler.handle(e);
+      }
+    });
   }
 
 

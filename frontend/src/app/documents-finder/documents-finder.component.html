@@ -49,6 +49,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="label col-form-label">Origen del documento</label>
+                        <nb-radio-group formControlName="shared">
+                            <nb-radio value="0">Creado por mí</nb-radio>
+                            <nb-radio value="1">Compartido conmigo</nb-radio>
+                          </nb-radio-group>
+                    </div>
                     <div class="d-flex flex-row-reverse">
                         <button *ngIf="!loadingResults"status="primary" nbButton type="submit">Buscar</button>
                         <nb-card *ngIf="loadingResults" class="ghost-card" [nbSpinner]="true" nbSpinnerSize="small" nbSpinnerStatus="primary">

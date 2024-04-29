@@ -1,0 +1,18 @@
+.subheader {
+    padding-bottom: 1.5rem;
+}
+
+.subheader p {
+    line-height: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: large;
+}
+
+@page {
+    margin-top: 2.5cm;
+    margin-bottom: 2.5cm;
+    margin-left: 2.5cm;
+    margin-right: 2.5cm;
+    size: A4;
+}

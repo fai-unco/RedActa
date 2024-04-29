@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { finalize } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { NbMenuService } from '@nebular/theme';
+import { Subscription, filter, finalize } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
@@ -8,25 +9,53 @@ import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.
   templateUrl: './anexo.component.html',
   styleUrls: ['./anexo.component.scss']
 })
-export class AnexoComponent implements OnInit {
+export class AnexoComponent implements OnInit, OnDestroy {
 
   @Input('form') form!: any ;
   @Input('file') file!: any;
   uploading: boolean = false;
   @Output('onDelete') delete = new EventEmitter();
   @Input('index') index!: any;
-
-  
+  @Output('onInsert') insert = new EventEmitter();
+  menuSubscription!: Subscription;
+  listItemActions: any;
 
   constructor(private apiConnectionService: ApiConnectionService, 
-              private errorHandler: ErrorHandlerService) { }
+              private errorHandler: ErrorHandlerService,
+              private nbMenuService: NbMenuService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.index > 8) {
+      this.listItemActions = [{ title: 'Eliminar' }];
+    } else {
+      this.listItemActions = [
+        { title: 'Agregar 1 arriba' }, 
+        { title: 'Agregar 1 abajo' },
+        { title: 'Eliminar' }
+      ];
+    }
+    this.menuSubscription = this.nbMenuService.onItemClick().pipe(
+      filter (({ tag }) => tag == 'anexo-menu-' + this.index),
+    ).subscribe ((event: any) => {
+      let action = event.item.title;
+      if (action == 'Eliminar'){
+        this.delete.emit('');
+      } else if (action == 'Agregar 1 arriba') {
+        this.insert.emit(this.index);
+      } else {
+        this.insert.emit(this.index + 1);
+      }
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['index']) {
       this.form.get('index').setValue(this.index);
     }
+  }
+
+  ngOnDestroy (){
+    this.menuSubscription.unsubscribe();
   }
 
   contentSourceOnChange(){
