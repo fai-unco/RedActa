@@ -15,6 +15,7 @@ use App\Http\Controllers\StampController;
 use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\DocumentSharedAccessController;
 use App\Http\Controllers\RedactaUserController;
+use App\Http\Controllers\VisibilityLevelController;
 
 
 /*
@@ -42,8 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('signatures', SignatureController::class);
   Route::apiResource('documents_shared_accesses', DocumentSharedAccessController::class);
   Route::apiResource('redacta_users', RedactaUserController::class);
-  Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
+  Route::apiResource('visibility_levels', VisibilityLevelController::class);
 });
+Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
 
 
 

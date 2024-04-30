@@ -21,6 +21,8 @@ return new class extends Migration
             $table->bigInteger('heading_id')->nullable()->unsigned();
             $table->foreign('heading_id')->references('id')->on('headings');
             $table->boolean('has_anexo_unico')->default(false);
+            $table->bigInteger('visibility_level_id')->nullable()->unsigned();
+            $table->foreign('visibility_level_id')->references('id')->on('visibility_levels');
         });
     }
 
