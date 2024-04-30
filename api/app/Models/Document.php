@@ -55,6 +55,10 @@ class Document extends Model
         return $this->belongsTo(Heading::class);
     }
 
+    public function visibilityLevel(){
+        return $this->belongsTo(VisibilityLevel::class);
+    }
+
     /*public function anexosSectionType(){
         return $this->belongsTo(AnexosSectionType::class);
     }*/
