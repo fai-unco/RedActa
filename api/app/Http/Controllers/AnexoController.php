@@ -185,7 +185,7 @@ class AnexoController extends Controller
     }
 
     private function userHasAccessToDocument($loggedInUserId, $document) {
-        if ($document->redactaUser->id != $loggedInUserId) {
+        if ($document->redactaUser->id != $loggedInUserId && $document->visibilityLevel->name == 'private') {
             $documentSharedAccess = DocumentSharedAccess::where([
                 ['redacta_user_id', '=', $loggedInUserId],
                 ['document_id', '=', $document->id]
