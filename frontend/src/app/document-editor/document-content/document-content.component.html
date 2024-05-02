@@ -8,7 +8,7 @@
                         <div class="d-flex justify-content-end pb-2">
                             <div *ngIf="documentType.id" class="d-flex align-items-center text-align-center">
                                 <ng-container *ngIf="!submitting">
-                                    <div *ngIf="actionResult" class="action-result fade-out">
+                                    <div *ngIf="actionResult" class="mr-2 action-result fade-out">
                                         {{actionResult}}   
                                     </div>
                                     <div class="mr-2" nbTooltip="Crear copia a partir del documento actual">
@@ -171,7 +171,7 @@
                                             <div class="form-group">
                                                 <nb-checkbox (change)="hasAnexoUnicoOnChange()" [checked]="hasAnexoUnico">Tiene anexo único?</nb-checkbox>
                                             </div>
-                                            <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" (onDelete)="removeAnexo(removeItemDialog, i, 'anexo')" (onInsert)="addAnexo('', $event)"></app-anexo>
+                                            <app-anexo *ngFor="let item of anexosData; let i=index" [index]="i" [form]="item.form" [file]="item.fileData" [isAnexoUnico]="hasAnexoUnico" (onDelete)="removeAnexo(removeItemDialog, i, 'anexo')" (onInsert)="addAnexo('', $event)"></app-anexo>
                                             <div class="d-flex justify-content-end" #anexosBottom>
                                                 <button *ngIf="(!hasAnexoUnico && anexosData.length < 10) || (hasAnexoUnico && anexosData.length < 1)" nbButton ghost class="ghost-btn" nbTooltip="Agregar anexo a continuación" (click)="addAnexo()">
                                                     <nb-icon icon="plus-outline" status="primary"></nb-icon>

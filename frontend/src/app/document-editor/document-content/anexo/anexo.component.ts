@@ -19,20 +19,24 @@ export class AnexoComponent implements OnInit, OnDestroy {
   @Output('onInsert') insert = new EventEmitter();
   menuSubscription!: Subscription;
   listItemActions: any;
+  @Input() 
+  set isAnexoUnico(value: boolean) {
+    if (value) {
+      this.setListItemActions(false);
+    } else {
+      this.setListItemActions();
+    }
+  };
 
   constructor(private apiConnectionService: ApiConnectionService, 
               private errorHandler: ErrorHandlerService,
               private nbMenuService: NbMenuService) { }
 
   ngOnInit(): void {
-    if (this.index > 8) {
-      this.listItemActions = [{ title: 'Eliminar' }];
+    if (this.index > 8 || this.isAnexoUnico) {
+      this.setListItemActions(false);
     } else {
-      this.listItemActions = [
-        { title: 'Agregar 1 arriba' }, 
-        { title: 'Agregar 1 abajo' },
-        { title: 'Eliminar' }
-      ];
+      this.setListItemActions();
     }
     this.menuSubscription = this.nbMenuService.onItemClick().pipe(
       filter (({ tag }) => tag == 'anexo-menu-' + this.index),
@@ -56,6 +60,18 @@ export class AnexoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy (){
     this.menuSubscription.unsubscribe();
+  }
+
+  private setListItemActions(setFullList: boolean = true) {
+    if (setFullList) {
+      this.listItemActions = [
+        { title: 'Agregar 1 arriba' }, 
+        { title: 'Agregar 1 abajo' },
+        { title: 'Eliminar' }
+      ];
+    } else {
+      this.listItemActions = [{ title: 'Eliminar' }];
+    }
   }
 
   contentSourceOnChange(){
