@@ -4,19 +4,31 @@
     </nb-card>
     <div *ngIf="viewState == 'rendering'">
         <div class="flex-container">
-            <div class="d-flex justify-content-end pb-2">
-                        <div class="d-flex align-items-center text-align-center">
-                            <div class="mr-2" nbTooltip="Añadir cuenta">
-                                <button class="ghost-btn" nbButton ghost (click)="addDocumentSharedAccess()">
-                                    <nb-icon icon="plus-outline" status="primary"></nb-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            
             <div class="scrollable">
+
                 <nb-card>
                     <nb-card-header>
-                        Accesos compartidos a este documento 
+                        Nivel de visibilidad del documento
+                    </nb-card-header>
+                    <nb-card-body>
+                        <nb-select fullWidth placeholder="Seleccionar inicio" [(selected)]="documentVisibilityLevelId">
+                            <nb-option *ngFor="let item of visibilityLevels" [value]="item.id" (click)="onVisibilityLevelSelect(item.id)">{{item.label}}</nb-option>
+                        </nb-select>
+                    </nb-card-body>
+                </nb-card>
+                <nb-card *ngIf="documentVisibilityLevelId == 1">
+                    <nb-card-header>
+                        <div class="d-flex justify-content-between">
+                            Accesos compartidos a este documento
+                            <div class="d-flex align-items-center text-align-center">
+                                <div class="mr-2" nbTooltip="Añadir cuenta">
+                                    <button class="ghost-btn" nbButton ghost (click)="addDocumentSharedAccess()">
+                                        <nb-icon icon="plus-outline" status="primary"></nb-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </nb-card-header>
                     <nb-list>
                         <nb-list-item *ngIf="documentSharedAccesses.length == 0">

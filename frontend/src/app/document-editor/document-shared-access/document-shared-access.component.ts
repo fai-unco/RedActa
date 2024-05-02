@@ -3,7 +3,7 @@ import { NbDialogService } from '@nebular/theme';
 import { ApiConnectionService } from '../../api-connection.service';
 import { ActivatedRoute } from '@angular/router';
 import { DocumentService } from '../../shared/document.service';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 import { UserSelectorComponent } from './user-selector/user-selector.component';
 
@@ -23,6 +23,8 @@ export class DocumentSharedAccessComponent implements OnInit {
     { title: 'Exportar copia fiel' }
   ];
   documentSharedAccesses: any;
+  visibilityLevels: any;
+  documentVisibilityLevelId!: number;
 
 
   constructor(private dialogService: NbDialogService,
@@ -36,7 +38,22 @@ export class DocumentSharedAccessComponent implements OnInit {
     this.route.queryParams.subscribe(params => {this.documentId = params['id']});
     if(this.documentId){
       this.viewState = 'loading';
-      this.getDocumentSharedAccesss();
+      let requests = [
+        this.connectionService.get('documents_shared_accesses?document_id=' + this.documentId),
+        this.connectionService.get('documents', this.documentId),
+        this.connectionService.get('visibility_levels')
+      ];
+      forkJoin(requests).subscribe({
+        next: (res: any) => {
+          this.documentSharedAccesses = res[0].data;
+          this.documentVisibilityLevelId = res[1].data.visibilityLevelId;
+          this.visibilityLevels = res[2].data;
+          this.viewState = 'rendering';
+        },
+        error: e => {
+          this.viewState = 'error';
+        }
+      });
     }
   }
 
@@ -73,15 +90,16 @@ export class DocumentSharedAccessComponent implements OnInit {
     });
   }
 
-  
-
-  export(trueCopy = false){
+  onVisibilityLevelSelect(id: number) {
     this.viewState = 'loading';
-    this.documentService.exportDocument(this.documentId, trueCopy)
-      .pipe(finalize(()=> this.viewState = 'rendering'))
+    this.connectionService.patch('documents', this.documentId, { visibilityLevelId: id })
+      .pipe(finalize(() => this.viewState = 'rendering'))
       .subscribe({
-        error: _ => {
-          this.errorHandler.handle();
+        next: _ => {
+          this.documentVisibilityLevelId = id;
+        },
+        error: e => {
+          this.errorHandler.handle(e);
         }
       })
   }
