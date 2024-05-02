@@ -50,7 +50,7 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $this->validateRequest($request);
+        $data = $this->validateRequest($request, 'post');
         try {
             if(!isset($data['true_copy_stamp_id'])){
                 $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
@@ -145,17 +145,19 @@ class DocumentController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = $this->validateRequest($request);
-        try {
+        $data = $this->validateRequest($request, 'patch');
+        //try {
             $document = Document::find($id);
             if (!$document || !$this->userHasAccessToDocument($request->user()->id, $document)) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'Recurso inexistente'        
                 ], 404);
-            }  
-            $document->set($data);
-            $document->save();
+            }
+            if (isset($data['body'] )) {
+                $data['body'] = json_encode($data['body']);
+            }
+            $document->update($data);
             $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
             $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
@@ -164,12 +166,12 @@ class DocumentController extends Controller
                 'message' => 'OK',
                 'data' => $document           
             ]);
-        } catch (\Throwable $th) {
+        /*} catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }
+        }*/
     }
 
     /**
@@ -237,7 +239,7 @@ class DocumentController extends Controller
             $query =  Document::with(['issuer','documentType']);
             if ($request->boolean('shared', false)) {
                 $documentsId = DocumentSharedAccess::where('redacta_user_id', $request->user()->id)->pluck('document_id')->all();
-                $query = Document::whereIn('id', $documentsId);
+                $query = Document::whereIn('id', $documentsId)->orWhere('visibility_level_id', '=', 2);
             } else {
                 $query = Document::where('redacta_user_id', $request->user()->id);
             }
@@ -280,21 +282,26 @@ class DocumentController extends Controller
         }
     }
 
-    private function validateRequest($request) {
-        $validator = Validator::make($request->all(), [
-                'document_type_id' => 'required|numeric',
-                'name' => 'sometimes|string|nullable',
-                'number' => 'sometimes|numeric|nullable',
-                'issuer_id' => 'required|numeric|exists:redacta_users,id',
-                'issue_date' => 'sometimes|date|nullable',
-                'body' => 'required',
-                'subject' => 'sometimes|nullable|string',
-                'destinatary' => 'sometimes|nullable|string',
-                'has_anexo_unico' => 'sometimes|boolean',
-                'heading_id' => 'required|numeric',
-                'operative_section_beginning_id' => 'required|numeric',
-                'true_copy_stamp_id' => 'sometimes|numeric|nullable'
-            ], [
+    private function validateRequest($request , $method) {
+        $requiredRules = [
+            'document_type_id' => 'required|numeric',
+            'issuer_id' => 'required|numeric|exists:redacta_users,id',
+        ];
+        $sometimesRules = [
+            'name' => 'sometimes|string|nullable',
+            'number' => 'sometimes|numeric|nullable',
+            'issue_date' => 'sometimes|date|nullable',
+            'body' => 'sometimes',
+            'subject' => 'sometimes|nullable|string',
+            'destinatary' => 'sometimes|nullable|string',
+            'has_anexo_unico' => 'sometimes|boolean',
+            'true_copy_stamp_id' => 'sometimes|numeric|nullable',
+            'visibility_level_id' => 'sometimes|numeric',
+            'heading_id' => 'sometimes|numeric',
+            'operative_section_beginning_id' => 'sometimes|numeric',
+        ];
+        $rules = $method == 'post' ? $requiredRules + $sometimesRules : $sometimesRules;
+        $validator = Validator::make($request->all(), $rules, [
                 'required' => 'El campo :attribute es requerido',
                 'numeric' => 'El campo :attribute debe ser un número',
                 'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy',
@@ -311,14 +318,15 @@ class DocumentController extends Controller
                 'has_anexo_unico' => '"Tiene anexo único"',
                 'heading_id' => '"Membrete"',
                 'operative_section_beginning_id' => '"Inicio de sección operativa"',
-                'true_copy_stamp_id' => '"Firmante de copia fiel"'
+                'true_copy_stamp_id' => '"Firmante de copia fiel"',
+                'visibility_level_id' => '"Nivel de visibilidad del documento"'
             ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
     }
 
-    private function userHasAccessToDocument($loggedInUserId, $document){
-        if ($document->redactaUser->id != $loggedInUserId) {
+    private function userHasAccessToDocument($loggedInUserId, $document) {
+        if ($document->redactaUser->id != $loggedInUserId && $document->visibilityLevel->name == 'private') {
             $documentSharedAccess = DocumentSharedAccess::where([
                 ['redacta_user_id', '=', $loggedInUserId],
                 ['document_id', '=', $document->id]
