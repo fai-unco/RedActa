@@ -54,7 +54,9 @@ class DocumentController extends Controller
         try {
             if(!isset($data['true_copy_stamp_id'])){
                 $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
-                $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
+                if (isset($issuerSettings->suggestedTrueCopyStamp)) {
+                    $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
+                }
             }
             $data['redacta_user_id'] = $request->user()->id;
             $document = new Document();
@@ -286,7 +288,7 @@ class DocumentController extends Controller
     private function validateRequest($request , $method) {
         $requiredRules = [
             'document_type_id' => 'required|numeric',
-            'issuer_id' => 'required|numeric|exists:redacta_users,id',
+            'issuer_id' => 'required|numeric|exists:issuers,id',
         ];
         $sometimesRules = [
             'name' => 'sometimes|string|nullable',
@@ -299,7 +301,7 @@ class DocumentController extends Controller
             'true_copy_stamp_id' => 'sometimes|numeric|nullable',
             'visibility_level_id' => 'sometimes|numeric',
             'heading_id' => 'sometimes|numeric',
-            'operative_section_beginning_id' => 'sometimes|numeric',
+            'operative_section_beginning_id' => 'sometimes|numeric|nullable',
         ];
         $rules = $method == 'post' ? $requiredRules + $sometimesRules : $sometimesRules;
         $validator = Validator::make($request->all(), $rules, [
