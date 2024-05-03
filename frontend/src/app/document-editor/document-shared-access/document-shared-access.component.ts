@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { ApiConnectionService } from '../../api-connection.service';
 import { ActivatedRoute } from '@angular/router';
@@ -25,6 +25,7 @@ export class DocumentSharedAccessComponent implements OnInit {
   documentSharedAccesses: any;
   visibilityLevels: any;
   documentVisibilityLevelId!: number;
+  shareLink: string = 'https://redacta.fi.uncoma.edu.ar/documentos/editar?id='
 
 
   constructor(private dialogService: NbDialogService,
@@ -49,6 +50,7 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.documentVisibilityLevelId = res[1].data.visibilityLevelId;
           this.visibilityLevels = res[2].data;
           this.viewState = 'rendering';
+          this.shareLink = this.shareLink + this.documentId;
         },
         error: e => {
           this.viewState = 'error';
@@ -102,6 +104,14 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.errorHandler.handle(e);
         }
       })
+  }
+
+  openShareLinkDialog(dialog: TemplateRef<any>) {
+    this.dialogService.open(dialog, { context: this.shareLink});
+  }
+
+  copyShareLink() {
+    navigator.clipboard.writeText(this.shareLink);
   }
 
 }
