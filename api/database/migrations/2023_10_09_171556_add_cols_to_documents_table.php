@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->bigInteger('operative_section_beginning_id')->unsigned();
+            $table->bigInteger('operative_section_beginning_id')->nullable()->unsigned();
             $table->foreign('operative_section_beginning_id')->references('id')->on('operative_section_beginnings');
             $table->bigInteger('true_copy_stamp_id')->nullable()->unsigned();
             $table->foreign('true_copy_stamp_id')->references('id')->on('stamps');
