@@ -221,7 +221,7 @@ class DocumentController extends Controller
     }
 
     public function search(Request $request){
-        try {
+        //try {
             $params = [
                 'keywords',
                 'document_type_id',
@@ -239,7 +239,8 @@ class DocumentController extends Controller
             $query =  Document::with(['issuer','documentType']);
             if ($request->boolean('shared', false)) {
                 $documentsId = DocumentSharedAccess::where('redacta_user_id', $request->user()->id)->pluck('document_id')->all();
-                $query = Document::whereIn('id', $documentsId)->orWhere('visibility_level_id', '=', 2);
+                array_merge($documentsId, Document::where('visibility_level_id', '=', 2)->get()->all());
+                $query = Document::whereIn('id', $documentsId);
             } else {
                 $query = Document::where('redacta_user_id', $request->user()->id);
             }
@@ -274,12 +275,12 @@ class DocumentController extends Controller
                 ]);
             }
             return $output; 
-        } catch (\Throwable $th) {
+        /*} catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }
+        }*/
     }
 
     private function validateRequest($request , $method) {
