@@ -106,7 +106,9 @@
 							<p>ES COPIA FIEL</p>
 							<div style="display: flex; flex-flow: row-reverse;">
 								<div class="stamp true-copy-stamp">
+								@if(isset($document->trueCopyStamp))
 									{!! $document->trueCopyStamp->content !!}
+								@endif
 								</div>
 							</div>
 						</td>
@@ -120,7 +122,9 @@
 				<p>ES COPIA FIEL</p>
 				<div style="display: flex; flex-flow: row-reverse;">
 					<div class="stamp true-copy-stamp">
-						{!! $document->trueCopyStamp->content !!}
+						@if(isset($document->trueCopyStamp))
+							{!! $document->trueCopyStamp->content !!}
+						@endif
 					</div>
 				</div>
 			</div>
