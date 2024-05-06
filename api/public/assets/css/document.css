@@ -9,26 +9,23 @@ img {
 
 /*Remove table borders*/
 
-table {
+.document-container {
     border: 0  !important;
     width: 100%;
 }
 
-table > tbody > tr:first-child > td, table > tbody > tr:first-child > th {
+.document-container > tbody > tr:first-child > td, .document-container > tbody > tr:first-child > th {
     border: 0 !important;
 }
 
-
-
-table.document-container {
+.document-container {
     break-after:always;
 }
 
-thead.document-header {
+.document-container thead.document-header {
     display: table-header-group;
 }
 
-        
 /*
     Table footer has two children divs: one with "document-footer-cell" class and the other
     with  "document-footer-empty-cell" class. 
@@ -36,12 +33,12 @@ thead.document-header {
     The "document-footer-empty-cell" div is displayed only in print view mode for keeping a space between the last line of the document body and the "footer" class element.
 */
     
-tfoot.document-footer .document-footer-empty-cell {
+.document-footer-empty-cell {
     display: none;
     height: 7rem;
 }
 
-th, td {
+.document-container th, .document-container td {
     padding: 0;
     line-height: 1.2;		
 }
