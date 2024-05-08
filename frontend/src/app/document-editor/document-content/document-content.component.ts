@@ -108,7 +108,9 @@ export class DocumentContentComponent implements OnInit {
       this.connectionService.get('issuers', data.issuerId),
       this.connectionService.get('headings?issuer_id=' + data.issuerId),
       this.connectionService.get('operative_section_beginnings?issuer_id=' + data.issuerId),
-      this.connectionService.get('issuers_settings?issuer_id=' + data.issuerId)
+      this.connectionService.get('issuers_settings?issuer_id=' + data.issuerId),
+      this.connectionService.get('headings', data.headingId)
+
     ];
     
     forkJoin(requests).subscribe({
@@ -118,6 +120,10 @@ export class DocumentContentComponent implements OnInit {
         this.headings = res[2].data;
         this.operativeSectionBeginnings = res[3].data;
         this.issuerSettings = res[4].data;
+        let index = this.headings.findIndex((item: any) => item.id === res[5].data.id);
+        if (index === -1) {
+          this.headings.push(res[5].data);
+        } 
         this.form = this.fb.group({
           name: ['Nuevo documento'],
           documentTypeId: ['', Validators.required],
@@ -292,6 +298,10 @@ export class DocumentContentComponent implements OnInit {
         queryParams: null,
       }
     );
+    this.actionResult = 'Copiado!';
+    setTimeout(() => {
+      this.actionResult = '';
+    }, 6000);
   }
 
   submit() {
