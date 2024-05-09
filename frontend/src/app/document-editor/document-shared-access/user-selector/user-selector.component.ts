@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { finalize, forkJoin } from 'rxjs';
+import { Observable, finalize, forkJoin, map, of, startWith } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
@@ -16,6 +16,9 @@ export class UserSelectorComponent implements OnInit {
   form!: FormGroup;
   documentId: any;
   viewState = 'loading';
+  filteredUsers!: Observable<any[]>;
+  username: string = '';
+  
 
   constructor(private connectionService: ApiConnectionService,
     protected dialogRef: NbDialogRef<UserSelectorComponent>,
@@ -29,7 +32,7 @@ export class UserSelectorComponent implements OnInit {
     });
     let requests = [this.connectionService.get('redacta_users')];
     this.form.get('documentId')?.setValue(this.documentId);
-    
+   
     forkJoin(requests)
       .pipe(finalize(() => {this.viewState = 'rendering'}))
       .subscribe({
@@ -45,6 +48,19 @@ export class UserSelectorComponent implements OnInit {
           this.cancel();
         }
       });
+  }
+
+  filter(filterString: any) {
+    const filterValue = filterString.toLowerCase();
+    return this.users.filter(user => (user.name.toLowerCase() + ' ' + user.lastName.toLowerCase()).normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(filterValue));
+  }
+
+  onUsernameChange(value: string) {
+    this.filteredUsers = of(this.filter(value));
+  }
+
+  selectUser(id: number){
+    this.userIdFormControl.setValue(id);
   }
 
   get userIdFormControl(){
