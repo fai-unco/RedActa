@@ -1,9 +1,7 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
-import { Router } from '@angular/router';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
-import { ErrorDialogComponent } from 'src/app/shared/error-dialog/error-dialog.component';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
@@ -13,11 +11,13 @@ import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.
 })
 export class InitSettingsDialogComponent implements OnInit {
 
-  issuers: any;
+  issuers: any [] = [];
   documentTypes: any;
   selectedIssuerId!: number;
   selectedDocumentTypeId!: number;
   viewState = 'loading';
+  filteredIssuers!: Observable<any[]>;
+  issuerName: string = '';
   
   constructor(private connectionService: ApiConnectionService, 
               protected dialogRef: NbDialogRef<InitSettingsDialogComponent>,
@@ -44,5 +44,17 @@ export class InitSettingsDialogComponent implements OnInit {
       this.dialogRef.close();
     }
   }
+  
+  filter(filterString: any) {
+    const filterValue = filterString.toLowerCase();
+    return this.issuers.filter(issuer => (issuer.description.toLowerCase()).normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(filterValue));
+  }
 
+  onIssuerNameChange(value: string) {
+    this.filteredIssuers = of(this.filter(value));
+  }
+
+  selectIssuer(id: number){
+    this.selectedIssuerId = id;
+  }
 }

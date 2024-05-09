@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DocumentContentComponent } from './document-content.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NbMomentDateModule } from '@nebular/moment';
-import { NbInputModule, NbCardModule, NbButtonModule, NbActionsModule, NbUserModule, NbCheckboxModule, NbRadioModule, NbDatepickerModule, NbSelectModule, NbIconModule, NbTooltipModule, NbSpinnerModule, NbContextMenuModule, NbTabsetModule, NbDialogModule } from '@nebular/theme';
+import { NbInputModule, NbCardModule, NbButtonModule, NbActionsModule, NbUserModule, NbCheckboxModule, NbRadioModule, NbDatepickerModule, NbSelectModule, NbIconModule, NbTooltipModule, NbSpinnerModule, NbContextMenuModule, NbTabsetModule, NbDialogModule, NbAutocompleteModule } from '@nebular/theme';
 import { DocumentEditorRoutingModule } from '../../document-editor/document-editor-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { AnexoComponent } from './anexo/anexo.component';
@@ -40,6 +40,7 @@ import { InitSettingsDialogComponent } from './init-settings-dialog/init-setting
     NbContextMenuModule,
     SharedModule,
     NbTabsetModule,
+    NbAutocompleteModule,
   ], 
   exports: [
     DocumentContentComponent

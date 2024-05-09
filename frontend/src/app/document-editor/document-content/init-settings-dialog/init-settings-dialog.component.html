@@ -6,9 +6,15 @@
     <nb-card-body>
         <div class="form-group">  
             <label class="label col-form-label">Dependencia emisora</label>
-            <nb-select fullWidth placeholder="Seleccionar emisor" [(selected)]="selectedIssuerId">
+            <!--nb-select fullWidth placeholder="Seleccionar emisor" [(selected)]="selectedIssuerId">
                 <nb-option *ngFor="let item of issuers" [value]="item.id">{{item.description}}</nb-option>
-            </nb-select>
+            </nb-select-->
+            <input fullWidth [ngModel]="issuerName" (ngModelChange)="onIssuerNameChange($event)" nbInput placeholder="Ingresar emisor"  [nbAutocomplete]="autoControl" />
+            <nb-autocomplete #autoControl>
+                <nb-option *ngFor="let issuer of filteredIssuers | async" [value]="issuer.description" (click)="selectIssuer(issuer.id)"> 
+                    {{ issuer.description }} 
+                </nb-option>
+            </nb-autocomplete>
         </div>
         <div class="form-group">
             <label class="label col-form-label">Tipo de documento</label>
