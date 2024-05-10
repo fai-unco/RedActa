@@ -34,15 +34,20 @@
 									&nbsp;
 								@endfor
 							@endif
-							<br>
-							{{mb_strtoupper($document->documentType->description, 'UTF-8')}} {{mb_strtoupper($issuer->code, 'UTF-8')}} N° 
-							@if($document->number)
-								{{sprintf('%03s', $document->number)}}
-							@else
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							@if($document->number || $issuer->code)
+								<br>
+								{{mb_strtoupper($document->documentType->description, 'UTF-8')}} 
+								@if($issuer->code)
+									{{mb_strtoupper($issuer->code, 'UTF-8')}} 
+								@endif
+								@if($document->number)
+									N° {{sprintf('%03s', $document->number)}}
+								@endif
 							@endif
-							<br>
-							Ref: {{$document->subject}}
+							@if($document->subject)
+								<br>
+								Ref: {{$document->subject}}
+							@endif	
 						</div>	
 						<div class="destinatary-section">
                             {!! nl2br(e($document->destinatary)) !!}
@@ -84,8 +89,8 @@
 						<div class="footer-content">
                             <hr>
 							{{$issuer->address}} 
-							{{$issuer->postal_code ? ' ('.$issuer->postal_code.')' : ''}}
-							, {{$issuer->city}} 
+							{{$issuer->city ? $issuer->city : ''}} 
+							{{$issuer->postal_code ? ' ('.$issuer->postal_code.')' : ''}} 
 							{{$issuer->province ? ', '.$issuer->province : ''}} 
 							{{$issuer->phone ? ' — Tel. '.$issuer->phone : ''}}
 							{{$issuer->email ? ' — Email: '.$issuer->email : ''}}

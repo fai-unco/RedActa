@@ -1,15 +1,20 @@
 <nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
     <nb-card-body></nb-card-body>
   </nb-card>
-<nb-card class="h-100" *ngIf="viewState == 'rendering'">
+  <nb-card class="h-100" *ngIf="viewState == 'rendering'">
     <nb-card-header>Agregar acceso compartido</nb-card-header>
     <nb-card-body>
-        <nb-select fullWidth placeholder="Seleccionar cuenta" [formControl]="userIdFormControl">
-            <nb-option *ngFor="let user of users" [value]="user.id">{{user.name}} {{user.lastName}}</nb-option>
-        </nb-select>
+      <!--nb-select fullWidth placeholder="Seleccionar cuenta" [formControl]="userIdFormControl"><nb-option *ngFor="let user of users" [value]="user.id">{{user.name}} {{user.lastName}}</nb-option></nb-select-->
+      <input [ngModel]="username"
+      (ngModelChange)="onUsernameChange($event)" nbInput placeholder="Ingresar nombre"  [nbAutocomplete]="autoControl" />
+      <nb-autocomplete #autoControl>
+        <nb-option *ngFor="let user of filteredUsers | async" [value]="user.name + ' ' + user.lastName" (click)="selectUser(user.id)"> 
+            {{ user.name }} {{ user.lastName }} 
+        </nb-option>
+      </nb-autocomplete>
     </nb-card-body>
     <nb-card-footer>
-        <button nbButton status="primary" (click)="submit()" class="mr-4">Guardar</button>
-        <button nbButton (click)="cancel()">Cancelar</button>
+      <button nbButton status="primary" (click)="submit()" class="mr-4">Guardar</button>
+      <button nbButton (click)="cancel()">Cancelar</button>
     </nb-card-footer>
-</nb-card>
+  </nb-card>
