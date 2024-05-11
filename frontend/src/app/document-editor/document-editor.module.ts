@@ -8,7 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NbMomentDateModule } from '@nebular/moment';
 import { SharedModule } from '../shared/shared.module';
 import { DocumentContentModule } from './document-content/document-content.module';
-import { DocumentSignaturesModule } from './document-signatures/document-signatures.module';
+import { DocumentStampsModule } from './document-signatures/document-signatures.module';
 import { DocumentSharedAccessModule } from './document-shared-access/document-shared-access.module';
 
 
@@ -39,7 +39,7 @@ import { DocumentSharedAccessModule } from './document-shared-access/document-sh
     NbContextMenuModule,
     SharedModule,
     NbTabsetModule,
-    DocumentSignaturesModule,
+    DocumentStampsModule,
     DocumentContentModule,
     DocumentSharedAccessModule
   ]

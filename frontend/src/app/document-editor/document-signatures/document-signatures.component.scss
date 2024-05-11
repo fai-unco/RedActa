@@ -6,7 +6,7 @@
     flex: 1;
     display: flex;
     flex-flow: column;
-    height: calc(100vh - 12rem);
+    height: calc(100vh - 14rem);
 }
 
 .scrollable {
@@ -16,4 +16,25 @@
 
 .scrollable nb-card:last-child {
     margin-bottom: 0;
+}
+
+.action-result {
+    color: var(--text-primary-color);
+    font-weight: 550;
+}
+
+.fade-out {
+    animation: fadeOut ease 2.5s;
+    animation-fill-mode: forwards;
+    animation-delay: 4s;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    
+    100% {
+        opacity: 0;
+    }
 }
