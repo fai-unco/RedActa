@@ -5,9 +5,9 @@ import { ApiConnectionService } from 'src/app/api-connection.service';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 
 @Component({
-  selector: 'app-signature-selector',
-  templateUrl: './signature-selector.component.html',
-  styleUrls: ['./signature-selector.component.scss']
+  selector: 'app-stamp-selector',
+  templateUrl: './stamp-selector.component.html',
+  styleUrls: ['./stamp-selector.component.scss']
 })
 export class StampSelectorComponent implements OnInit {
 

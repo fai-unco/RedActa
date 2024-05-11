@@ -8,7 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NbMomentDateModule } from '@nebular/moment';
 import { SharedModule } from '../shared/shared.module';
 import { DocumentContentModule } from './document-content/document-content.module';
-import { DocumentStampsModule } from './document-signatures/document-signatures.module';
+import { DocumentStampsModule } from './document-stamps/document-stamps.module';
 import { DocumentSharedAccessModule } from './document-shared-access/document-shared-access.module';
 
 

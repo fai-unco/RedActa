@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NbDialogService, NbMenuService } from '@nebular/theme';
 import { ApiConnectionService } from '../../api-connection.service';
-import { StampSelectorComponent } from './signature-selector/signature-selector.component';
+import { StampSelectorComponent } from './stamp-selector/stamp-selector.component';
 import { ActivatedRoute } from '@angular/router';
 import { DocumentService } from '../../shared/document.service';
 import { Subscription, filter, finalize } from 'rxjs';
@@ -9,9 +9,9 @@ import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-document-signatures',
-  templateUrl: './document-signatures.component.html',
-  styleUrls: ['./document-signatures.component.scss']
+  selector: 'app-document-stamps',
+  templateUrl: './document-stamps.component.html',
+  styleUrls: ['./document-stamps.component.scss']
 })
 export class DocumentStampsComponent implements OnInit {
 

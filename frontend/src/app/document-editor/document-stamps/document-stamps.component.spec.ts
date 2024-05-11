@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DocumentStampsComponent } from './document-signatures.component';
+import { DocumentStampsComponent } from './document-stamps.component';
 
 describe('DocumentStampsComponent', () => {
   let component: DocumentStampsComponent;

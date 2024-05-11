@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SignatureSelectorComponent } from './signature-selector.component';
+import { StampSelectorComponent } from './stamp-selector.component';
 
-describe('SignatureSelectorComponent', () => {
-  let component: SignatureSelectorComponent;
-  let fixture: ComponentFixture<SignatureSelectorComponent>;
+describe('StampSelectorComponent', () => {
+  let component: StampSelectorComponent;
+  let fixture: ComponentFixture<StampSelectorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SignatureSelectorComponent ]
+      declarations: [ StampSelectorComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SignatureSelectorComponent);
+    fixture = TestBed.createComponent(StampSelectorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
