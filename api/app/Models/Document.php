@@ -23,7 +23,8 @@ class Document extends Model
         'true_copy_stamp_id', 
         'heading_id',
         'has_anexo_unico',
-        'visibility_level_id'
+        'visibility_level_id', 
+        'stamps'
     ];
     
     public function documentCopy(){
