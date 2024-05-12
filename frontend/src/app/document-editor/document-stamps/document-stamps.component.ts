@@ -70,8 +70,6 @@ export class DocumentStampsComponent implements OnInit {
           this.viewState = 'error';
         }
       })
-    } else {
-      this.addStamp('');
     }
   }
 
@@ -127,20 +125,25 @@ export class DocumentStampsComponent implements OnInit {
             this.actionResult = '';
           }, 6000);
         },
-        error: _ => {
-          this.errorHandler.handle();
+        error: e => {
+          this.errorHandler.handle(e);
         }
       })
   }
 
   submit() {
+    this.viewState = 'loading';
     this.connectionService.patch('documents', this.documentId, this.form.value)
-      .subscribe({
+    .pipe(finalize(() => this.viewState = 'rendering'))  
+    .subscribe({
         next: _ => {
           this.actionResult = 'Guardado!';
           setTimeout(() => {
             this.actionResult = '';
           }, 6000);
+        },
+        error: e => {
+          this.errorHandler.handle(e)
         }
       })
   }
