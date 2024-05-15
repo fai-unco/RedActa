@@ -1,0 +1,25 @@
+<nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+  </nb-card>
+  <nb-card *ngIf="viewState == 'rendering'">
+    <nb-card-header>Seleccionar {{itemName}}</nb-card-header>
+    <nb-card-body>
+        <ng-container *ngIf="autocomplete">
+            <input [ngModel]="value"
+            (ngModelChange)="onUsernameChange($event)" nbInput [placeholder]="'Ingresar ' + itemName "  [nbAutocomplete]="autoControl" />
+            <nb-autocomplete #autoControl>
+            <nb-option *ngFor="let item of filteredItems | async" [value]="item[filterBy]" (click)="selectItem(item)"> 
+                {{ item[filterBy] }}
+            </nb-option>
+            </nb-autocomplete>
+            <div class="pt-4">Ha seleccionado: <b>{{item ? item[filterBy] : 'sin seleccionar'}}</b></div>
+        </ng-container>
+        <nb-select *ngIf="!autocomplete" fullWidth [placeholder]="'Seleccionar ' + itemName ">
+            <nb-option *ngFor="let item of items" [value]="item.id" (click)="selectItem(item)">{{item[filterBy]}}</nb-option>
+        </nb-select>
+    </nb-card-body>
+    <nb-card-footer>
+        <button nbButton status="primary" (click)="submit()" class="mr-4">Aceptar</button>
+        <button nbButton (click)="cancel()">Cancelar</button>
+    </nb-card-footer>
+</nb-card>
