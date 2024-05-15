@@ -52,11 +52,14 @@ class DocumentController extends Controller
     {
         $data = $this->validateRequest($request, 'post');
         try {
-            if(!isset($data['true_copy_stamp_id'])){
+            if (!isset($data['true_copy_stamp_id'])) {
                 $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
                 if (isset($issuerSettings->suggestedTrueCopyStamp)) {
                     $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
                 }
+            }
+            if (isset($data['stamps'])) {
+                $data['stamps'] = json_encode( $data['stamps']);
             }
             $data['redacta_user_id'] = $request->user()->id;
             $document = new Document();
@@ -65,6 +68,11 @@ class DocumentController extends Controller
             $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
             $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
+            if ($document->stamps) {
+                $document->stamps = json_decode($document->stamps);
+            } else {
+                $document->stamps = [];
+            }
             return response()->json([
                 'status' => 201,
                 'message' => 'OK',
@@ -112,6 +120,11 @@ class DocumentController extends Controller
                 $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
                 $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
                 $document->body = json_decode($document->body);
+                if ($document->stamps) {
+                    $document->stamps = json_decode($document->stamps);
+                } else {
+                    $document->stamps = [];
+                }
                 return response()->json([
                     'status' => 200,
                     'message' => $loggedInUserId,
@@ -148,7 +161,7 @@ class DocumentController extends Controller
     public function update(Request $request, $id)
     {
         $data = $this->validateRequest($request, 'patch');
-        //try {
+        try {
             $document = Document::find($id);
             if (!$document || !$this->userHasAccessToDocument($request->user()->id, $document)) {
                 return response()->json([
@@ -159,21 +172,29 @@ class DocumentController extends Controller
             if (isset($data['body'] )) {
                 $data['body'] = json_encode($data['body']);
             }
+            if (isset($data['stamps'])) {
+                $data['stamps'] = json_encode( $data['stamps']);
+            }
             $document->update($data);
             $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
             $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
             $document->body = json_decode($document->body);
+            if ($document->stamps) {
+                $document->stamps = json_decode($document->stamps);
+            } else {
+                $document->stamps = [];
+            }
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
                 'data' => $document           
             ]);
-        /*} catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }*/
+        }
     }
 
     /**
@@ -223,7 +244,7 @@ class DocumentController extends Controller
     }
 
     public function search(Request $request){
-        //try {
+        try {
             $params = [
                 'keywords',
                 'document_type_id',
@@ -277,12 +298,12 @@ class DocumentController extends Controller
                 ]);
             }
             return $output; 
-        /*} catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }*/
+        }
     }
 
     private function validateRequest($request , $method) {
@@ -302,6 +323,7 @@ class DocumentController extends Controller
             'visibility_level_id' => 'sometimes|numeric',
             'heading_id' => 'sometimes|numeric',
             'operative_section_beginning_id' => 'sometimes|numeric|nullable',
+            'stamps' => 'sometimes|array',
         ];
         $rules = $method == 'post' ? $requiredRules + $sometimesRules : $sometimesRules;
         $validator = Validator::make($request->all(), $rules, [
@@ -322,7 +344,7 @@ class DocumentController extends Controller
                 'heading_id' => '"Membrete"',
                 'operative_section_beginning_id' => '"Inicio de sección operativa"',
                 'true_copy_stamp_id' => '"Firmante de copia fiel"',
-                'visibility_level_id' => '"Nivel de visibilidad del documento"'
+                'visibility_level_id' => '"Nivel de visibilidad del documento"',
             ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();

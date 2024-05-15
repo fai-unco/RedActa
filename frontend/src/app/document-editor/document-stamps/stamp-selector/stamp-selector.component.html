@@ -1,0 +1,15 @@
+<nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+  </nb-card>
+<nb-card class="h-100" *ngIf="viewState == 'rendering'">
+    <nb-card-header>Agregar sello</nb-card-header>
+    <nb-card-body>
+        <nb-select fullWidth placeholder="Seleccionar sello" [(ngModel)]="selectedStampIndex">
+            <nb-option *ngFor="let stamp of stamps; let i = index" [value]="i">{{stamp.description}}</nb-option>
+        </nb-select>
+    </nb-card-body>
+    <nb-card-footer>
+        <button nbButton status="primary" (click)="close(true)" class="mr-4">Guardar</button>
+        <button nbButton (click)="close()">Cancelar</button>
+    </nb-card-footer>
+</nb-card>

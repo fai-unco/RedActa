@@ -2,9 +2,9 @@
     <nb-tab tabTitle="Contenido">
         <app-document-content></app-document-content>
     </nb-tab>
-    <nb-tab tabTitle="Firmas" *ngIf="documentId" class="signatures-tab">
+    <nb-tab tabTitle="Sellos" *ngIf="documentId" class="stamps-tab">
         <ng-template nbTabContent>
-            <app-document-signatures></app-document-signatures>
+            <app-document-stamps></app-document-stamps>
         </ng-template>
     </nb-tab>
     <nb-tab tabTitle="Acceso compartido" *ngIf="documentId" class="signatures-tab">

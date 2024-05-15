@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SignatureSelectorComponent } from './signature-selector/signature-selector.component';
-import { DocumentSignaturesComponent } from './document-signatures.component';
+import { StampSelectorComponent } from './stamp-selector/stamp-selector.component';
+import { DocumentStampsComponent } from './document-stamps.component';
 import { NbButtonModule, NbCardModule, NbContextMenuModule, NbDialogModule, NbIconModule, NbInputModule, NbListModule, NbSelectModule, NbSpinnerModule, NbTooltipModule } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
@@ -10,8 +10,8 @@ import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
-    DocumentSignaturesComponent,
-    SignatureSelectorComponent
+    DocumentStampsComponent,
+    StampSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +30,7 @@ import { SharedModule } from '../../shared/shared.module';
     NbContextMenuModule,
   ],
   exports: [
-    DocumentSignaturesComponent
+    DocumentStampsComponent
   ]
 })
-export class DocumentSignaturesModule { }
+export class DocumentStampsModule { }
