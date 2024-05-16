@@ -7,15 +7,12 @@ import { NbInputModule, NbCardModule, NbButtonModule, NbActionsModule, NbUserMod
 import { DocumentEditorRoutingModule } from '../../document-editor/document-editor-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { AnexoComponent } from './anexo/anexo.component';
-import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
-
 
 
 @NgModule({
   declarations: [
     DocumentContentComponent,
-    AnexoComponent,
-    InitSettingsDialogComponent
+    AnexoComponent
   ],
   imports: [
     CommonModule,
