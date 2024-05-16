@@ -8,11 +8,11 @@
             <input [ngModel]="value"
             (ngModelChange)="onUsernameChange($event)" nbInput [placeholder]="'Ingresar ' + itemName "  [nbAutocomplete]="autoControl" />
             <nb-autocomplete #autoControl>
-            <nb-option *ngFor="let item of filteredItems | async" [value]="item[filterBy]" (click)="selectItem(item)"> 
-                {{ item[filterBy] }}
-            </nb-option>
+                <nb-option *ngFor="let item of filteredItems | async" [value]="item[filterBy]" (click)="selectItem(item)"> 
+                    {{ item[filterBy] }}
+                </nb-option>
             </nb-autocomplete>
-            <div class="pt-4">Ha seleccionado: <b>{{item ? item[filterBy] : 'sin seleccionar'}}</b></div>
+            <div class="pt-4">Ha seleccionado: <b>{{item ? item[filterBy] : ''}}</b></div>
         </ng-container>
         <nb-select *ngIf="!autocomplete" fullWidth [placeholder]="'Seleccionar ' + itemName ">
             <nb-option *ngFor="let item of items" [value]="item.id" (click)="selectItem(item)">{{item[filterBy]}}</nb-option>

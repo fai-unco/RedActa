@@ -1,22 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 import { ApiConnectionService } from 'src/app/api-connection.service';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
+import { throws } from 'assert';
 
 @Component({
   selector: 'app-item-selector',
   templateUrl: './item-selector.component.html',
   styleUrls: ['./item-selector.component.scss']
 })
-export class ItemSelectorComponent implements OnInit {
+export class ItemSelectorComponent implements OnInit, OnDestroy {
 
-  /*users: any [] = [];
-  form!: FormGroup;
-  documentId: any;
-  viewState = 'loading';
-  filteredUsers!: Observable<any[]>;
-  username: string = '';*/
   @Input('items') items!: any [];
   @Input('filterBy') filterBy: any= '';
   filteredItems!: Observable<any[]>;
@@ -26,6 +21,7 @@ export class ItemSelectorComponent implements OnInit {
   item!: any;
   value: string = '';
   viewState = 'rendering';
+  @Input('allowUndefined') allowUndefined: boolean = false;
   
   constructor(protected dialogRef: NbDialogRef<ItemSelectorComponent>,
               protected connectionService: ApiConnectionService,
@@ -39,6 +35,9 @@ export class ItemSelectorComponent implements OnInit {
         .subscribe({
           next: (res: any) => {
             this.items = res.data;
+            if (this.allowUndefined) {
+              this.items.splice(0, 0, {id: null, [this.filterBy]: 'Sin definir'});
+            }
             this.viewState = 'rendering';
           },
           error: e => {
@@ -46,6 +45,14 @@ export class ItemSelectorComponent implements OnInit {
             this.dialogRef.close();
           }
         });
+    } else if (this.allowUndefined) {
+      this.items.splice(0, 0, {id: null, [this.filterBy]: 'Sin definir'});
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.allowUndefined) {
+      this.items.splice(0, 1);
     }
   }
 
@@ -64,7 +71,6 @@ export class ItemSelectorComponent implements OnInit {
 
   submit() {
     this.dialogRef.close(this.item);
-    //this.dialogRef.close(this.items.findIndex(item => item.id == this.item.id));
   }
 
   cancel() {
