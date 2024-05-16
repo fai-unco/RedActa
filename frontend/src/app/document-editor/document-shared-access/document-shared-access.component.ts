@@ -2,10 +2,9 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { ApiConnectionService } from '../../api-connection.service';
 import { ActivatedRoute } from '@angular/router';
-import { DocumentService } from '../../shared/document.service';
 import { finalize, forkJoin } from 'rxjs';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
-import { UserSelectorComponent } from './user-selector/user-selector.component';
+import { ItemSelectorComponent } from 'src/app/shared/item-selector/item-selector.component';
 
 @Component({
   selector: 'app-document-shared-access',
@@ -25,15 +24,13 @@ export class DocumentSharedAccessComponent implements OnInit {
   documentSharedAccesses: any;
   visibilityLevels: any;
   documentVisibilityLevelId!: number;
-  shareLink: string = 'https://redacta.fi.uncoma.edu.ar/documentos/editar?id='
-
+  shareLink: string = 'https://redacta.fi.uncoma.edu.ar/documentos/editar?id=';
+  users: any [] = [];
 
   constructor(private dialogService: NbDialogService,
               private connectionService: ApiConnectionService,
               private route: ActivatedRoute,
-              private documentService: DocumentService,
               private errorHandler: ErrorHandlerService) { }
-
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {this.documentId = params['id']});
@@ -42,7 +39,8 @@ export class DocumentSharedAccessComponent implements OnInit {
       let requests = [
         this.connectionService.get('documents_shared_accesses?document_id=' + this.documentId),
         this.connectionService.get('documents', this.documentId),
-        this.connectionService.get('visibility_levels')
+        this.connectionService.get('visibility_levels'),
+        this.connectionService.get('redacta_users')
       ];
       forkJoin(requests).subscribe({
         next: (res: any) => {
@@ -51,8 +49,9 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.visibilityLevels = res[2].data;
           this.viewState = 'rendering';
           this.shareLink = this.shareLink + this.documentId;
+          this.users = res[3].data.map((user: any) => {return {id: user.id, name: user.name + ' ' + user.lastName}});
         },
-        error: e => {
+        error: _ => {
           this.viewState = 'error';
         }
       });
@@ -60,11 +59,20 @@ export class DocumentSharedAccessComponent implements OnInit {
   }
 
   addDocumentSharedAccess() {
-    this.dialogService.open(UserSelectorComponent, {context: {documentId: this.documentId}}).onClose.subscribe(status => {
-      if(status){
-        this.getDocumentSharedAccesss();
+    this.dialogService.open(ItemSelectorComponent, {context: {items: this.users, itemName: 'usuario', filterBy: 'name', autocomplete: true}}).onClose.subscribe(user => {
+      if (user != null) {
+        this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, redactaUserId: user.id})
+        .pipe(finalize(() => {this.viewState = 'rendering'}))
+          .subscribe({
+            next: _ => {
+              this.getDocumentSharedAccesss();
+            },
+            error: e => {
+              this.errorHandler.handle(e);
+            }
+          })
       }
-    });
+    })
   }
 
   removeDocumentSharedAccess(documentSharedAccessId: any) {
@@ -86,7 +94,7 @@ export class DocumentSharedAccessComponent implements OnInit {
         this.documentSharedAccesses = res.data;
         this.viewState = 'rendering';
       },
-      error: e => {
+      error: _ => {
         this.viewState = 'error';
       }
     });
@@ -113,5 +121,4 @@ export class DocumentSharedAccessComponent implements OnInit {
   copyShareLink() {
     navigator.clipboard.writeText(this.shareLink);
   }
-
 }
