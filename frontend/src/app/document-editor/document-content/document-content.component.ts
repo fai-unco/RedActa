@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbMenuService} from '@nebular/theme';
 import { DatePipe } from '@angular/common';
 import { ApiConnectionService } from '../../api-connection.service';
-import { Subscription, filter, finalize, forkJoin, map } from 'rxjs';
-import { InitSettingsDialogComponent } from './init-settings-dialog/init-settings-dialog.component';
+import { Observable, Subscription, filter, finalize, forkJoin, map, of } from 'rxjs';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
+import { ItemSelectorComponent } from 'src/app/shared/item-selector/item-selector.component';
 
 @Component({
   selector: 'app-document-content',
@@ -16,42 +16,40 @@ import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.
 })
 
 export class DocumentContentComponent implements OnInit {
-  issuer: any;
   documentType: any;
-  form!: FormGroup; 
-  operativeSectionBeginnings: any;
-  headings: any;
+  form!: FormGroup;
+  operativeSectionBeginnings: any = [];
+  headings: any = [];
   nameOnFocus: boolean = false;
   submitting: boolean = false;
   documentId: any;
   actionResult!: string;
   state = '';
   anexosData: any[] = [];
-  anexosToBeRemoved: any = [];   
+  anexosToBeRemoved: any[] = [];
+  issuers: any[] = [];
+  issuerName: string = 'Sin definir';
   exportOptionsMenuSubscription!: Subscription;
   articleMenuSubscriptions: Subscription[] = [];
   anexosMenuSubscriptions: Subscription[] = [];
   @ViewChild('removeItemDialog', { read: TemplateRef }) removeItemDialog!:TemplateRef<any>;
   issuerSettings: any;
   @ViewChild('scrollable') scrollable!: ElementRef;
-
-  
+  filteredIssuers!: Observable<any[]>;
   exportOptions = [
-    { title: 'Exportar original' }, 
+    { title: 'Exportar original' },
     { title: 'Exportar copia fiel' }
   ];
-  
   articleActions = [
-    { title: 'Agregar 1 arriba' }, 
+    { title: 'Agregar 1 arriba' },
     { title: 'Agregar 1 abajo' },
     { title: 'Insertar últ. artículo predef.'},
     { title: 'Eliminar' }
   ];
-
   hints: {[index: string]: any} = {
-    Visto: 'No incluir "Visto" al inicio, se añade en forma automática al exportar el documento',
+    Visto: 'No incluir "Visto" al inicio, se añade en forma automática al exportar el documento'
   }
-  
+
   constructor(private fb: FormBuilder, 
               private dialogService: NbDialogService, 
               private route: ActivatedRoute,
@@ -68,62 +66,62 @@ export class DocumentContentComponent implements OnInit {
         filter(({ tag }) => tag === 'document-content-export-menu'),
       )
       .subscribe((event) => {
-        if(event.item.title === 'Exportar original'){
+        if (event.item.title === 'Exportar original') {
           this.export()
-        } else if(event.item.title === 'Exportar copia fiel'){
+        } else if (event.item.title === 'Exportar copia fiel') {
           this.export(true);
         }
       });
     this.route.queryParams.subscribe(params => {this.documentId = params['id']});
-    if (!this.documentId) {
-      this.dialogService.open(InitSettingsDialogComponent).onClose.subscribe(data => {
-        if(data){
-          this.state = 'loading'
-          this.initialize(data);
+    this.connectionService.get('document_types').subscribe({
+      next: (documentTypesRes: any) => {
+        if (!this.documentId) {
+          this.dialogService.open(ItemSelectorComponent, {context: {items: documentTypesRes.data, itemName: 'tipo de documento', filterBy: 'description'}})
+          .onClose.subscribe(documentType => {
+            if (documentType != null) {
+              this.state = 'loading',
+              this.documentType = documentType;
+              this.initialize();
+            } else {
+              this.router.navigateByUrl('/');
+            }
+          })
         } else {
-          this.router.navigateByUrl('/');
+          this.state = 'loading';
+          this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
+            next: (documentRes: any) => {
+              let documentTypeIndex = documentTypesRes.data.findIndex((documentType: any) => documentType.id == documentRes.data.documentTypeId);
+              this.documentType = documentTypesRes.data[documentTypeIndex];
+              this.initialize(documentRes.data)
+            },
+            error: e => {
+              this.errorHandler.handle(e, '/');
+              this.state = '';
+            }
+          }); 
         }
-      });
-    } else {
-      this.state = 'loading';
-      this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
-        next: (res: any) => this.initialize(res.data), 
-        error: e => {
-          this.errorHandler.handle(e, '/');
-          this.state = '';
-        }
-      });
-    }
+      },
+      error: e => {
+        this.errorHandler.handle(e, '/');
+      }
+    });
   }
 
   ngOnDestroy(): void {
     if(this.exportOptionsMenuSubscription){
       this.exportOptionsMenuSubscription.unsubscribe();
     }
+    this.articleMenuSubscriptions.forEach(sub => sub.unsubscribe());
+    this.anexosMenuSubscriptions.forEach(sub => sub.unsubscribe())
   }
 
-  private initialize(data?: any){
+  private initialize(data: any = {}) {
     let requests = [
-      this.connectionService.get('document_types', data.documentTypeId), 
-      this.connectionService.get('issuers', data.issuerId),
-      this.connectionService.get('headings?issuer_id=' + data.issuerId),
-      this.connectionService.get('operative_section_beginnings?issuer_id=' + data.issuerId),
-      this.connectionService.get('issuers_settings?issuer_id=' + data.issuerId),
-      this.connectionService.get('headings', data.headingId)
-
+      this.connectionService.get('issuers')
     ];
-    
     forkJoin(requests).subscribe({
       next: (res: any) => {
-        this.documentType = res[0].data;
-        this.issuer = res[1].data;
-        this.headings = res[2].data;
-        this.operativeSectionBeginnings = res[3].data;
-        this.issuerSettings = res[4].data;
-        let index = this.headings.findIndex((item: any) => item.id === res[5].data.id);
-        if (index === -1) {
-          this.headings.push(res[5].data);
-        } 
+        this.issuers = res[0].data;
         this.form = this.fb.group({
           name: ['Nuevo documento'],
           documentTypeId: ['', Validators.required],
@@ -137,23 +135,21 @@ export class DocumentContentComponent implements OnInit {
           operativeSectionBeginningId: ['', Validators.required],    
           body: this.fb.group({})
         });
-        if(!this.documentId){
-          this.form.get('headingId')?.setValue(this.issuerSettings.suggestedHeadingId);
-          this.form.get('operativeSectionBeginningId')?.setValue(this.issuerSettings.suggestedOperativeSectionBeginningId);
-        }
-        if([1, 2, 3].includes(data.documentTypeId)){ //si el documento es una resolución, disposición o declaración
+        if([1, 2, 3].includes(this.documentType.id)){ 
+          //si el documento es una resolución, disposición o declaración
           this.body.addControl('visto', this.fb.control(''));
           this.body.addControl('considerando', this.fb.array(this.documentId ? [] : ['']));
           this.body.addControl('articulos', this.fb.array([]));
           if (!this.documentId) {
             this.addArticulo('', 0);
           }
-        } else if([4, 5, 6].includes(data.documentTypeId)){ //si el documento es un acta, memo o nota 
-          if(data.documentTypeId == '6'){
-            this.body.addControl('startingPhrase', this.fb.control(this.issuerSettings.suggestedStartingPhrase));
-            this.body.addControl('partingPhrase', this.fb.control(this.issuerSettings.suggestedPartingPhrase));
-          }
+        } else if([4, 5, 6].includes(this.documentType.id)){ 
+          //si el documento es un acta, memo o nota 
           this.body.addControl('cuerpo', this.fb.control(''));
+          if (this.documentType.id == 6) {
+            this.body.addControl('startingPhrase', this.fb.control(''));
+            this.body.addControl('partingPhrase', this.fb.control(''));
+          }
         } 
         for(let [key, value] of Object.entries(data)) {
           switch(key){
@@ -176,13 +172,15 @@ export class DocumentContentComponent implements OnInit {
               }
               break;
             case 'anexos':
-              for(let anexo of data.anexos){
-                this.addAnexo(anexo.id, anexo.index, anexo.title, anexo.subtitle, anexo.content, anexo.file);
-              }
+              data.anexos.forEach((anexo: any) => this.addAnexo(anexo.id, anexo.index, anexo.title, anexo.subtitle, anexo.content, anexo.file));
               break;
             default:
               this.form.get(key)?.setValue(value);
           }
+        }
+        if (data.issuerId) {
+          let index = this.issuers.findIndex(issuer => issuer.id == data.issuerId);
+          this.setIssuer(this.issuers[index], data);
         }
         this.state = 'showForm';
       },
@@ -209,20 +207,44 @@ export class DocumentContentComponent implements OnInit {
     return this.form.get('headingId') as FormControl;
   }
 
-  nameOnInput(value: string){
-    this.form.get('name')?.setValue(value);
+  changeIssuer() {
+    this.dialogService.open(ItemSelectorComponent, {context: {items: this.issuers, itemName: 'emisor', filterBy: 'description', autocomplete: true}})
+      .onClose.subscribe(issuer => {
+        if (issuer != null) {
+          this.setIssuer(issuer);
+        }
+      })
   }
 
-  nameOnBlur(){
-    if(!this.form.get('name')?.value){
-      this.form.get('name')?.setValue('Nuevo documento');
-    }
-    this.nameOnFocus = false;
-  }
-
-  adReferendumOnChange(){
-    let adReferendum = this.form.get('adReferendum')?.value;
-    this.form.get('adReferendum')?.setValue(!adReferendum);  
+  setIssuer(issuer: any, document: any = null) {
+    this.state = 'loading';
+    let requests = [
+      this.connectionService.get('headings?issuer_id=' + issuer.id),
+      this.connectionService.get('operative_section_beginnings?issuer_id=' + issuer.id),
+      this.connectionService.get('issuers_settings?issuer_id=' + issuer.id)
+    ];    
+    forkJoin(requests)
+      .pipe(finalize(() => this.state = 'showForm'))
+      .subscribe({
+        next: (res: any) => {
+          this.headings = res[0].data;
+          this.operativeSectionBeginnings = res[1].data;
+          this.issuerName = issuer.description;
+          this.issuerSettings = res[2].data;
+          setTimeout(() => {
+            this.form.get('issuerId')?.setValue(document && document.issuerId ? document.issuerId : issuer.id);
+            this.form.get('headingId')?.setValue(document && document.headingId ? document.headingId : res[2].data.suggestedHeadingId);
+            this.form.get('operativeSectionBeginningId')?.setValue(document && document.operativeSectionBeginningId ? document.operativeSectionBeginningId : res[2].data.suggestedOperativeSectionBeginningId);
+            if (this.documentType.id == 6) {
+              this.body.get('startingPhrase')?.setValue(document.body ? document.body.startingPhrase : res[2].data.suggestedStartingPhrase);
+              this.body.get('partingPhrase')?.setValue(document.body ? document.body.partingPhrase : res[2].data.suggestedPartingPhrase);
+            }
+          });
+        },
+        error: e => {
+          this.errorHandler.handle(e);
+        }
+    })
   }
 
   hasAnexoUnicoOnChange(){
@@ -240,10 +262,10 @@ export class DocumentContentComponent implements OnInit {
       position = articlesLength;
     }  
     let subscription = this.nbMenuService.onItemClick().pipe(
-        filter (({ tag }) => tag =='article-menu-' + articlesLength),
-      ).subscribe ((event: any) => {
+        filter(({ tag }) => tag =='article-menu-' + articlesLength),
+      ).subscribe((event: any) => {
         let action = event.item.title;
-        if (action == 'Eliminar'){
+        if (action == 'Eliminar') {
           this.removeArticulo(articlesLength);
         } else if (action == 'Agregar 1 arriba') {
           this.addArticulo ('', articlesLength);
@@ -352,7 +374,7 @@ export class DocumentContentComponent implements OnInit {
     }
     for (let item of this.anexosData) {
       item.form.get('documentId')?.setValue(this.documentId);
-      if(item.form.get('id')?.value == ''){
+      if (item.form.get('id')?.value == '') {
         requests.push(this.connectionService.post('anexos', item.form.value));
       } else {
         requests.push(this.connectionService.patch('anexos', item.form.get('id')?.value, item.form.value));

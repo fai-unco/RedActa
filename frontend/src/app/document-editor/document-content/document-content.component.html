@@ -2,8 +2,8 @@
     <nb-card class="h-100" *ngIf="state == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
         <nb-card-body></nb-card-body>
     </nb-card>
-    <div *ngIf="state == 'showForm'">
-                <form *ngIf="state == 'showForm'" [formGroup]="form">
+    <div *ngIf="form || state == 'showForm'" [hidden]="state != 'showForm'">
+                <form [formGroup]="form">
                     <div class="flex-container">
                         <div class="d-flex justify-content-end pb-2">
                             <div *ngIf="documentType.id" class="d-flex align-items-center text-align-center">
@@ -49,7 +49,18 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="label col-form-label">Dependencia emisora</label>
-                                            <p><strong>{{issuer.description}}</strong></p>
+                                            <div class="d-flex">
+                                                <p class="mb-0 mr-4"><strong>{{issuerName}}</strong></p>
+                                                <button nbButton class="p" size="tiny" status="primary" (click)="changeIssuer()">Cambiar</button>
+                                            </div>
+                                        
+
+                                            <!--input fullWidth [ngModel]="issuerName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onIssuerNameChange($event)" nbInput placeholder="Ingresar emisor"  [nbAutocomplete]="autoControl" />
+                                            <nb-autocomplete #autoControl>
+                                                <nb-option *ngFor="let issuer of filteredIssuers | async" [value]="issuer.description" (click)="setIssuer(issuer)"> 
+                                                    {{ issuer.description }} 
+                                                </nb-option>
+                                            </nb-autocomplete-->
                                         </div>
                                     </nb-card-body>
                             </nb-card>
