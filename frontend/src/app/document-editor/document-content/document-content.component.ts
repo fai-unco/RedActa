@@ -181,8 +181,9 @@ export class DocumentContentComponent implements OnInit {
         if (data.issuerId) {
           let index = this.issuers.findIndex(issuer => issuer.id == data.issuerId);
           this.setIssuer(this.issuers[index], data);
+        } else {
+          this.state = 'showForm';
         }
-        this.state = 'showForm';
       },
       error: e => {
         this.state = '';
@@ -208,7 +209,7 @@ export class DocumentContentComponent implements OnInit {
   }
 
   changeIssuer() {
-    this.dialogService.open(ItemSelectorComponent, {context: {items: this.issuers, itemName: 'emisor', filterBy: 'description', autocomplete: true}})
+    this.dialogService.open(ItemSelectorComponent, {context: {items: this.issuers, itemName: 'emisor', filterBy: 'description', autocomplete: true, allowUndefined: true}})
       .onClose.subscribe(issuer => {
         if (issuer != null) {
           this.setIssuer(issuer);
@@ -217,34 +218,48 @@ export class DocumentContentComponent implements OnInit {
   }
 
   setIssuer(issuer: any, document: any = null) {
-    this.state = 'loading';
-    let requests = [
-      this.connectionService.get('headings?issuer_id=' + issuer.id),
-      this.connectionService.get('operative_section_beginnings?issuer_id=' + issuer.id),
-      this.connectionService.get('issuers_settings?issuer_id=' + issuer.id)
-    ];    
-    forkJoin(requests)
-      .pipe(finalize(() => this.state = 'showForm'))
-      .subscribe({
-        next: (res: any) => {
-          this.headings = res[0].data;
-          this.operativeSectionBeginnings = res[1].data;
-          this.issuerName = issuer.description;
-          this.issuerSettings = res[2].data;
-          setTimeout(() => {
-            this.form.get('issuerId')?.setValue(document && document.issuerId ? document.issuerId : issuer.id);
-            this.form.get('headingId')?.setValue(document && document.headingId ? document.headingId : res[2].data.suggestedHeadingId);
-            this.form.get('operativeSectionBeginningId')?.setValue(document && document.operativeSectionBeginningId ? document.operativeSectionBeginningId : res[2].data.suggestedOperativeSectionBeginningId);
-            if (this.documentType.id == 6) {
-              this.body.get('startingPhrase')?.setValue(document.body ? document.body.startingPhrase : res[2].data.suggestedStartingPhrase);
-              this.body.get('partingPhrase')?.setValue(document.body ? document.body.partingPhrase : res[2].data.suggestedPartingPhrase);
-            }
-          });
-        },
-        error: e => {
-          this.errorHandler.handle(e);
-        }
-    })
+    if (issuer.id) {
+      this.state = 'loading';
+      let requests = [
+        this.connectionService.get('headings?issuer_id=' + issuer.id),
+        this.connectionService.get('operative_section_beginnings?issuer_id=' + issuer.id),
+        this.connectionService.get('issuers_settings?issuer_id=' + issuer.id)
+      ];    
+      forkJoin(requests)
+        .pipe(finalize(() => this.state = 'showForm'))
+        .subscribe({
+          next: (res: any) => {
+            this.headings = res[0].data;
+            this.operativeSectionBeginnings = res[1].data;
+            this.issuerName = issuer.description;
+            this.issuerSettings = res[2].data;
+            setTimeout(() => {
+              this.form.get('issuerId')?.setValue(document && document.issuerId ? document.issuerId : issuer.id);
+              this.form.get('headingId')?.setValue(document && document.headingId ? document.headingId : res[2].data.suggestedHeadingId);
+              this.form.get('operativeSectionBeginningId')?.setValue(document && document.operativeSectionBeginningId ? document.operativeSectionBeginningId : res[2].data.suggestedOperativeSectionBeginningId);
+              if (this.documentType.id == 6) {
+                this.body.get('startingPhrase')?.setValue(document && document.body ? document.body.startingPhrase : res[2].data.suggestedStartingPhrase);
+                this.body.get('partingPhrase')?.setValue(document && document.body ? document.body.partingPhrase : res[2].data.suggestedPartingPhrase);
+              }
+            });
+          },
+          error: e => {
+            this.errorHandler.handle(e);
+          }
+      })
+    } else {
+      this.headings = [];
+      this.operativeSectionBeginnings = [];
+      this.issuerName = 'Sin definir';
+      this.issuerSettings = [];
+      this.form.get('issuerId')?.setValue('');
+      this.form.get('headingId')?.setValue('');
+      this.form.get('operativeSectionBeginningId')?.setValue('');
+      if (this.documentType.id == 6) {
+        this.body.get('startingPhrase')?.setValue('');
+        this.body.get('partingPhrase')?.setValue('');
+      }
+    }
   }
 
   hasAnexoUnicoOnChange(){
