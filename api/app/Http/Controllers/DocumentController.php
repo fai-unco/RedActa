@@ -228,6 +228,46 @@ class DocumentController extends Controller
         }
     }
 
+     /**
+     * Sets the visibility level of a given document.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function setVisibilityLevel(Request $request, $id) {
+        try {
+            $document = Document::find($id);
+            if (!$document) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Recurso inexistente'        
+                ], 404);
+            }
+            if ($document->redactaUser->id != $request->user()->id) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Solo el propietario del recurso puede realizar la acción'        
+                ], 404);
+            }
+            $validator = Validator::make($request->all(), [
+                'visibility_level_id' => 'required|numeric|exists:visibility_levels,id'
+            ], [
+                'required' => 'El campo "nivel de visibilidad" es requerido',
+                'numeric' => 'El campo "nivel de visibilidad" debe ser un número',
+                'exists' => 'El valor ingresado para "nivel de visibilidad" no es válido'
+            ])->stopOnFirstFailure(true);
+            $validator->validate();
+            $document->visibility_level_id = $request->input('visibility_level_id');
+            $document->save();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
+    }
+
     public function generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd){      
         $html = view($document->documentType->view)->with([
             'document' => $document, 
