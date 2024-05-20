@@ -17,9 +17,11 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->bigInteger('document_id')->unsigned();
-            $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
+            $table->foreign('document_id')->references('id')->on('documents');
             $table->bigInteger('redacta_user_id')->unsigned();
-            $table->foreign('redacta_user_id')->references('id')->on('redacta_users')->onDelete('cascade');
+            $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
+            $table->bigInteger('access_mode_id')->unsigned();
+            $table->foreign('access_mode_id')->references('id')->on('access_modes');
         });
     }
 

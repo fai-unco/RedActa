@@ -14,16 +14,18 @@ class DocumentSharedAccess extends Model
     protected $fillable = [
         'document_id',
         'redacta_user_id', 
+        'access_mode_id'
     ];
 
-    public function document(){
+    public function document() {
         return $this->belongsTo(Document::class);
     }
 
-    public function redactaUser(){
+    public function redactaUser() {
         return $this->belongsTo(RedactaUser::class);
     }
 
-
-
+    public function accessMode() {
+        return $this->belongsTo(AccessMode::class);
+    }
 }

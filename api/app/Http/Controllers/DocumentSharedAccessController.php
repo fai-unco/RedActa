@@ -181,12 +181,14 @@ class DocumentSharedAccessController extends Controller
         $validator = Validator::make($request->all(), [
             'redacta_user_id' => 'required|numeric|exists:redacta_users,id',
             'document_id' => 'required|numeric|exists:documents,id',
+            'access_mode_id' => 'required|numeric|exists:access_modes,id',
         ], [
             'required' => 'El campo :attribute es requerido',
             'numeric' => 'El campo :attribute debe ser numérico',
         ], [
             'redacta_user_id' => '"Usuario"',
-            'document_id' => '"Documento"'
+            'document_id' => '"Documento"',
+            'access_mode_id' => '"Modo de acceso"'
         ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
