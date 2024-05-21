@@ -335,6 +335,7 @@ export class DocumentContentComponent implements OnInit {
         queryParams: null,
       }
     );
+    this.anexosData = [];
     this.actionResult = 'Copiado!';
     setTimeout(() => {
       this.actionResult = '';
