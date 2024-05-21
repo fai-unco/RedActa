@@ -76,6 +76,9 @@ class DocumentSharedAccessController extends Controller
                     'message' => 'La cuenta seleccionada ya tiene actualmente permisos de acceso a este documento'        
                 ], 409);
             }
+            if (!isset($validatedData['access_mode_id'])) {
+                $validatedData['access_mode_id'] = 1;
+            }
             $documentSharedAccess = DocumentSharedAccess::create($validatedData);
             return response()->json([
                 'status' => 201,
@@ -178,10 +181,15 @@ class DocumentSharedAccessController extends Controller
     }
 
     private function validateRequest($request) {
+        if ($request->isMethod('post')) {
+            $firstRule = 'required';
+        } else {
+            $firstRule = 'sometimes';
+        }
         $validator = Validator::make($request->all(), [
-            'redacta_user_id' => 'required|numeric|exists:redacta_users,id',
-            'document_id' => 'required|numeric|exists:documents,id',
-            'access_mode_id' => 'required|numeric|exists:access_modes,id',
+            'redacta_user_id' => $firstRule.'|numeric|exists:redacta_users,id',
+            'document_id' => $firstRule.'|numeric|exists:documents,id',
+            'access_mode_id' => 'sometimes|numeric|exists:access_modes,id',
         ], [
             'required' => 'El campo :attribute es requerido',
             'numeric' => 'El campo :attribute debe ser numérico',
