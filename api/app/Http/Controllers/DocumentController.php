@@ -366,7 +366,6 @@ class DocumentController extends Controller
             'destinatary' => 'sometimes|nullable|string',
             'has_anexo_unico' => 'sometimes|boolean',
             'true_copy_stamp_id' => 'sometimes|numeric|nullable',
-            'visibility_level_id' => 'sometimes|numeric',
             'heading_id' => 'sometimes|numeric',
             'operative_section_beginning_id' => 'sometimes|numeric|nullable',
             'stamps' => 'sometimes|array',
@@ -390,7 +389,6 @@ class DocumentController extends Controller
                 'heading_id' => '"Membrete"',
                 'operative_section_beginning_id' => '"Inicio de sección operativa"',
                 'true_copy_stamp_id' => '"Firmante de copia fiel"',
-                'visibility_level_id' => '"Nivel de visibilidad del documento"',
             ])->stopOnFirstFailure(true);
         $validator->validate();
         return $validator->validated();
