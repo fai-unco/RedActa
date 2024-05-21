@@ -169,6 +169,12 @@ class DocumentController extends Controller
                     'message' => 'Recurso inexistente'        
                 ], 404);
             }
+            if (!$this->userCanEdit($request->user()->id, $document)) {
+                return response()->json([
+                    'status' => 405,
+                    'message' => 'Recurso de solo lectura'        
+                ], 405);
+            }
             if (isset($data['body'] )) {
                 $data['body'] = json_encode($data['body']);
             }
@@ -401,6 +407,23 @@ class DocumentController extends Controller
             }
         }
         return true; 
+    }
+
+    private function userCanEdit($loggedInUserId, $document) {
+        if ($document->redactaUser->id == $loggedInUserId) {
+            return true;
+        } else if (str_ends_with($document->visibilityLevel->name, 'editable')) {
+            return true;
+        } else if ($document->visibilityLevel->name == 'private') {
+            $userDocumentAccess = DocumentSharedAccess::where([
+                ['redacta_user_id', '=', $loggedInUserId],
+                ['document_id', '=', $document->id]
+            ])->get()->first();
+            if ($userDocumentAccess->accessMode->name == 'editable') {
+                return true;
+            } 
+        } 
+        return false; 
     }
     
     public function exportAnexo(Request $request, $id){

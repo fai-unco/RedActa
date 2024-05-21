@@ -57,6 +57,12 @@ class AnexoController extends Controller
                     'message' => 'Documento inválido'        
                 ], 422);
             }
+            if (!$this->userCanEdit($request->user()->id, $document)) {
+                return response()->json([
+                    'status' => 405,
+                    'message' => 'Recurso de solo lectura'        
+                ], 405);
+            }
             $anexo = new Anexo();
             $anexo->set($request->index, $request->title, $request->subtitle, $request->content, $document, $file);
             return response()->json([
@@ -114,9 +120,14 @@ class AnexoController extends Controller
                     'message' => 'Recurso inexistente',       
                 ], 404);  
             }
+            if (!$this->userCanEdit($request->user()->id, $anexo->document)) {
+                return response()->json([
+                    'status' => 405,
+                    'message' => 'Recurso de solo lectura'        
+                ], 405);
+            }
             $file = File::find($request->file_id);
             if (!$file || !$this->userHasAccessToDocument($file->redactaUser->id, $anexo->document)) {
-                //|| ($request->user()->id != $file->redactaUser->id) { 
                 return response()->json([
                     'status' => 422,
                     'message' => 'Archivo inválido',       
@@ -195,6 +206,23 @@ class AnexoController extends Controller
             }
         }
         return true; 
+    }
+
+    private function userCanEdit($loggedInUserId, $document) {
+        if ($document->redactaUser->id == $loggedInUserId) {
+            return true;
+        } else if (str_ends_with($document->visibilityLevel->name, 'editable')) {
+            return true;
+        } else if ($document->visibilityLevel->name == 'private') {
+            $userDocumentAccess = DocumentSharedAccess::where([
+                ['redacta_user_id', '=', $loggedInUserId],
+                ['document_id', '=', $document->id]
+            ])->get()->first();
+            if ($userDocumentAccess->accessMode->name == 'editable') {
+                return true;
+            } 
+        } 
+        return false; 
     }
 
 }
