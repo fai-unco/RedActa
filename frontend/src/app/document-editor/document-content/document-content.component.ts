@@ -124,7 +124,7 @@ export class DocumentContentComponent implements OnInit {
         this.issuers = res[0].data;
         this.form = this.fb.group({
           name: ['Nuevo documento'],
-          documentTypeId: ['', Validators.required],
+          documentTypeId: [this.documentType.id, Validators.required],
           number: ['', Validators.required],
           issuerId: ['', Validators.required],
           issueDate: ['', Validators.required],
