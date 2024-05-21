@@ -102,7 +102,7 @@ export class DocumentSharedAccessComponent implements OnInit {
 
   onVisibilityLevelSelect(id: number) {
     this.viewState = 'loading';
-    this.connectionService.patch('documents', this.documentId, { visibilityLevelId: id })
+    this.connectionService.patch('documents', this.documentId, { visibilityLevelId: id }, 'visibility_level')
       .pipe(finalize(() => this.viewState = 'rendering'))
       .subscribe({
         next: _ => {
