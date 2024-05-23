@@ -16,16 +16,17 @@ export class DocumentSharedAccessComponent implements OnInit {
   //@Input('documentId') 
   documentId: any;
   viewState = '';
-  documentDocumentSharedAccesss: any = [];
   exportOptions = [
     { title: 'Exportar original' }, 
     { title: 'Exportar copia fiel' }
   ];
-  documentSharedAccesses: any;
+  documentSharedAccesses: any [] = [];
   visibilityLevels: any;
   documentVisibilityLevelId!: number;
   shareLink: string = 'https://redacta.fi.uncoma.edu.ar/documentos/editar?id=';
   users: any [] = [];
+  accessModeName: string = 'Sin definir';
+  accessModes: any [] = [];
 
   constructor(private dialogService: NbDialogService,
               private connectionService: ApiConnectionService,
@@ -40,7 +41,8 @@ export class DocumentSharedAccessComponent implements OnInit {
         this.connectionService.get('documents_shared_accesses?document_id=' + this.documentId),
         this.connectionService.get('documents', this.documentId),
         this.connectionService.get('visibility_levels'),
-        this.connectionService.get('redacta_users')
+        this.connectionService.get('redacta_users'),
+        this.connectionService.get('access_modes'),
       ];
       forkJoin(requests).subscribe({
         next: (res: any) => {
@@ -50,6 +52,7 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.viewState = 'rendering';
           this.shareLink = this.shareLink + this.documentId;
           this.users = res[3].data.map((user: any) => {return {id: user.id, name: user.name + ' ' + user.lastName}});
+          this.accessModes = res[4].data;
         },
         error: _ => {
           this.viewState = 'error';
@@ -121,4 +124,31 @@ export class DocumentSharedAccessComponent implements OnInit {
   copyShareLink() {
     navigator.clipboard.writeText(this.shareLink);
   }
+
+  changeAccessMode(sharedAccessId: number) {
+    this.dialogService.open(ItemSelectorComponent, {context: {items: this.accessModes, itemName: 'modo de acceso', filterBy: 'label', autocomplete: false}}).onClose.subscribe(accessMode => {
+      if (accessMode != null) {
+        this.viewState = 'loading';
+        this.connectionService.patch('documents_shared_accesses', sharedAccessId, {accessModeId: accessMode.id})
+        .pipe(finalize(() => {this.viewState = 'rendering'}))
+          .subscribe({
+            next: _ => {
+              let index = this.documentSharedAccesses.findIndex((access: any) => access.id == sharedAccessId);
+              this.documentSharedAccesses[index].accessModeId = accessMode.id;
+            },
+            error: e => {
+              this.errorHandler.handle(e);
+            }
+          })
+      }
+    })
+  }
+
+  getAccessMode(accessModeId: number) {
+    let index = this.accessModes.findIndex((accessMode: any) => accessMode.id == accessModeId);
+    return this.accessModes[index];
+  }
+
+
 }
+

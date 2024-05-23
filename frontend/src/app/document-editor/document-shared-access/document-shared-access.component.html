@@ -42,7 +42,14 @@
                         <nb-list-item *ngFor="let sharedAccess of documentSharedAccesses; let i=index">
                             <div class="w-100 d-flex flex-column">
                                 <div class="w-100 d-flex justify-content-between">
-                                    {{sharedAccess['redactaUser']['name']}} {{sharedAccess['redactaUser']['lastName']}}
+                                    <div class="d-flex flex-column">
+                                        <b>{{sharedAccess['redactaUser']['name']}} {{sharedAccess['redactaUser']['lastName']}}</b>
+                                        <div>
+                                            Modo de acceso: {{getAccessMode(sharedAccess.accessModeId).label}}
+                                            <button nbButton class="ml-2" size="tiny" status="primary" (click)="changeAccessMode(sharedAccess.id)">Cambiar</button>
+                                        </div>
+                                        <!--p>Modo de acceso: <b>Solo lectura</b></p-->
+                                    </div>
                                     <div class="d-flex">
                                         <div class="mr-2" nbTooltip="Eliminar">
                                             <button class="ghost-btn" nbButton ghost>
