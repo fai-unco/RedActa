@@ -144,7 +144,33 @@ class DocumentSharedAccessController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validatedData = $this->validateRequest($request);
+        try {
+            $documentSharedAccess = DocumentSharedAccess::find($id);
+            if (!$documentSharedAccess) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Recurso inexistente'        
+                ], 404);
+            }
+            if ($documentSharedAccess->document->redactaUser->id != $request->user()->id) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'No tiene autorización para realizar esta acción'        
+                ], 404);
+            }
+            $documentSharedAccess->update($validatedData);
+            return response()->json([
+                'status' => 200,
+                'message' => 'OK',
+                'data' => $documentSharedAccess           
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
     }
 
     /**
