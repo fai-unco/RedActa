@@ -16,7 +16,7 @@ use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\DocumentSharedAccessController;
 use App\Http\Controllers\RedactaUserController;
 use App\Http\Controllers\VisibilityLevelController;
-use App\Http\Controllers\AccessMode;
+use App\Http\Controllers\AccessModeController;
 
 
 /*
