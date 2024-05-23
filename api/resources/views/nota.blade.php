@@ -2,6 +2,8 @@
 @php( $months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"] )
 @php( $issueDate = strtotime($document->issue_date) )
 @php( $body = json_decode($document->body) )
+@php( $stamps = json_decode($document->stamps) )
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -57,11 +59,11 @@
 							{!! $body->cuerpo !!}
 						</div>
 						<div class="parting-phrase">{{$body->parting_phrase}}</div>
-						@if(count($document->signatures) >  0)
-							<div class="signatures-container">
-								@foreach($document->signatures as $signature)
+						@if(count($stamps) >  0)
+							<div class="stamps-container">
+								@foreach($stamps as $stamp)
 									<div class="stamp">
-										{!! $signature->stamp->content !!}	
+										{!! $stamp !!}	
 									</div>								
 								@endforeach
 							</div>

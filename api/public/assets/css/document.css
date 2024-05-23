@@ -96,14 +96,17 @@ img {
 
 /* Document body styles*/
 
-.signatures-container {
+.stamps-container {
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;
     justify-content: center;
-    padding-top: 1rem;
     padding-bottom: 1rem;
     break-inside: avoid;
+}
+
+.stamp {
+    padding-top: 6rem;
 }
 
 .stamp p {

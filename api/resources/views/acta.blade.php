@@ -1,6 +1,7 @@
 @php( $issuer = $document->issuer )
 @php( $issueDate = strtotime($document->issue_date) )
 @php( $body = json_decode($document->body) )
+@php( $stamps = json_decode($document->stamps) )
 
 <!DOCTYPE html>
 <html>
@@ -32,13 +33,15 @@
 						<div class="body-section">
 							{!! $body->cuerpo !!}
 						</div>
-						<div class="signatures-container">
-							@foreach($document->signatures as $signature)
-								<div class="stamp">
-									{!! $signature->stamp->content !!}	
-								</div>								
-							@endforeach
-						</div>
+						@if(count($stamps) >  0)
+							<div class="stamps-container">
+								@foreach($stamps as $stamp)
+									<div class="stamp">
+										{!! $stamp !!}	
+									</div>								
+								@endforeach
+							</div>
+						@endif
 						@if($blankPageAtEnd)
 							<div class="page-break"></div>
 						@endif
