@@ -308,7 +308,8 @@ class DocumentController extends Controller
             $query =  Document::with(['issuer','documentType']);
             if ($request->boolean('shared', false)) {
                 $documentsId = DocumentSharedAccess::where('redacta_user_id', $request->user()->id)->pluck('document_id')->all();
-                $documentsId = array_merge($documentsId, Document::whereIn('visibility_level_id', [2, 3])->pluck('id')->all());
+                $documentsId = array_merge($documentsId, Document::whereIn('visibility_level_id', [2, 3])->where('redacta_user_id','<>',$request->user()->id)
+                            ->pluck('id')->all());
                 $query = Document::whereIn('id', $documentsId);
             } else {
                 $query = Document::where('redacta_user_id', $request->user()->id);
