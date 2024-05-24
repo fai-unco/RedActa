@@ -30,7 +30,7 @@ return new class extends Migration
             $table->foreign('document_type_id')->references('id')->on('document_types');
             $table->bigInteger('document_copy_id')->nullable()->unsigned();
             $table->foreign('document_copy_id')->references('id')->on('document_copies');
-            $table->bigInteger('issuer_id')->unsigned();
+            $table->bigInteger('issuer_id')->nullable()->unsigned();
             $table->foreign('issuer_id')->references('id')->on('issuers');
             //$table->bigInteger('anexos_section_type_id')->unsigned();
             //$table->foreign('anexos_section_type_id')->references('id')->on('anexos_section_types');

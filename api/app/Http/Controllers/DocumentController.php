@@ -356,9 +356,9 @@ class DocumentController extends Controller
     private function validateRequest($request , $method) {
         $requiredRules = [
             'document_type_id' => 'required|numeric',
-            'issuer_id' => 'required|numeric|exists:issuers,id',
         ];
         $sometimesRules = [
+            'issuer_id' => 'sometimes|numeric|exists:issuers,id',
             'name' => 'sometimes|string|nullable',
             'number' => 'sometimes|numeric|nullable',
             'issue_date' => 'sometimes|date|nullable',
