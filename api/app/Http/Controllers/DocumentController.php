@@ -52,7 +52,7 @@ class DocumentController extends Controller
     {
         $data = $this->validateRequest($request, 'post');
         try {
-            if (!isset($data['true_copy_stamp_id'])) {
+            if (!isset($data['true_copy_stamp_id']) && isset($data['issuer_id'])) {
                 $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
                 if (isset($issuerSettings->suggestedTrueCopyStamp)) {
                     $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
@@ -180,6 +180,12 @@ class DocumentController extends Controller
             }
             if (isset($data['stamps'])) {
                 $data['stamps'] = json_encode( $data['stamps']);
+            }
+            if (isset($data['issuer_id']) && !$document->true_copy_stamp_id) {
+                $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
+                if (isset($issuerSettings->suggestedTrueCopyStamp)) {
+                    $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
+                }
             }
             $document->update($data);
             $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
@@ -336,7 +342,7 @@ class DocumentController extends Controller
             foreach ($results as $document){
                 array_push($output, [
                     'id' => $document->id,
-                    'issuer' => $document->issuer->description,
+                    'issuer' => $document->issuer? $document->issuer->description : 'Sin definir',
                     'documentType' => $document->documentType->description,
                     'name' => $document->name,
                     'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
@@ -358,7 +364,7 @@ class DocumentController extends Controller
             'document_type_id' => 'required|numeric',
         ];
         $sometimesRules = [
-            'issuer_id' => 'sometimes|numeric|exists:issuers,id',
+            'issuer_id' => 'sometimes|numeric|exists:issuers,id|nullable',
             'name' => 'sometimes|string|nullable',
             'number' => 'sometimes|numeric|nullable',
             'issue_date' => 'sometimes|date|nullable',
@@ -367,7 +373,7 @@ class DocumentController extends Controller
             'destinatary' => 'sometimes|nullable|string',
             'has_anexo_unico' => 'sometimes|boolean',
             'true_copy_stamp_id' => 'sometimes|numeric|nullable',
-            'heading_id' => 'sometimes|numeric',
+            'heading_id' => 'sometimes|numeric|nullable',
             'operative_section_beginning_id' => 'sometimes|numeric|nullable',
             'stamps' => 'sometimes|array',
         ];
