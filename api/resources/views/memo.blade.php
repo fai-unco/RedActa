@@ -48,7 +48,9 @@
 						<div class="body-section">
 							{!! $body->cuerpo !!}
 						</div>
-						<div class="parting-phrase">Atentamente</div>
+						@if(isset($body->parting_phrase))
+							<div class="parting-phrase">{{$body->parting_phrase}}</div>
+						@endif
 						@if(isset($stamps) && count($stamps) >  0)
 							<div class="stamps-container">
 								@foreach($stamps as $stamp)
