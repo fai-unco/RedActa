@@ -98,15 +98,14 @@ img {
 
 .stamps-container {
     display: flex;
+    column-gap: 2rem;
+    row-gap: 6rem;
+    padding-top: 6rem;
     gap: 2rem;
     flex-wrap: wrap;
     justify-content: center;
     padding-bottom: 1rem;
     break-inside: avoid;
-}
-
-.stamp {
-    padding-top: 6rem;
 }
 
 .stamp p {
@@ -115,6 +114,7 @@ img {
 }
 
 .true-copy-stamp p {
+    text-align: center;
     line-height: 0.8rem;
 }
 

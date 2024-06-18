@@ -105,7 +105,7 @@
 						<td class="document-footer-cell">
 							<p>ES COPIA FIEL</p>
 							<div style="display: flex; flex-flow: row-reverse;">
-								<div class="stamp true-copy-stamp">
+								<div class="true-copy-stamp">
 								@if(isset($document->trueCopyStamp))
 									{!! $document->trueCopyStamp->content !!}
 								@endif
@@ -121,7 +121,7 @@
 			<div class="footer">
 				<p>ES COPIA FIEL</p>
 				<div style="display: flex; flex-flow: row-reverse;">
-					<div class="stamp true-copy-stamp">
+					<div class="true-copy-stamp">
 						@if(isset($document->trueCopyStamp))
 							{!! $document->trueCopyStamp->content !!}
 						@endif
