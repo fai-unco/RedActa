@@ -3,6 +3,7 @@
 @php( $issueDate = strtotime($document->issue_date) )
 @php( $body = json_decode($document->body) )
 @php( $stamps = json_decode($document->stamps) )
+@php( $hasAnexoUnico = $document->has_anexo_unico )
 
 <!DOCTYPE html>
 <html>
@@ -59,7 +60,7 @@
 							{!! $body->cuerpo !!}
 						</div>
 						<div class="parting-phrase">{{$body->parting_phrase}}</div>
-						@if(count($stamps) >  0)
+						@if(isset($stamps) && count($stamps) >  0)
 							<div class="stamps-container">
 								@foreach($stamps as $stamp)
 									<div class="stamp">
