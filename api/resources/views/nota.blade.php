@@ -55,11 +55,15 @@
 						<div class="destinatary-section">
                             {!! nl2br(e($document->destinatary)) !!}
 						</div>
-						<p>{{$body->starting_phrase}}</p>
+						@if(isset($body->starting_phrase))
+							<p>{{$body->starting_phrase}}</p>
+						@endif
 						<div class="body-section indented">
 							{!! $body->cuerpo !!}
 						</div>
-						<div class="parting-phrase">{{$body->parting_phrase}}</div>
+						@if(isset($body->parting_phrase))
+							<div class="parting-phrase">{{$body->parting_phrase}}</div>
+						@endif
 						@if(isset($stamps) && count($stamps) >  0)
 							<div class="stamps-container">
 								@foreach($stamps as $stamp)
