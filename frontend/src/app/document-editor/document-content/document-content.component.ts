@@ -125,14 +125,14 @@ export class DocumentContentComponent implements OnInit {
         this.form = this.fb.group({
           name: ['Nuevo documento'],
           documentTypeId: [this.documentType.id, Validators.required],
-          number: ['', Validators.required],
-          issuerId: ['', Validators.required],
-          issueDate: ['', Validators.required],
-          subject: ['', Validators.required],    
-          destinatary: ['', Validators.required],    
+          number: [null, Validators.required],
+          issuerId: [null, Validators.required],
+          issueDate: [null, Validators.required],
+          subject: [null, Validators.required],    
+          destinatary: [null, Validators.required],    
           hasAnexoUnico: [false, Validators.required],
-          headingId: ['', Validators.required],    
-          operativeSectionBeginningId: ['', Validators.required],    
+          headingId: [null, Validators.required],    
+          operativeSectionBeginningId: [null, Validators.required],    
           body: this.fb.group({})
         });
         if([1, 2, 3].includes(this.documentType.id)){ 
