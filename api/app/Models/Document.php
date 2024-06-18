@@ -24,7 +24,8 @@ class Document extends Model
         'heading_id',
         'has_anexo_unico',
         'visibility_level_id', 
-        'stamps'
+        'stamps',
+        'issuer_id'
     ];
     
     public function documentCopy(){
@@ -88,41 +89,10 @@ class Document extends Model
     }
     
     public function set($data){
-        $issuer = Issuer::find($data['issuer_id']);
-        //$user = RedactaUser::find(Auth::id());
-        $documentType = DocumentType::find($data['document_type_id']);
-        //$anexosSectionType = AnexosSectionType::find($data['anexos_section_type_id']);        
-        //$this->redactaUser()->associate($user);
-        
         foreach ($data as $key => $value) {
-            if ($key == 'document_type_id'){
-                $this->documentType()->associate($documentType);
-            } else if  ($key == 'issuer_id'){
-                $this->issuer()->associate($issuer);
-            } else if ($key == 'body'){
+            if ($key == 'body'){
                 $this->setAttribute($key, json_encode($value));
-            } 
-            
-            /*else if ($key == 'anexos_section_type_id'){
-                $this->anexosSectionType()->associate($anexosSectionType);
-            } */
-            /*else if ($key == 'anexos'){
-                foreach ($data->anexos as $anexoData) {
-                    //Creates a new anexo
-                    $newAnexo = new Anexo();
-                    $newAnexo->title = $anexoData->title;
-                    $newAnexo->subtitle = $anexoData->subtitle;
-                    $newAnexo->content = $anexoData->content;
-                    $newAnexo->save();
-                    
-                    
-                    //Associates the anexo with the previously uploaded file
-                    $file = File::find($anexoData->fileId);
-                    // Conviene crear un método en File que reciba fileId para asociarlo con newAnexo 
-                    $file->anexo()->associate($newAnexo);
-                }        
-            } */
-            else {
+            } else {
                 $this->setAttribute($key, $value);
             }
         }
