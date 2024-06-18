@@ -146,9 +146,9 @@ export class DocumentContentComponent implements OnInit {
         } else if([4, 5, 6].includes(this.documentType.id)){ 
           //si el documento es un acta, memo o nota 
           this.body.addControl('cuerpo', this.fb.control(''));
-          if (this.documentType.id == 6) {
-            this.body.addControl('startingPhrase', this.fb.control(''));
-            this.body.addControl('partingPhrase', this.fb.control(''));
+          if ([5, 6].includes(this.documentType.id)) {
+            this.body.addControl('startingPhrase', this.fb.control(null));
+            this.body.addControl('partingPhrase', this.fb.control(null));
           }
         } 
         for(let [key, value] of Object.entries(data)) {
@@ -237,7 +237,7 @@ export class DocumentContentComponent implements OnInit {
               this.form.get('issuerId')?.setValue(document && document.issuerId ? document.issuerId : issuer.id);
               this.form.get('headingId')?.setValue(document && document.headingId ? document.headingId : res[2].data.suggestedHeadingId);
               this.form.get('operativeSectionBeginningId')?.setValue(document && document.operativeSectionBeginningId ? document.operativeSectionBeginningId : res[2].data.suggestedOperativeSectionBeginningId);
-              if (this.documentType.id == 6) {
+              if ([5, 6].includes(this.documentType.id)) {
                 this.body.get('startingPhrase')?.setValue(document && document.body ? document.body.startingPhrase : res[2].data.suggestedStartingPhrase);
                 this.body.get('partingPhrase')?.setValue(document && document.body ? document.body.partingPhrase : res[2].data.suggestedPartingPhrase);
               }
