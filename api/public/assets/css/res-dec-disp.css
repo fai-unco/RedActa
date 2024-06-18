@@ -64,10 +64,6 @@
     margin: 0;
 }
 
-.articulo-content p:after {
-    content:".";
-}
-
 .anexo-normal-img {
     padding-top: 1rem;
     width: auto;
