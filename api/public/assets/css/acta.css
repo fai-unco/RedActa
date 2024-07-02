@@ -16,3 +16,12 @@
     margin-right: 2.5cm;
     size: A4;
 }
+
+.anexo-img {
+    padding-top: 1rem;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    max-width: 37rem;
+    max-height: 42rem;
+}
