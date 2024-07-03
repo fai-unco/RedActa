@@ -72,38 +72,40 @@ export class DocumentContentComponent implements OnInit {
           this.export(true);
         }
       });
-    this.route.queryParams.subscribe(params => {this.documentId = params['id']});
-    this.connectionService.get('document_types').subscribe({
-      next: (documentTypesRes: any) => {
-        if (!this.documentId) {
-          this.dialogService.open(ItemSelectorComponent, {context: {items: documentTypesRes.data, itemName: 'tipo de documento', filterBy: 'description'}})
-          .onClose.subscribe(documentType => {
-            if (documentType != null) {
-              this.state = 'loading',
-              this.documentType = documentType;
-              this.initialize();
-            } else {
-              this.router.navigateByUrl('/');
-            }
-          })
-        } else {
-          this.state = 'loading';
-          this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
-            next: (documentRes: any) => {
-              let documentTypeIndex = documentTypesRes.data.findIndex((documentType: any) => documentType.id == documentRes.data.documentTypeId);
-              this.documentType = documentTypesRes.data[documentTypeIndex];
-              this.initialize(documentRes.data)
-            },
-            error: e => {
-              this.errorHandler.handle(e, '/');
-              this.state = '';
-            }
-          }); 
+    this.route.queryParams.subscribe(params => {
+      this.documentId = params['id'];
+      this.connectionService.get('document_types').subscribe({
+        next: (documentTypesRes: any) => {
+          if (!this.documentId && !this.documentType) {
+            this.dialogService.open(ItemSelectorComponent, {context: {items: documentTypesRes.data, itemName: 'tipo de documento', filterBy: 'description'}})
+            .onClose.subscribe(documentType => {
+              if (documentType != null) {
+                this.state = 'loading',
+                this.documentType = documentType;
+                this.initialize();
+              } else {
+                this.router.navigateByUrl('/');
+              }
+            })
+          } else if (this.documentId) {
+            this.state = 'loading';
+            this.connectionService.get('documents', this.documentId, {headers: {accept: 'application/json'}}).subscribe({
+              next: (documentRes: any) => {
+                let documentTypeIndex = documentTypesRes.data.findIndex((documentType: any) => documentType.id == documentRes.data.documentTypeId);
+                this.documentType = documentTypesRes.data[documentTypeIndex];
+                this.initialize(documentRes.data)
+              },
+              error: e => {
+                this.errorHandler.handle(e, '/');
+                this.state = '';
+              }
+            }); 
+          }
+        },
+        error: e => {
+          this.errorHandler.handle(e, '/');
         }
-      },
-      error: e => {
-        this.errorHandler.handle(e, '/');
-      }
+      });
     });
   }
 
@@ -329,6 +331,8 @@ export class DocumentContentComponent implements OnInit {
   cloneDocument(){
     this.documentId = null;
     this.form.get('name')?.setValue('Nuevo documento');
+    this.form.get('hasAnexoUnico')?.setValue('false');
+    this.form.get('number')?.setValue(null);
     this.router.navigate([], 
       {
         relativeTo: this.route,
