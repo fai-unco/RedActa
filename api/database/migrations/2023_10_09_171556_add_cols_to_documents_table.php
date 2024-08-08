@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('has_anexo_unico')->default(false);
             $table->bigInteger('visibility_level_id')->nullable()->unsigned();
             $table->foreign('visibility_level_id')->references('id')->on('visibility_levels');
-            $table->text('stamps');
+            $table->longText('stamps');
         });
     }
 
