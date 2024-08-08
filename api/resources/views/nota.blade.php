@@ -4,6 +4,7 @@
 @php( $body = json_decode($document->body) )
 @php( $stamps = json_decode($document->stamps) )
 @php( $hasAnexoUnico = $document->has_anexo_unico )
+@php( $intToRomanNumbers = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X'])
 
 <!DOCTYPE html>
 <html>
