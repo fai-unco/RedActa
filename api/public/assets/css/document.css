@@ -100,7 +100,7 @@ img {
     display: flex;
     column-gap: 2rem;
     row-gap: 6rem;
-    padding-top: 6rem;
+    padding-top: 1rem;
     gap: 2rem;
     flex-wrap: wrap;
     justify-content: center;
