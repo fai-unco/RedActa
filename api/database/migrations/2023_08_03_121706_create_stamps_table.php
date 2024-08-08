@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('stamps', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->text('content');
+            $table->longText('content');
             $table->bigInteger('redacta_user_id')->unsigned();
             $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
             $table->string('description');
