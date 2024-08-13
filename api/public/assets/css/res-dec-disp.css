@@ -26,6 +26,11 @@
     text-indent: 10rem;
 }
 
+.indented li{
+    text-indent: 0rem;
+}
+
+
 .no-wrap {
     white-space: nowrap;
 }
