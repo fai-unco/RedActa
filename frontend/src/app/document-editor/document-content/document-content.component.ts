@@ -331,7 +331,7 @@ export class DocumentContentComponent implements OnInit {
   cloneDocument(){
     this.documentId = null;
     this.form.get('name')?.setValue('Nuevo documento');
-    this.form.get('hasAnexoUnico')?.setValue('false');
+    this.form.get('hasAnexoUnico')?.setValue(false);
     this.form.get('number')?.setValue(null);
     this.router.navigate([], 
       {
