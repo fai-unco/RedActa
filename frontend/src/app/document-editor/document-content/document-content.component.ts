@@ -323,7 +323,7 @@ export class DocumentContentComponent implements OnInit {
       .onClose.subscribe(remove => {
         if(remove){
           (this.body.get('articulos') as FormArray).removeAt(index);
-          this.articleMenuSubscriptions.pop();
+          this.articleMenuSubscriptions.pop()?.unsubscribe();
         }
       });
   }
