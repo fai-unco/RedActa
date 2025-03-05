@@ -25,7 +25,7 @@ export class DocumentContentComponent implements OnInit {
   documentId: any;
   actionResult!: string;
   state = '';
-  anexosData: any[] = [];
+  anexosData!: any[];
   anexosToBeRemoved: any[] = [];
   issuers: any[] = [];
   issuerName: string = 'Sin definir';
@@ -118,6 +118,7 @@ export class DocumentContentComponent implements OnInit {
   }
 
   private initialize(data: any = {}) {
+    this.anexosData = [];
     let requests = [
       this.connectionService.get('issuers')
     ];
@@ -368,7 +369,8 @@ export class DocumentContentComponent implements OnInit {
             {
               relativeTo: this.route,
               queryParams: { id: this.documentId },
-              queryParamsHandling: 'merge'
+              queryParamsHandling: 'merge',
+              replaceUrl: true
             }
           );
         }
