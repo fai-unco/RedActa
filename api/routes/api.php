@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('visibility_levels', VisibilityLevelController::class);
   Route::patch('/documents/{id}/visibility_level', [DocumentController::class, 'setVisibilityLevel']);
   Route::apiResource('access_modes', AccessModeController::class);
+  Route::post('documents_shared_access/{id}/notify', [DocumentSharedAccessController::class, 'notify']);
 });
 Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
 

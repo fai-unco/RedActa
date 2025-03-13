@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\DocumentSharedAccess;
 use App\Models\Document;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ShareDocumentMailService;
+
 
 
 class DocumentSharedAccessController extends Controller
@@ -78,8 +81,10 @@ class DocumentSharedAccessController extends Controller
             }
             if (!isset($validatedData['access_mode_id'])) {
                 $validatedData['access_mode_id'] = 1;
-            }
+            } 
             $documentSharedAccess = DocumentSharedAccess::create($validatedData);
+            Mail::to($documentSharedAccess->redactaUser->email)
+                ->send(new ShareDocumentMailService($document->id, $request->user()));
             return response()->json([
                 'status' => 201,
                 'message' => 'OK',
@@ -197,6 +202,38 @@ class DocumentSharedAccessController extends Controller
                 'status' => 200,
                 'message' => 'OK',
                 'data' => $documentSharedAccess           
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error en el servidor. Reintente la operación'
+            ], 500);
+        }
+    }
+
+
+    public function notify(Request $request, $id)
+    {
+        $validatedData = $this->validateRequest($request);
+        try {
+            $documentSharedAccess = DocumentSharedAccess::find($id);
+            if (!$documentSharedAccess) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Recurso inexistente'        
+                ], 404);
+            }
+            if ($documentSharedAccess->document->redactaUser->id != $request->user()->id) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'No tiene autorización para realizar esta acción'        
+                ], 404);
+            }
+            Mail::to($documentSharedAccess->redactaUser->email)
+                ->send(new ShareDocumentMailService($documentSharedAccess->document->id, $request->user()));
+            return response()->json([
+                'status' => 200,
+                'message' => 'OK'           
             ]);
         } catch (\Throwable $th) {
             return response()->json([
