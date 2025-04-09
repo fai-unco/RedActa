@@ -10,7 +10,7 @@
 		<title>{{$document->name}}</title>
     	<meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="https://latex.now.sh/style.css">
+		<link rel="stylesheet" href="{{ asset('assets/css/latex.css') }}">
 		<link rel="stylesheet" href="{{ asset('/assets/css/document.css') }}">
 		<link rel="stylesheet" href="{{ asset('/assets/css/res-dec-disp.css') }}">
 	</head>
