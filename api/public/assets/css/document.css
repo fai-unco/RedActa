@@ -127,3 +127,7 @@ img {
 .page-break {
     break-after: page;
 }
+
+p {
+    text-align: justify;
+}
