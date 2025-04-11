@@ -99,23 +99,11 @@
 					</td>
 				</tr>
 			</tbody>
-			@if($isCopy)
-				<tfoot class="document-footer">
-					<tr>
-						<td class="document-footer-cell">
-							<p>ES COPIA FIEL</p>
-							<div style="display: flex; flex-flow: row-reverse;">
-								<div class="true-copy-stamp">
-								@if(isset($document->trueCopyStamp))
-									{!! $document->trueCopyStamp->content !!}
-								@endif
-								</div>
-							</div>
-						</td>
-						<td class="document-footer-empty-cell"></td>
-					</tr>
-				</tfoot>
-			@endif
+			<tfoot class="document-footer">
+				<tr>
+					<td class="document-footer-empty-cell"></td>
+				</tr>
+			</tfoot>
 		</table>	
 		@if($isCopy)
 			<div class="footer">

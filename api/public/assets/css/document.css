@@ -35,7 +35,7 @@ img {
     
 .document-footer-empty-cell {
     display: none;
-    height: 7rem;
+    height: 2.5cm;
 }
 
 .document-container th, .document-container td {
@@ -50,7 +50,6 @@ img {
     width: 80ch;
     padding-right: 2.75rem;
     margin: 0 auto;
-    padding-bottom: 2rem;
 }
 
 .anexo-content {
