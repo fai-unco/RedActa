@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Heading;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreHeadingRequest;
+use App\Http\Requests\UpdateHeadingRequest;
 
 
 class HeadingController extends Controller
@@ -57,13 +59,13 @@ class HeadingController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreHeadingRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreHeadingRequest $request)
     {
-        $validatedData = $this->validateRequest($request);
         try {
+            $validatedData = $request->validated();
             $heading = new Heading(); 
             $heading->set($validatedData);
             return response()->json([
@@ -127,15 +129,15 @@ class HeadingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateHeadingRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateHeadingRequest $request, $id)
     {
-        $validatedData = $this->validateRequest($request);
         try {
-            $heading = heading::find($id);
+            $validatedData = $request->validated();
+            $heading = Heading::find($id);
             if(!$heading){
                 return response()->json([
                     'status' => 404,
@@ -166,22 +168,4 @@ class HeadingController extends Controller
     {
         //
     }
-
-    private function validateRequest($request){
-        $validator = Validator::make($request->all(), [
-            'description' => 'required|string',
-            'issuer_id' => 'required|numeric',
-            'file_id' => 'required|numeric|exists:files,id'
-        ], [
-            'required' => 'El campo :attribute es requerido',
-            'string' => 'El campo :attribute debe ser una cadena de texto',
-        ], [
-            'description' => '"Descripción"',
-            'file_id' => '"Seleccionar archivo"'
-        ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
-    }
-
-
 }

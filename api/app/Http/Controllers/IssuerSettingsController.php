@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\IssuerSettings;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreIssuerSettingsRequest;
+use App\Http\Requests\UpdateIssuerSettingsRequest;
 
 
 class IssuerSettingsController extends Controller
@@ -48,15 +50,14 @@ class IssuerSettingsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreIssuerSettingsRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreIssuerSettingsRequest $request)
     {
-        $this->validateRequest($request);
         try {
             $issuerSettings = new IssuerSettings(); 
-            $validatedData = $this->validateRequest($request);
+            $validatedData = $request->validated();
             $issuerSettings->set($validatedData);
             return response()->json([
                 'status' => 201,
@@ -115,14 +116,14 @@ class IssuerSettingsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateIssuerSettingsRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateIssuerSettingsRequest $request, $id)
     {
-        $validatedData = $this->validateRequest($request);
         try {
+            $validatedData = $request->validated();
             $issuerSettings = IssuerSettings::find($id);
             if(!$issuerSettings){
                 return response()->json([
@@ -153,26 +154,6 @@ class IssuerSettingsController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    private function validateRequest($request){
-        $validator = Validator::make($request->all(), [
-            'issuer_id' => 'required|numeric|exists:issuers,id',
-            'suggested_operative_section_beginning_id' => 'required|numeric|exists:operative_section_beginnings,id',
-            'suggested_true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id',
-            'suggested_heading_id' => 'required|numeric|exists:headings,id',
-
-        ], [
-            'required' => 'El campo :attribute es requerido',
-            'numeric' => 'El campo :attribute debe ser un número'
-        ], [
-            'issuer_id' => '"Emisor"',
-            'suggested_operative_section_beginning_id' => '"Inicio de sección operativa sugerido"',
-            'suggested_true_copy_stamp_id' => '"Sello en copia fiel sugerido"',
-            'suggested_heading_id' => '"Membrete sugerido"',
-        ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
     }
 }
 

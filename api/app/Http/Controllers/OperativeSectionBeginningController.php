@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\OperativeSectionBeginning;
 use App\Models\Issuer;
+use App\Http\Requests\StoreOperativeSectionBeginningRequest;
+use App\Http\Requests\UpdateOperativeSectionBeginningRequest;
 
 
 class OperativeSectionBeginningController extends Controller
@@ -18,7 +20,7 @@ class OperativeSectionBeginningController extends Controller
      */
     public function index(Request $request)
     {
-        //try {    
+        try {    
             if($request->has('issuer_id')){
                 $results = OperativeSectionBeginning::where('issuer_id', $request->query('issuer_id'))->get();
             } else {
@@ -29,12 +31,12 @@ class OperativeSectionBeginningController extends Controller
                 'message' => 'OK',
                 'data' => $results           
             ]);
-        /*} catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }*/
+        }
     }
 
     /**
@@ -50,13 +52,13 @@ class OperativeSectionBeginningController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreOperativeSectionBeginningRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreOperativeSectionBeginningRequest $request)
     {
-        $validatedData = $this->validateRequest($request);
         try {  
+            $validatedData = $request->validated();
             $operativeSectionBeginning = OperativeSectionBeginning::create($validatedData);
             return response()->json([
                 'status' => 201,
@@ -114,14 +116,14 @@ class OperativeSectionBeginningController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateOperativeSectionBeginningRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateOperativeSectionBeginningRequest $request, $id)
     {
-        $validatedData = $this->validateRequest($request);
         try { 
+            $validatedData = $request->validated();
             $operativeSectionBeginning = OperativeSectionBeginning::find($id);
             if (!$operativeSectionBeginning) {
                 return response()->json([
@@ -153,28 +155,6 @@ class OperativeSectionBeginningController extends Controller
     {
         //
     }
-
-    private function validateRequest($request){
-        $presence = 'required';
-        if ($request->isMethod('patch')) {
-            $presence = 'sometimes';
-        }
-        $validator = Validator::make($request->all(), [
-            'issuer_id' => $presence.'|numeric|exists:issuers,id',
-            'content' => $presence.'|string',
-        ], [
-            'required' => 'El campo :attribute es requerido',
-            'numeric' => 'El campo :attribute debe ser un número',
-            'string' => 'El campo :attribute debe ser un string',
-            'issuer_id.exists' => 'El emisor especificado no existe'
-        ], [
-            'issuer_id' => '"Emisor"',
-            'content' => '"Contenido"',
-        ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
-    }
-
 }
 
 

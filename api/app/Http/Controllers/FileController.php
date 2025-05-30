@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\RedactaUser;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Requests\StoreFileRequest;
 
 
 
@@ -36,12 +36,11 @@ class FileController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreFileRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreFileRequest $request)
     {
-        $this->validateRequest($request);
         try {
             $file = $request->file('file');
             $name = $file->getClientOriginalName();
@@ -140,11 +139,5 @@ class FileController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         }   
-    }
-
-    public function validateRequest($request) {
-        $validator = Validator::make($request->all(), [
-            'file' => 'mimes:pdf,png,jpg,jpeg',
-        ])->validate();
     }
 }

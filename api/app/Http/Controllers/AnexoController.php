@@ -8,7 +8,8 @@ use App\Models\Document;
 use App\Models\Anexo;
 use App\Models\DocumentSharedAccess;
 use Illuminate\Support\Facades\Validator;
-
+use App\Http\Requests\StoreAnexoRequest;
+use App\Http\Requests\UpdateAnexoRequest;
 
 
 class AnexoController extends Controller
@@ -36,21 +37,21 @@ class AnexoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreAnexoRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $this->validateRequest($request);
         try {
-            $file = File::find($request->file_id);
+            $data = $request->validated();
+            $file = File::find($data['file_id']);
             if (!$file || $file->redactaUser->id != $request->user()->id) {
                 return response()->json([
                     'status' => 422,
                     'message' => 'Archivo inválido'        
                 ], 422);
             }
-            $document = Document::find($request->document_id);
+            $document = Document::find($data['document_id']);
             if (!$this->userHasAccessToDocument($request->user()->id, $document)) {
                 return response()->json([
                     'status' => 422,
@@ -64,7 +65,7 @@ class AnexoController extends Controller
                 ], 405);
             }
             $anexo = new Anexo();
-            $anexo->set($request->index, $request->title, $request->subtitle, $request->content, $document, $file);
+            $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $document, $file);
             return response()->json([
                 'status' => 201,
                 'message' => 'OK',
@@ -105,14 +106,14 @@ class AnexoController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateAnexoRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $this->validateRequest($request);
         try {
+            $data = $request->validated();
             $anexo = Anexo::find($id);
             if (!$anexo || !$this->userHasAccessToDocument($request->user()->id, $anexo->document)) {
                 return response()->json([
@@ -126,14 +127,14 @@ class AnexoController extends Controller
                     'message' => 'Recurso de solo lectura'        
                 ], 405);
             }
-            $file = File::find($request->file_id);
+            $file = File::find($data['file_id']);
             if (!$file || !$this->userHasAccessToDocument($file->redactaUser->id, $anexo->document)) {
                 return response()->json([
                     'status' => 422,
                     'message' => 'Archivo inválido',       
                 ], 422);  
             }
-            $anexo->set($request->index, $request->title, $request->subtitle, $request->content, $anexo->document, $file);
+            $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $anexo->document, $file);
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
@@ -179,20 +180,6 @@ class AnexoController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         } 
-    }
-
-    private function validateRequest($request) {
-        $validator = Validator::make($request->all(), [
-                'index' => 'required|numeric',
-                'document_id' => 'required|numeric|exists:documents,id',
-                'file_id' => 'required|numeric|exists:files,id'
-            ], [
-                'required' => 'El campo :attribute es requerido',
-                'numeric' => 'El campo :attribute debe ser un número',
-            ] ,[
-                'file_id' => '"seleccionar archivo"'
-            ])->stopOnFirstFailure(true);
-        $validator->validate();
     }
 
     private function userHasAccessToDocument($loggedInUserId, $document) {

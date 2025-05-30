@@ -14,6 +14,8 @@ use App\Models\DocumentSharedAccess;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\UpdateDocumentRequest;
 
 
 
@@ -45,13 +47,13 @@ class DocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreDocumentRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreDocumentRequest $request)
     {
-        $data = $this->validateRequest($request, 'post');
         try {
+            $data = $request->validated();
             if (!isset($data['true_copy_stamp_id']) && isset($data['issuer_id'])) {
                 $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
                 if (isset($issuerSettings->suggestedTrueCopyStamp)) {
@@ -152,16 +154,16 @@ class DocumentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateDocumentRequest $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
 
 
-    public function update(Request $request, $id)
+    public function update(UpdateDocumentRequest $request, $id)
     {
-        $data = $this->validateRequest($request, 'patch');
         try {
+            $data = $request->validated();
             $document = Document::find($id);
             if (!$document || !$this->userHasAccessToDocument($request->user()->id, $document)) {
                 return response()->json([
@@ -357,48 +359,6 @@ class DocumentController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         }
-    }
-
-    private function validateRequest($request , $method) {
-        $requiredRules = [
-            'document_type_id' => 'required|numeric',
-        ];
-        $sometimesRules = [
-            'issuer_id' => 'sometimes|numeric|exists:issuers,id|nullable',
-            'name' => 'sometimes|string|nullable',
-            'number' => 'sometimes|numeric|nullable',
-            'issue_date' => 'sometimes|date|nullable',
-            'body' => 'sometimes',
-            'subject' => 'sometimes|nullable|string',
-            'destinatary' => 'sometimes|nullable|string',
-            'has_anexo_unico' => 'sometimes|boolean',
-            'true_copy_stamp_id' => 'sometimes|numeric|nullable',
-            'heading_id' => 'sometimes|numeric|nullable',
-            'operative_section_beginning_id' => 'sometimes|numeric|nullable',
-            'stamps' => 'sometimes|array',
-        ];
-        $rules = $method == 'post' ? $requiredRules + $sometimesRules : $sometimesRules;
-        $validator = Validator::make($request->all(), $rules, [
-                'required' => 'El campo :attribute es requerido',
-                'numeric' => 'El campo :attribute debe ser un número',
-                'date' => 'El campo :attribute debe ser una fecha en formato dd/mm/yyyy',
-                'string' => 'El campo :attribute debe ser de tipo string',
-                'boolean' => 'El campo :attribute debe ser de tipo booleano'
-            ], [
-                'document_type_id' => '"tipo de documento"',
-                'name' => '"nombre de documento"',
-                'number' => '"número"',
-                'issuer_id' => '"dependencia emisora"',
-                'issue_date' => '"fecha de emisión"',
-                'subject' => '"Asunto"',
-                'destinatary' => '"Destinatario"',
-                'has_anexo_unico' => '"Tiene anexo único"',
-                'heading_id' => '"Membrete"',
-                'operative_section_beginning_id' => '"Inicio de sección operativa"',
-                'true_copy_stamp_id' => '"Firmante de copia fiel"',
-            ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
     }
 
     private function userHasAccessToDocument($loggedInUserId, $document) {

@@ -8,7 +8,8 @@ use App\Models\Document;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ShareDocumentMailService;
-
+use App\Http\Requests\StoreDocumentSharedAccessRequest;
+use App\Http\Requests\UpdateDocumentSharedAccessRequest;
 
 
 class DocumentSharedAccessController extends Controller
@@ -59,13 +60,13 @@ class DocumentSharedAccessController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreDocumentSharedAccessRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreDocumentSharedAccessRequest $request)
     {
-        $validatedData = $this->validateRequest($request);
         try {
+            $validatedData = $request->validated();
             $document = Document::find($validatedData['document_id']);
             if ($document->redactaUser->id != $request->user()->id) {
                 return response()->json([
@@ -143,14 +144,14 @@ class DocumentSharedAccessController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateDocumentSharedAccessRequest $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateDocumentSharedAccessRequest $request, $id)
     {
-        $validatedData = $this->validateRequest($request);
         try {
+            $validatedData = $request->validated();
             $documentSharedAccess = DocumentSharedAccess::find($id);
             if (!$documentSharedAccess) {
                 return response()->json([
@@ -241,28 +242,6 @@ class DocumentSharedAccessController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         }
-    }
-
-    private function validateRequest($request) {
-        if ($request->isMethod('post')) {
-            $firstRule = 'required';
-        } else {
-            $firstRule = 'sometimes';
-        }
-        $validator = Validator::make($request->all(), [
-            'redacta_user_id' => $firstRule.'|numeric|exists:redacta_users,id',
-            'document_id' => $firstRule.'|numeric|exists:documents,id',
-            'access_mode_id' => 'sometimes|numeric|exists:access_modes,id',
-        ], [
-            'required' => 'El campo :attribute es requerido',
-            'numeric' => 'El campo :attribute debe ser numérico',
-        ], [
-            'redacta_user_id' => '"Usuario"',
-            'document_id' => '"Documento"',
-            'access_mode_id' => '"Modo de acceso"'
-        ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
     }
 
     private function userHasAccessToDocument($loggedInUserId, $document) {
