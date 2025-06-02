@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Stamp;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreStampRequest;
+use App\Http\Requests\UpdateStampRequest;
 
 class StampController extends Controller
 {
@@ -44,14 +46,14 @@ class StampController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\StoreStampRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreStampRequest $request)
     {
-        $validatedData = $this->validateRequest($request);
-        $validatedData['redacta_user_id'] = $request->user()->id;
         try {  
+            $validatedData = $request->validated();
+            $validatedData['redacta_user_id'] = $request->user()->id;
             $stamp = Stamp::create($validatedData);
             return response()->json([
                 'status' => 201,
@@ -91,14 +93,14 @@ class StampController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UpdateStampRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateStampRequest $request, $id)
     {
-        $validatedData = $this->validateRequest($request);
         try { 
+            $validatedData = $request->validated();
             $stamp = Stamp::find($id);
             if (!$stamp || $stamp->redacta_user_id != $request->user()->id) {
                 return response()->json([
@@ -149,20 +151,5 @@ class StampController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         }
-    }
-
-    private function validateRequest($request){
-        $validator = Validator::make($request->all(), [
-            'content' => 'required|string',
-            'description' => 'required|string',
-        ], [
-            'required' => 'El campo :attribute es requerido',
-            'string' => 'El campo :attribute debe ser un string',
-        ], [
-            'content' => '"Contenido"',
-            'description' => '"Descripción"',
-        ])->stopOnFirstFailure(true);
-        $validator->validate();
-        return $validator->validated();
     }
 }
