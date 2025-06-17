@@ -28,7 +28,10 @@ class StoreAnexoRequest extends FormRequest
         return [
             'index' => 'required|numeric',
             'document_id' => 'required|numeric|exists:documents,id',
-            'file_id' => 'required|numeric|exists:files,id'
+            'file_id' => 'required|numeric|exists:files,id',
+            'title' => 'sometimes|nullable|string',
+            'subtitle' => 'sometimes|nullable|string',
+            'content' => 'sometimes|nullable|string',
         ];
     }
 }

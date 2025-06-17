@@ -29,7 +29,10 @@ class UpdateAnexoRequest extends FormRequest
         return [
             'index' => 'sometimes|numeric',
             'document_id' => 'sometimes|numeric|exists:documents,id',
-            'file_id' => 'sometimes|numeric|exists:files,id'
+            'file_id' => 'sometimes|numeric|exists:files,id',
+            'title' => 'sometimes|nullable|string',
+            'subtitle' => 'sometimes|nullable|string',
+            'content' => 'sometimes|nullable|string',
         ];
     }
 }

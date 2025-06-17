@@ -40,7 +40,7 @@ class AnexoController extends Controller
      * @param  App\Http\Requests\StoreAnexoRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAnexoRequest $request)
     {
         try {
             $data = $request->validated();
@@ -78,7 +78,7 @@ class AnexoController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        }  
+        } 
     }
 
     /**
@@ -110,7 +110,7 @@ class AnexoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAnexoRequest $request, $id)
     {
         try {
             $data = $request->validated();
