@@ -27,6 +27,7 @@ export class DocumentSharedAccessComponent implements OnInit {
   users: any [] = [];
   accessModeName: string = 'Sin definir';
   accessModes: any [] = [];
+  owner: any;
 
   constructor(private dialogService: NbDialogService,
               private connectionService: ApiConnectionService,
@@ -53,6 +54,7 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.shareLink = this.shareLink + this.documentId;
           this.users = res[3].data.map((user: any) => {return {id: user.id, name: user.name + ' ' + user.lastName}});
           this.accessModes = res[4].data;
+          this.owner = this.users.find((user: any) => user.id == res[1].data.redactaUserId);
         },
         error: _ => {
           this.viewState = 'error';
