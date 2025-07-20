@@ -18,6 +18,8 @@ use App\Http\Controllers\RedactaUserController;
 use App\Http\Controllers\VisibilityLevelController;
 use App\Http\Controllers\AccessModeController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\GroupMembershipController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('access_modes', AccessModeController::class);
   Route::post('documents_shared_access/{id}/notify', [DocumentSharedAccessController::class, 'notify']);
   Route::apiResource('groups', GroupController::class);
+  Route::apiResource('group_memberships', GroupMembershipController::class);
 });
 Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
 Route::post('/register', [AuthenticationController::class, 'register']);
