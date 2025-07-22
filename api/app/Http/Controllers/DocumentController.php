@@ -100,11 +100,11 @@ class DocumentController extends Controller
         try {
             $document = Document::find($id);
             $loggedInUserId = $request->user()->id;
-            if (!$document || !$this->userHasAccessToDocument($loggedInUserId, $document)) {
+            if (!$document->isAccessibleToRedactaUser($request->user(), 2)) {
                 return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente'        
-                ], 404);
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }                  
             if ($request->accepts(['application/pdf'])) {                
                 $isCopy = $request->boolean('is_copy', false);
@@ -119,6 +119,7 @@ class DocumentController extends Controller
                     ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
                     ->header('Access-Control-Expose-Headers', 'Content-Disposition');
             } else if ($request->accepts(['application/json'])) {
+                $document->load('documentSharedAccesses');
                 $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
                 $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
                 $document->body = json_decode($document->body);
@@ -165,18 +166,13 @@ class DocumentController extends Controller
         try {
             $data = $request->validated();
             $document = Document::find($id);
-            if (!$document || !$this->userHasAccessToDocument($request->user()->id, $document)) {
+            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
                 return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente'        
-                ], 404);
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }
-            if (!$this->userCanEdit($request->user()->id, $document)) {
-                return response()->json([
-                    'status' => 405,
-                    'message' => 'Recurso de solo lectura'        
-                ], 405);
-            }
+
             if (isset($data['body'] )) {
                 $data['body'] = json_encode($data['body']);
             }
@@ -222,11 +218,12 @@ class DocumentController extends Controller
     {
         try { 
             $document = Document::find($id);
-            if (!$document || $document->redactaUser->id != $request->user()->id) {
+            //if (!$document || $document->redactaUser->id != $request->user()->id) {
+            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
                 return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente'        
-                ], 404);
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }
             $document->delete();
             return response()->json([
@@ -315,10 +312,24 @@ class DocumentController extends Controller
             $isCopy = $request->boolean('is_copy', false);
             $query =  Document::with(['issuer','documentType']);
             if ($request->boolean('shared', false)) {
-                $documentsId = DocumentSharedAccess::where('redacta_user_id', $request->user()->id)->pluck('document_id')->all();
-                $documentsId = array_merge($documentsId, Document::whereIn('visibility_level_id', [2, 3])->where('redacta_user_id','<>',$request->user()->id)
-                            ->pluck('id')->all());
-                $query = Document::whereIn('id', $documentsId);
+                // Get ids from documents shared with the currrent user
+                $sharedDocumentIds = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\RedactaUser')
+                    ->where('document_shared_accessable_id', $request->user()->id)
+                    ->pluck('document_id')
+                    ->toArray();
+
+                // Get ids from documents shared with groups which current user belongs to
+                $userGroupIds = $request->user()->groups()->pluck('group_id')->toArray();
+                $groupSharedDocumentIds = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\Group')
+                    ->whereIn('document_shared_accessable_id', $userGroupIds)
+                    ->pluck('document_id')
+                    ->toArray();
+
+                // Merge both arrays and remove duplicates
+                $documentsId = array_unique(array_merge($sharedDocumentIds, $groupSharedDocumentIds));
+
+                $query = Document::whereIn('id', $documentsId)
+                    ->where('redacta_user_id', '<>', $request->user()->id);
             } else {
                 $query = Document::where('redacta_user_id', $request->user()->id);
             }
@@ -349,7 +360,7 @@ class DocumentController extends Controller
                     'name' => $document->name,
                     'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
                     'number' => $document->number,
-                    'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at))
+                    'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at)),
                 ]);
             }
             return $output; 
@@ -359,36 +370,6 @@ class DocumentController extends Controller
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
         }
-    }
-
-    private function userHasAccessToDocument($loggedInUserId, $document) {
-        if ($document->redactaUser->id != $loggedInUserId && $document->visibilityLevel->name == 'private') {
-            $documentSharedAccess = DocumentSharedAccess::where([
-                ['redacta_user_id', '=', $loggedInUserId],
-                ['document_id', '=', $document->id]
-            ])->get();
-            if (count($documentSharedAccess) == 0) {
-                return false;
-            }
-        }
-        return true; 
-    }
-
-    private function userCanEdit($loggedInUserId, $document) {
-        if ($document->redactaUser->id == $loggedInUserId) {
-            return true;
-        } else if (str_ends_with($document->visibilityLevel->name, 'editable')) {
-            return true;
-        } else if ($document->visibilityLevel->name == 'private') {
-            $userDocumentAccess = DocumentSharedAccess::where([
-                ['redacta_user_id', '=', $loggedInUserId],
-                ['document_id', '=', $document->id]
-            ])->get()->first();
-            if ($userDocumentAccess->accessMode->name == 'editable') {
-                return true;
-            } 
-        } 
-        return false; 
     }
     
     public function exportAnexo(Request $request, $id){
