@@ -24,6 +24,7 @@ class RedactaUser extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'pivot'
     ];
 
 //hasMany
@@ -52,9 +53,19 @@ class RedactaUser extends Authenticatable
         return $this->hasMany(Stamp::class);
     }
 
-    public function documentsSharedAccesses()
+    public function groups()
     {
-        return $this->hasMany(DocumentSharedAccess::class);
+        return $this->belongsToMany(Group::class, 'group_memberships', 'redacta_user_id', 'group_id');
+    }
+
+    public function groupMemberships()
+    {
+        return $this->hasMany(GroupMembership::class, 'redacta_user_id');
+    }
+
+    public function documentSharedAccesses()
+    {
+        return $this->morphMany(DocumentSharedAccess::class, 'document_shared_accessable');
     }
 
 }
