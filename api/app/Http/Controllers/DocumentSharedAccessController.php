@@ -24,11 +24,12 @@ class DocumentSharedAccessController extends Controller
     {
         try {       
             if ($request->has('document_id')) {
-                if (!$this->userHasAccessToDocument($request->user()->id, Document::find($request->query('document_id')))) {
+                $document = Document::find($request->query('document_id'));
+                if (!$document->isAccessibleToRedactaUser($request->user(), 2)) {
                     return response()->json([
-                        'status' => 422,
-                        'message' => 'Documento inválido'        
-                    ], 422);
+                        'status' => 403,
+                        'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                    ], 403);
                 }
                 $result = DocumentSharedAccess::where('document_id', $request->query('document_id'))->get();
             } else {
@@ -68,28 +69,55 @@ class DocumentSharedAccessController extends Controller
         try {
             $validatedData = $request->validated();
             $document = Document::find($validatedData['document_id']);
-            if ($document->redactaUser->id != $request->user()->id) {
+            if (!$document) {
                 return response()->json([
-                    'status' => 422,
-                    'message' => 'Documento inválido'        
-                ], 422);
+                    'status' => 404,
+                    'message' => 'Recurso inexistente'
+                ], 404);
             }
-            if ($this->userHasAccessToDocument($validatedData['redacta_user_id'], $document)) {
+            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
+            }
+
+            $validatedData = $this->setDocumentSharedAccessableFields($validatedData, $request);
+
+            // Check if exists a document shared access for the same user/group
+            if ($document->documentSharedAccesses()
+                    ->where('document_shared_accessable_type', $validatedData['document_shared_accessable_type'])
+                    ->where('document_shared_accessable_id', $validatedData['document_shared_accessable_id'])
+                    ->exists()) {
                 return response()->json([
                     'status' => 409,
-                    'message' => 'La cuenta seleccionada ya tiene actualmente permisos de acceso a este documento'        
+                    'message' => 'Ya existe un acceso compartido al documento para el usuario o grupo seleccionado'        
                 ], 409);
             }
-            if (!isset($validatedData['access_mode_id'])) {
-                $validatedData['access_mode_id'] = 1;
-            } 
+            
             $documentSharedAccess = DocumentSharedAccess::create($validatedData);
-            Mail::to($documentSharedAccess->redactaUser->email)
-                ->send(new ShareDocumentMailService($document->id, $request->user()));
+
+            // Notify the user or group members about the shared access
+            $usersToNotify = [];
+            if ($validatedData['document_shared_accessable_type'] == 'App\Models\RedactaUser') {
+                $usersToNotify[] = $documentSharedAccess->document_shared_accessable;
+            } else {
+                foreach ($documentSharedAccess->documentSharedAccessable->redactaUsers as $user) {
+                    $usersToNotify[] = $user;
+                }
+            }
+
+            foreach ($usersToNotify as $user) {
+                if ($user->id != $request->user()->id) {
+                    Mail::to($user->email)
+                        ->send(new ShareDocumentMailService($document->id, $request->user()));
+                }
+            }
+
             return response()->json([
                 'status' => 201,
                 'message' => 'OK',
-                'data' => $documentSharedAccess           
+                'data' => $documentSharedAccess
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -110,12 +138,11 @@ class DocumentSharedAccessController extends Controller
     {
         try {
             $documentSharedAccess = DocumentSharedAccess::find($id);
-            if (!$documentSharedAccess || 
-                !$this->userHasAccessToDocument($request->user()->id, $documentSharedAccess->document)) {
+            if (!$documentSharedAccess->document->isAccessibleToRedactaUser($request->user(), 2)) {
                 return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente'        
-                ], 404);
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }
             return response()->json([
                 'status' => 200,
@@ -153,18 +180,54 @@ class DocumentSharedAccessController extends Controller
         try {
             $validatedData = $request->validated();
             $documentSharedAccess = DocumentSharedAccess::find($id);
+
             if (!$documentSharedAccess) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'Recurso inexistente'        
+                    'message' => 'Recurso inexistente'
                 ], 404);
             }
-            if ($documentSharedAccess->document->redactaUser->id != $request->user()->id) {
+
+            $documentSharedAccessableIdHasChanged = false;
+            $documentSharedAccessableTypeHasChanged = false;
+            $documentSharedAccessableId = $documentSharedAccess->document_shared_accessable_id;
+            $documentSharedAccessableType = $documentSharedAccess->document_shared_accessable_type;
+
+            if (!$documentSharedAccess->document || !$documentSharedAccess->document->isAccessibleToRedactaUser($request->user(), 1)) {
                 return response()->json([
                     'status' => 403,
-                    'message' => 'No tiene autorización para realizar esta acción'        
-                ], 404);
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }
+
+            $validatedData = $this->setDocumentSharedAccessableFields($validatedData, $request);
+
+            if (isset($validatedData['document_shared_accessable_id'])) {
+                $documentSharedAccessableIdHasChanged = $validatedData['document_shared_accessable_id'] != $documentSharedAccess->document_shared_accessable_id;
+                $documentSharedAccessableId = $validatedData['document_shared_accessable_id'];
+            }
+
+            if (isset($validatedData['document_shared_accessable_type'])) {
+                $documentSharedAccessableTypeHasChanged = $validatedData['document_shared_accessable_type'] != $documentSharedAccess->document_shared_accessable_type;
+                $documentSharedAccessableType = $validatedData['document_shared_accessable_type'];
+            }
+
+            // Check if the resource has changed
+            if ($documentSharedAccessableIdHasChanged || $documentSharedAccessableTypeHasChanged) {
+                $documentSharedAccessableType = $validatedData['document_shared_accessable_type'] ?? $documentSharedAccess->document_shared_accessable_type;
+                $documentSharedAccessableId = $validatedData['document_shared_accessable_id'] ?? $documentSharedAccess->document_shared_accessable_id;
+                // Check if exists a document shared access for the same user/group
+                if ($documentSharedAccess->document->documentSharedAccesses()
+                        ->where('document_shared_accessable_type', $documentSharedAccessableType)
+                        ->where('document_shared_accessable_id', $documentSharedAccessableId)
+                        ->exists()) {
+                    return response()->json([
+                        'status' => 409,
+                        'message' => 'Ya existe un acceso compartido al documento para el usuario o grupo seleccionado'        
+                    ], 409);
+                }
+            }
+
             $documentSharedAccess->update($validatedData);
             return response()->json([
                 'status' => 200,
@@ -190,13 +253,17 @@ class DocumentSharedAccessController extends Controller
     {
         try { 
             $documentSharedAccess = DocumentSharedAccess::find($id);
-            if (!$documentSharedAccess || 
-                ($documentSharedAccess->redactaUser->id != $request->user()->id &&
-                    $documentSharedAccess->document->redactaUser->id != $request->user()->id)) {
+            if (!$documentSharedAccess) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'Recurso inexistente'        
+                    'message' => 'Recurso inexistente'
                 ], 404);
+            }
+            if (!$documentSharedAccess->document->isAccessibleToRedactaUser($request->user(), 1)) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }
             $documentSharedAccess->delete();
             return response()->json([
@@ -228,7 +295,7 @@ class DocumentSharedAccessController extends Controller
                 return response()->json([
                     'status' => 403,
                     'message' => 'No tiene autorización para realizar esta acción'        
-                ], 404);
+                ], 403);
             }
             Mail::to($documentSharedAccess->redactaUser->email)
                 ->send(new ShareDocumentMailService($documentSharedAccess->document->id, $request->user()));
@@ -244,16 +311,26 @@ class DocumentSharedAccessController extends Controller
         }
     }
 
-    private function userHasAccessToDocument($loggedInUserId, $document) {
-        if ($document->redactaUser->id != $loggedInUserId) {
-            $documentSharedAccess = DocumentSharedAccess::where([
-                ['redacta_user_id', '=', $loggedInUserId],
-                ['document_id', '=', $document->id]
-            ])->get();
-            if (count($documentSharedAccess) == 0) {
-                return false;
-            }
+    /**
+     * Set document_shared_accessable_id and document_shared_accessable_type fields.
+     *
+     * @param array $validatedData
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
+    private function setDocumentSharedAccessableFields(array $validatedData, Request $request)
+    {
+        if ($request->isMethod('post') && !isset($validatedData['access_mode_id'])){
+                $validatedData['access_mode_id'] = 1;
         }
-        return true; 
+        if (isset($validatedData['resource_id'])) {
+            $validatedData['document_shared_accessable_id'] = $validatedData['resource_id'];
+        }
+        if ($request->has('resource_type')) {
+            $validatedData['document_shared_accessable_type'] = $request->input('resource_type') == 'group'
+                ? 'App\Models\Group'
+                : 'App\Models\RedactaUser';
+        }
+        return $validatedData;
     }
 }
