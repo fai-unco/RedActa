@@ -1,21 +1,33 @@
 <nb-card class="h-100" *ngIf="viewState == 'loading'" [nbSpinner]="true" nbSpinnerStatus="primary">
     <nb-card-body></nb-card-body>
-  </nb-card>
-  <nb-card *ngIf="viewState == 'rendering'">
+</nb-card>
+<nb-card *ngIf="viewState == 'rendering'">
     <nb-card-header>Seleccionar {{itemName}}</nb-card-header>
     <nb-card-body>
         <ng-container *ngIf="autocomplete">
             <input [ngModel]="value"
             (ngModelChange)="onUsernameChange($event)" nbInput [placeholder]="'Ingresar ' + itemName "  [nbAutocomplete]="autoControl" />
             <nb-autocomplete #autoControl>
-                <nb-option *ngFor="let item of filteredItems | async" [value]="item[filterBy]" (click)="selectItem(item)"> 
-                    {{ item[filterBy] }}
+                <nb-option *ngFor="let item of filteredItems | async" [value]="item[filterBy]" (click)="selectItem(item)">
+                    <div>
+                        {{ item[filterBy] }}
+                        <div *ngIf="item.description" class="text-muted">
+                            {{ item.description }}
+                        </div>
+                    </div>
                 </nb-option>
             </nb-autocomplete>
             <div class="pt-4">Ha seleccionado: <b>{{item ? item[filterBy] : ''}}</b></div>
         </ng-container>
         <nb-select *ngIf="!autocomplete" fullWidth [placeholder]="'Seleccionar ' + itemName ">
-            <nb-option *ngFor="let item of items" [value]="item.id" (click)="selectItem(item)">{{item[filterBy]}}</nb-option>
+            <nb-option *ngFor="let item of items" [value]="item.id" (click)="selectItem(item)">
+                <div>
+                    {{item[filterBy]}}
+                    <div *ngIf="item.description" class="text-muted">
+                        {{ item.description }}
+                    </div>
+                </div>
+            </nb-option>
         </nb-select>
     </nb-card-body>
     <nb-card-footer>
