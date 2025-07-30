@@ -27,7 +27,7 @@
                         <div class="d-flex justify-content-between">
                             Accesos a este documento
                             <div class="d-flex align-items-center text-align-center">
-                                <div class="mr-2" nbTooltip="Añadir cuenta">
+                                <div class="mr-2" nbTooltip="Añadir acceso">
                                     <button class="ghost-btn" nbButton ghost (click)="addDocumentSharedAccess()">
                                         <nb-icon icon="plus-outline" status="primary"></nb-icon>
                                     </button>
@@ -40,7 +40,10 @@
                             <div class="w-100 d-flex flex-column">
                                 <div class="w-100 d-flex justify-content-between">
                                     <div class="d-flex flex-column">
-                                        <b>{{owner['name']}} {{owner['lastName']}}</b>
+                                        <div>
+                                            <nb-icon icon="person-outline"></nb-icon>
+                                            <b class="ml-2">{{owner['name']}} {{owner['lastName']}}</b>
+                                        </div>
                                         <div>
                                             Posee la propiedad de este documento
                                         </div>
@@ -52,9 +55,24 @@
                             <div class="w-100 d-flex flex-column">
                                 <div class="w-100 d-flex justify-content-between">
                                     <div class="d-flex flex-column">
-                                        <b>{{sharedAccess['redactaUser']['name']}} {{sharedAccess['redactaUser']['lastName']}}</b>
                                         <div>
-                                            Modo de acceso: {{getAccessMode(sharedAccess.accessModeId).label}}
+                                            <nb-icon *ngIf="sharedAccess.resourceType === 'redactaUser'" icon="person-outline"></nb-icon>
+                                            <nb-icon *ngIf="sharedAccess.resourceType === 'group'" icon="people-outline"></nb-icon>
+                                            <b class="ml-2"
+                                               *ngIf="sharedAccess.resourceType === 'redactaUser'">
+                                                {{ getSharedAccessName(sharedAccess) }}
+                                            </b>
+                                            <b class="ml-2"
+                                               *ngIf="sharedAccess.resourceType === 'group'"
+                                                [nbPopover]="groupMembersTemplate"
+                                                [nbPopoverContext]="getGroupMembers(sharedAccess.resourceId)"
+                                                nbPopoverTrigger="hover"
+                                                nbPopoverPlacement="bottom">
+                                                {{ getSharedAccessName(sharedAccess) }}
+                                            </b>
+                                        </div>
+                                        <div>
+                                            Modo de acceso: {{getAccessMode(sharedAccess.accessModeId)?.label}}
                                             <button nbButton class="ml-2" size="tiny" status="primary" (click)="changeAccessMode(sharedAccess.id)">Cambiar</button>
                                         </div>
                                     </div>
@@ -87,3 +105,8 @@
       </nb-card-footer>
     </nb-card>
   </ng-template>
+<ng-template #groupMembersTemplate let-members>
+    <ul class="p-2">
+        <li class="no-bullet" *ngFor="let member of members"> {{member.name}} {{member.lastName}}</li>
+    </ul>
+</ng-template>

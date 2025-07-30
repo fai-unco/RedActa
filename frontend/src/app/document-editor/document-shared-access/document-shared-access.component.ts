@@ -12,8 +12,6 @@ import { ItemSelectorComponent } from 'src/app/shared/item-selector/item-selecto
   styleUrls: ['./document-shared-access.component.scss']
 })
 export class DocumentSharedAccessComponent implements OnInit {
-
-  //@Input('documentId') 
   documentId: any;
   viewState = '';
   exportOptions = [
@@ -25,6 +23,7 @@ export class DocumentSharedAccessComponent implements OnInit {
   documentVisibilityLevelId!: number;
   shareLink: string = 'https://redacta.fi.uncoma.edu.ar/documentos/editar?id=';
   users: any [] = [];
+  groups: any [] = [];
   accessModeName: string = 'Sin definir';
   accessModes: any [] = [];
   owner: any;
@@ -39,22 +38,28 @@ export class DocumentSharedAccessComponent implements OnInit {
     if(this.documentId){
       this.viewState = 'loading';
       let requests = [
-        this.connectionService.get('documents_shared_accesses?document_id=' + this.documentId),
         this.connectionService.get('documents', this.documentId),
         this.connectionService.get('visibility_levels'),
         this.connectionService.get('redacta_users'),
         this.connectionService.get('access_modes'),
+        this.connectionService.get('groups'),
       ];
       forkJoin(requests).subscribe({
         next: (res: any) => {
-          this.documentSharedAccesses = res[0].data;
-          this.documentVisibilityLevelId = res[1].data.visibilityLevelId;
-          this.visibilityLevels = res[2].data;
+          this.documentSharedAccesses = res[0].data.documentSharedAccesses;
+          this.documentVisibilityLevelId = res[0].data.visibilityLevelId;
+          this.visibilityLevels = res[1].data;
           this.viewState = 'rendering';
           this.shareLink = this.shareLink + this.documentId;
-          this.users = res[3].data.map((user: any) => {return {id: user.id, name: user.name + ' ' + user.lastName}});
-          this.accessModes = res[4].data;
-          this.owner = this.users.find((user: any) => user.id == res[1].data.redactaUserId);
+          this.users = res[2].data.map((user: any) => {return {id: user.id, name: user.name + ' ' + user.lastName}});
+          this.accessModes = res[3].data;
+          this.groups = res[4].data.map((group: any) => ({
+            ...group,
+            description: group.redactaUsers
+              ? group.redactaUsers.map((u: any) => `${u.name} ${u.lastName}`).join(', ')
+              : ''
+          }));
+          this.owner = this.users.find((user: any) => user.id == res[0].data.redactaUserId);
         },
         error: _ => {
           this.viewState = 'error';
@@ -64,18 +69,56 @@ export class DocumentSharedAccessComponent implements OnInit {
   }
 
   addDocumentSharedAccess() {
-    this.dialogService.open(ItemSelectorComponent, {context: {items: this.users, itemName: 'usuario', filterBy: 'name', autocomplete: true}}).onClose.subscribe(user => {
-      if (user != null) {
-        this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, redactaUserId: user.id})
-        .pipe(finalize(() => {this.viewState = 'rendering'}))
-          .subscribe({
-            next: _ => {
-              this.getDocumentSharedAccesss();
-            },
-            error: e => {
-              this.errorHandler.handle(e);
+    this.dialogService.open(ItemSelectorComponent, {
+      context: {
+        items: [
+          { id: 'user', name: 'Cuenta individual' },
+          { id: 'group', name: 'Grupo' }
+        ],
+        itemName: 'tipo de acceso',
+        filterBy: 'name',
+        autocomplete: false
+      }
+    }).onClose.subscribe(type => {
+      if (type != null) {
+        if (type.id === 'user') {
+          this.dialogService.open(ItemSelectorComponent, {context: {items: this.users, itemName: 'cuenta', filterBy: 'name', autocomplete: true}}).onClose.subscribe(user => {
+            if (user != null) {
+              this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, resourceId: user.id, resourceType: 'user'})
+                .pipe(finalize(() => {this.viewState = 'rendering'}))
+                .subscribe({
+                  next: _ => {
+                    this.getDocumentSharedAccesss();
+                  },
+                  error: e => {
+                    this.errorHandler.handle(e);
+                  }
+                })
             }
           })
+        } else if (type.id === 'group') {
+          this.dialogService.open(ItemSelectorComponent, {
+            context: {
+              items: this.groups,
+              itemName: 'grupo',
+              filterBy: 'name',
+              autocomplete: true
+            }
+          }).onClose.subscribe(group => {
+            if (group != null) {
+              this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, resourceId: group.id, resourceType: 'group'})
+                .pipe(finalize(() => {this.viewState = 'rendering'}))
+                .subscribe({
+                  next: _ => {
+                    this.getDocumentSharedAccesss();
+                  },
+                  error: e => {
+                    this.errorHandler.handle(e);
+                  }
+                })
+            }
+          })
+        }
       }
     })
   }
@@ -151,6 +194,14 @@ export class DocumentSharedAccessComponent implements OnInit {
     return this.accessModes[index];
   }
 
+  getSharedAccessName(access: any): string {
+    let listToSearch = access.resourceType == 'redactaUser' ? this.users : this.groups;
+    let index = listToSearch.findIndex((item: any) => item.id == access.resourceId);
+    return index != -1 ? listToSearch[index].name : 'Sin definir';
+  }
 
+  getGroupMembers(groupId: number): any[] {
+    const group = this.groups.find((g: any) => g.id === groupId);
+    return group && group.redactaUsers ? group.redactaUsers : [];
+  }
 }
-
