@@ -45,6 +45,7 @@ class AnexoController extends Controller
         try {
             $data = $request->validated();
             $file = File::find($data['file_id']);
+            // Check if the file exists and belongs to the user
             if (!$file || $file->redactaUser->id != $request->user()->id) {
                 return response()->json([
                     'status' => 422,
@@ -52,17 +53,12 @@ class AnexoController extends Controller
                 ], 422);
             }
             $document = Document::find($data['document_id']);
-            if (!$this->userHasAccessToDocument($request->user()->id, $document)) {
+            // Check if the document exists and can be accessed by the user
+            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
                 return response()->json([
-                    'status' => 422,
-                    'message' => 'Documento inválido'        
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
                 ], 422);
-            }
-            if (!$this->userCanEdit($request->user()->id, $document)) {
-                return response()->json([
-                    'status' => 405,
-                    'message' => 'Recurso de solo lectura'        
-                ], 405);
             }
             $anexo = new Anexo();
             $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $document, $file);
@@ -78,7 +74,7 @@ class AnexoController extends Controller
                 'status' => 500,
                 'message' => 'Error en el servidor. Reintente la operación'
             ], 500);
-        } 
+        }
     }
 
     /**
@@ -115,24 +111,29 @@ class AnexoController extends Controller
         try {
             $data = $request->validated();
             $anexo = Anexo::find($id);
-            if (!$anexo || !$this->userHasAccessToDocument($request->user()->id, $anexo->document)) {
+            if (!$anexo) {
                 return response()->json([
                     'status' => 404,
                     'message' => 'Recurso inexistente',       
                 ], 404);  
             }
-            if (!$this->userCanEdit($request->user()->id, $anexo->document)) {
+            // Check if the user has access to the document
+            if (!$anexo->document->isAccessibleToRedactaUser($request->user(), 1)) {
                 return response()->json([
-                    'status' => 405,
-                    'message' => 'Recurso de solo lectura'        
-                ], 405);
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);
             }
-            $file = File::find($data['file_id']);
-            if (!$file || !$this->userHasAccessToDocument($file->redactaUser->id, $anexo->document)) {
-                return response()->json([
-                    'status' => 422,
-                    'message' => 'Archivo inválido',       
-                ], 422);  
+
+            if (isset($data['file_id'])) {
+                // Check if the file exists and belongs to the user
+                $file = File::find($data['file_id']);
+                if ($file->redactaUser->id != $request->user()->id) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Archivo inválido'        
+                    ], 422);
+                }
             }
             $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $anexo->document, $file);
             return response()->json([
@@ -160,12 +161,19 @@ class AnexoController extends Controller
     {
         try {
             $anexo =  Anexo::find($id);
-            if(!$anexo || !$this->userHasAccessToDocument($request->user()->id, $anexo->document)){
+            if(!$anexo){
                 return response()->json([
                     'status' => 404,
                     'message' => 'Recurso inexistente',       
                 ], 404);     
             } 
+            // Check if the user has access to the document
+            if (!$anexo->document->isAccessibleToRedactaUser($request->user(), 1)) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
+                ], 403);            
+            }
             $anexo->delete();
             return response()->json([
                 'status' => 200,
@@ -181,35 +189,4 @@ class AnexoController extends Controller
             ], 500);
         } 
     }
-
-    private function userHasAccessToDocument($loggedInUserId, $document) {
-        if ($document->redactaUser->id != $loggedInUserId && $document->visibilityLevel->name == 'private') {
-            $documentSharedAccess = DocumentSharedAccess::where([
-                ['redacta_user_id', '=', $loggedInUserId],
-                ['document_id', '=', $document->id]
-            ])->get();
-            if (count($documentSharedAccess) == 0) {
-                return false;
-            }
-        }
-        return true; 
-    }
-
-    private function userCanEdit($loggedInUserId, $document) {
-        if ($document->redactaUser->id == $loggedInUserId) {
-            return true;
-        } else if (str_ends_with($document->visibilityLevel->name, 'editable')) {
-            return true;
-        } else if ($document->visibilityLevel->name == 'private') {
-            $userDocumentAccess = DocumentSharedAccess::where([
-                ['redacta_user_id', '=', $loggedInUserId],
-                ['document_id', '=', $document->id]
-            ])->get()->first();
-            if ($userDocumentAccess->accessMode->name == 'editable') {
-                return true;
-            } 
-        } 
-        return false; 
-    }
-
 }

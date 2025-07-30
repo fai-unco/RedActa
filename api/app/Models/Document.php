@@ -97,4 +97,45 @@ class Document extends Model
             }
         }
     }
+
+    public function isAccessibleToRedactaUser(RedactaUser $redactaUser, int $accessModeId)
+    {
+        // Check if the document is owned by the user
+        if ($redactaUser && $this->redactaUser->id === $redactaUser->id) {
+            return true;
+        }
+
+        // Check if the user has shared access to the document
+        $sharedAccess = null;
+        if ($redactaUser) {
+            $sharedAccess = $this->documentSharedAccesses()
+                ->where('document_shared_accessable_type', 'App\Models\RedactaUser')
+                ->where('document_shared_accessable_id', $redactaUser->id)
+                ->where('access_mode_id', '<=', $accessModeId)
+                ->first();
+        }
+
+        if ($sharedAccess) {
+            return true;
+        }
+
+        // If shared access does not exist, check if the user is part of a group that has access
+        $sharedAccess = $this->documentSharedAccesses()->whereHasMorph(
+            'documentSharedAccessable',
+            [\App\Models\Group::class],
+            function ($query) use ($redactaUser) {
+                $query->whereHas('redactaUsers', function ($q) use ($redactaUser) {
+                    $q->where('redacta_users.id', $redactaUser->id);
+                });
+            })
+            ->where('access_mode_id', '<=', $accessModeId)
+            ->first();
+
+            
+        if ($sharedAccess) {
+            return true;
+        }
+    
+        return false;
+    }
 }

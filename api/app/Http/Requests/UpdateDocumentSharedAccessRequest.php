@@ -26,10 +26,15 @@ class UpdateDocumentSharedAccessRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'redacta_user_id' => 'sometimes|numeric|exists:redacta_users,id',
+        $rules = [
             'document_id' => 'sometimes|numeric|exists:documents,id',
             'access_mode_id' => 'sometimes|numeric|exists:access_modes,id'
         ];
+        if ($this->input('resource_type') === 'group') {
+            $rules['resource_id'] = 'sometimes|numeric|exists:groups,id';
+        } else {
+            $rules['resource_id'] = 'sometimes|numeric|exists:redacta_users,id';
+        }
+        return $rules;
     }
 }
