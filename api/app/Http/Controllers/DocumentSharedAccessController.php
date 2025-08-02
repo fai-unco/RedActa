@@ -95,6 +95,7 @@ class DocumentSharedAccessController extends Controller
                 ], 409);
             }
             
+            $validatedData['shared_by'] = $request->user()->id;
             $documentSharedAccess = DocumentSharedAccess::create($validatedData);
 
             // Notify the user or group members about the shared access
