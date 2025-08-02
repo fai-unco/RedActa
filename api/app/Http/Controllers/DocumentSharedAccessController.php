@@ -188,44 +188,11 @@ class DocumentSharedAccessController extends Controller
                 ], 404);
             }
 
-            $documentSharedAccessableIdHasChanged = false;
-            $documentSharedAccessableTypeHasChanged = false;
-            $documentSharedAccessableId = $documentSharedAccess->document_shared_accessable_id;
-            $documentSharedAccessableType = $documentSharedAccess->document_shared_accessable_type;
-
-            if (!$documentSharedAccess->document || !$documentSharedAccess->document->isAccessibleToRedactaUser($request->user(), 1)) {
+            if (!$documentSharedAccess->document->isAccessibleToRedactaUser($request->user(), 1)) {
                 return response()->json([
                     'status' => 403,
                     'message' => 'No tiene los permisos necesarios para realizar la operación'        
                 ], 403);
-            }
-
-            $validatedData = $this->setDocumentSharedAccessableFields($validatedData, $request);
-
-            if (isset($validatedData['document_shared_accessable_id'])) {
-                $documentSharedAccessableIdHasChanged = $validatedData['document_shared_accessable_id'] != $documentSharedAccess->document_shared_accessable_id;
-                $documentSharedAccessableId = $validatedData['document_shared_accessable_id'];
-            }
-
-            if (isset($validatedData['document_shared_accessable_type'])) {
-                $documentSharedAccessableTypeHasChanged = $validatedData['document_shared_accessable_type'] != $documentSharedAccess->document_shared_accessable_type;
-                $documentSharedAccessableType = $validatedData['document_shared_accessable_type'];
-            }
-
-            // Check if the resource has changed
-            if ($documentSharedAccessableIdHasChanged || $documentSharedAccessableTypeHasChanged) {
-                $documentSharedAccessableType = $validatedData['document_shared_accessable_type'] ?? $documentSharedAccess->document_shared_accessable_type;
-                $documentSharedAccessableId = $validatedData['document_shared_accessable_id'] ?? $documentSharedAccess->document_shared_accessable_id;
-                // Check if exists a document shared access for the same user/group
-                if ($documentSharedAccess->document->documentSharedAccesses()
-                        ->where('document_shared_accessable_type', $documentSharedAccessableType)
-                        ->where('document_shared_accessable_id', $documentSharedAccessableId)
-                        ->exists()) {
-                    return response()->json([
-                        'status' => 409,
-                        'message' => 'Ya existe un acceso compartido al documento para el usuario o grupo seleccionado'        
-                    ], 409);
-                }
             }
 
             $documentSharedAccess->update($validatedData);
@@ -320,8 +287,8 @@ class DocumentSharedAccessController extends Controller
      */
     private function setDocumentSharedAccessableFields(array $validatedData, Request $request)
     {
-        if ($request->isMethod('post') && !isset($validatedData['access_mode_id'])){
-                $validatedData['access_mode_id'] = 1;
+        if (!isset($validatedData['access_mode_id'])) {
+            $validatedData['access_mode_id'] = 1;
         }
         if (isset($validatedData['resource_id'])) {
             $validatedData['document_shared_accessable_id'] = $validatedData['resource_id'];
