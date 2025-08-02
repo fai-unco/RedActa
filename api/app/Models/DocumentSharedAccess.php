@@ -15,6 +15,7 @@ class DocumentSharedAccess extends Model
         'access_mode_id',
         'document_shared_accessable_type',
         'document_shared_accessable_id',
+        'shared_by'
     ];
 
     protected $hidden = ['document_shared_accessable_type', 'document_shared_accessable_id'];
@@ -44,5 +45,9 @@ class DocumentSharedAccess extends Model
 
     public function getResourceIdAttribute() {
         return $this->attributes['document_shared_accessable_id'];
+    }
+
+    public function sharedBy() {
+        return $this->belongsTo(RedactaUser::class);
     }
 }
