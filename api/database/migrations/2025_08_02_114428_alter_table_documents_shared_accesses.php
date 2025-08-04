@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('documents_shared_accesses', function (Blueprint $table) {
-            $table->bigInteger('shared_by')->unsigned()->nullable();
-            $table->foreign('shared_by')->references('id')->on('redacta_users');
+            $table->bigInteger('redacta_user_id')->unsigned()->nullable();
+            $table->foreign('redacta_user_id')->references('id')->on('redacta_users');
         });
     }
 
@@ -27,8 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('documents_shared_accesses', function (Blueprint $table) {
-            $table->dropForeign(['shared_by']);
-            $table->dropColumn('shared_by');
+            $table->dropForeign(['redacta_user_id']);
+            $table->dropColumn('redacta_user_id');
         });
     }
 };
