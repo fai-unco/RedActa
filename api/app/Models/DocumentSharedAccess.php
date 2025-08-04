@@ -48,6 +48,6 @@ class DocumentSharedAccess extends Model
     }
 
     public function sharedBy() {
-        return $this->belongsTo(RedactaUser::class);
+        return $this->belongsTo(RedactaUser::class, 'shared_by');
     }
 }

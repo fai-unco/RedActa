@@ -352,8 +352,8 @@ class DocumentController extends Controller
                 $query = $query->whereDate('issue_date', '<=', $request->query('issue_date_end'));
             }
             $results = $query->orderBy('updated_at', 'desc')->get();
-            foreach ($results as $document){
-                array_push($output, [
+            foreach ($results as $document) {
+                $data = [
                     'id' => $document->id,
                     'issuer' => $document->issuer? $document->issuer->description : 'Sin definir',
                     'documentType' => $document->documentType->description,
@@ -361,7 +361,15 @@ class DocumentController extends Controller
                     'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
                     'number' => $document->number,
                     'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at)),
-                ]);
+                ];
+                if ($request->boolean('shared', false)) {
+                    $documentSharedAccesses = $document->documentSharedAccesses;
+                    if (!$documentSharedAccesses->isEmpty()) {
+                        $accessCreator = $documentSharedAccesses->first()->sharedBy;
+                        $data['shared_by'] =  $accessCreator->name.' '.$accessCreator->last_name;
+                    }
+                }
+                array_push($output, $data);
             }
             return $output; 
         } catch (\Throwable $th) {

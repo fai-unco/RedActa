@@ -84,6 +84,9 @@
                         Emisor: {{document.issuer}}<br>
                         Fecha de emisión: {{document.issueDate}}<br>
                         Última modificación: {{document.updatedAt}}<br>
+                        <ng-container *ngIf="document.sharedBy">
+                            Compartido por: {{document.sharedBy}}<br>
+                        </ng-container>
                     </div>
                     <div>
                         <button class="ghost-btn" nbButton ghost nbTooltip="Eliminar documento" (click)="removeDocument(document.id)">
