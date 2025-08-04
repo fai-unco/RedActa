@@ -55,7 +55,7 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.accessModes = res[3].data;
           this.groups = res[4].data.map((group: any) => ({
             ...group,
-            description: group.redactaUsers
+            detail: group.redactaUsers
               ? group.redactaUsers.map((u: any) => `${u.name} ${u.lastName}`).join(', ')
               : ''
           }));
