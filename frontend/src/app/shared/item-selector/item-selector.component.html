@@ -11,8 +11,8 @@
                 <nb-option *ngFor="let item of filteredItems | async" [value]="item[filterBy]" (click)="selectItem(item)">
                     <div>
                         {{ item[filterBy] }}
-                        <div *ngIf="item.description" class="text-muted">
-                            {{ item.description }}
+                        <div *ngIf="item.detail" class="text-muted">
+                            {{ item.detail }}
                         </div>
                     </div>
                 </nb-option>
@@ -23,8 +23,8 @@
             <nb-option *ngFor="let item of items" [value]="item.id" (click)="selectItem(item)">
                 <div>
                     {{item[filterBy]}}
-                    <div *ngIf="item.description" class="text-muted">
-                        {{ item.description }}
+                    <div *ngIf="item.detail" class="text-muted">
+                        {{ item.detail }}
                     </div>
                 </div>
             </nb-option>
