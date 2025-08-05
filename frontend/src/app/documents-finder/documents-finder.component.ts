@@ -6,6 +6,8 @@ import { DatePipe } from '@angular/common'
 import { ErrorHandlerService } from '../shared/error-handler/error-handler.service';
 import { NbDialogService } from '@nebular/theme';
 import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
+import { AuthService } from '../auth/auth.service';
+
 
 @Component({
   selector: 'app-documents-finder',
@@ -20,37 +22,46 @@ export class DocumentsFinderComponent implements OnInit {
   documentTypes!: any;
   issuers!: any;
   loadingForm!: boolean;
+  redactaUsers!: any;
+  currentUserId!: number;
   
   constructor(private connectionService: ApiConnectionService, 
               private fb: FormBuilder, 
               private datePipe: DatePipe,
               private errorHandler: ErrorHandlerService,
-              private dialogService: NbDialogService) { }
+              private dialogService: NbDialogService,
+              private authService: AuthService) { }
 
   ngOnInit(): void {
     this.loadingForm = true;
-    forkJoin([this.connectionService.get('document_types'), this.connectionService.get('issuers')])
+    this.currentUserId = this.authService.getCurrentUserId();
+    forkJoin([
+      this.connectionService.get('document_types'), 
+      this.connectionService.get('issuers'),
+      this.connectionService.get('redacta_users')
+    ])
     .pipe(finalize(() => this.loadingForm = false))
     .subscribe({
         next: (results: any) => {
           this.documentTypes = results[0].data;
-          this.issuers = results[1].data;  
+          this.issuers = results[1].data;
+          this.redactaUsers = results[2].data.filter((user: any) => user.id !== this.currentUserId);
+          this.searchForm = this.fb.group({
+            keywords: this.fb.control(''),
+            number: this.fb.control(''),
+            name: this.fb.control(''),
+            documentTypeId: this.fb.control(''),
+            issuerId: this.fb.control(''),
+            issueDateStart: this.fb.control(''),
+            issueDateEnd: this.fb.control(''),
+            shared: this.fb.control('0'),
+            sharedBy: this.fb.control('')
+          });
         }, 
         error: (e) =>{
           this.errorHandler.handle(e, '/');
         }
-    }),
-    this.searchForm = this.fb.group({
-      keywords: this.fb.control(''),
-      number: this.fb.control(''),
-      name: this.fb.control(''),
-      documentTypeId: this.fb.control(''),
-      issuerId: this.fb.control(''),
-      issueDateStart: this.fb.control(''),
-      issueDateEnd: this.fb.control(''),
-      shared: this.fb.control('0')
-    });
-       
+    })
   }
 
   private formatDate(date: any){
