@@ -18,6 +18,7 @@ export class AuthService {
     setSession(authResult: any) {
         localStorage.setItem('access_token', authResult.accessToken);
         localStorage.setItem('username', authResult.username);
+        localStorage.setItem('user_id', authResult.redactaUserId);
         this.router.navigate(['/']);
     }          
 
@@ -38,6 +39,10 @@ export class AuthService {
             username = '';
         }
         return username;
+    }
+
+    getCurrentUserId(): number {
+        return Number(localStorage.getItem('user_id'));
     }
 }
           
