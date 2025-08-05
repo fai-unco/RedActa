@@ -58,7 +58,8 @@ class AuthenticationController extends Controller
                 'data' => [
                     'access_token' => $token,
                     'token_type' => 'Bearer',
-                    'username' => $user->name.' '.$user->last_name
+                    'username' => $user->name.' '.$user->last_name,
+                    'redacta_user_id' => $user->id,
                 ]
             ], 200);
         } catch (\Throwable $th) {
