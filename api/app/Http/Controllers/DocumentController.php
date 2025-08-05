@@ -313,20 +313,23 @@ class DocumentController extends Controller
             $query =  Document::with(['issuer','documentType']);
             if ($request->boolean('shared', false)) {
                 // Get ids from documents shared with the currrent user
-                $sharedDocumentIds = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\RedactaUser')
-                    ->where('document_shared_accessable_id', $request->user()->id)
-                    ->pluck('document_id')
-                    ->toArray();
+                $singleUserSharedDocumentQuery = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\RedactaUser')
+                    ->where('document_shared_accessable_id', $request->user()->id);
 
                 // Get ids from documents shared with groups which current user belongs to
                 $userGroupIds = $request->user()->groups()->pluck('group_id')->toArray();
-                $groupSharedDocumentIds = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\Group')
-                    ->whereIn('document_shared_accessable_id', $userGroupIds)
-                    ->pluck('document_id')
-                    ->toArray();
+                $groupSharedDocumentQuery = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\Group')
+                    ->whereIn('document_shared_accessable_id', $userGroupIds);
+                
+                if ($request->query('shared_by', '*') != '*') {
+                    $singleUserSharedDocumentQuery->where('redacta_user_id', $request->query('shared_by'));
+                    $groupSharedDocumentQuery->where('redacta_user_id', $request->query('shared_by'));
+                }
+                $singleUserSharedDocumentIds = $singleUserSharedDocumentQuery->pluck('document_id')->toArray();
+                $groupSharedDocumentIds = $groupSharedDocumentQuery->pluck('document_id')->toArray();
 
                 // Merge both arrays and remove duplicates
-                $documentsId = array_unique(array_merge($sharedDocumentIds, $groupSharedDocumentIds));
+                $documentsId = array_unique(array_merge($singleUserSharedDocumentIds, $groupSharedDocumentIds));
 
                 $query = Document::whereIn('id', $documentsId)
                     ->where('redacta_user_id', '<>', $request->user()->id);
@@ -352,8 +355,8 @@ class DocumentController extends Controller
                 $query = $query->whereDate('issue_date', '<=', $request->query('issue_date_end'));
             }
             $results = $query->orderBy('updated_at', 'desc')->get();
-            foreach ($results as $document){
-                array_push($output, [
+            foreach ($results as $document) {
+                $data = [
                     'id' => $document->id,
                     'issuer' => $document->issuer? $document->issuer->description : 'Sin definir',
                     'documentType' => $document->documentType->description,
@@ -361,7 +364,17 @@ class DocumentController extends Controller
                     'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
                     'number' => $document->number,
                     'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at)),
-                ]);
+                ];
+                if ($request->boolean('shared', false)) {
+                    $documentSharedAccesses = $document->documentSharedAccesses;
+                    if (!$documentSharedAccesses->isEmpty()) {
+                        $accessCreator = $documentSharedAccesses->first()->redactaUser;
+                        if ($accessCreator) {
+                            $data['shared_by'] =  $accessCreator->name.' '.$accessCreator->last_name;
+                        }
+                    }
+                }
+                array_push($output, $data);
             }
             return $output; 
         } catch (\Throwable $th) {
