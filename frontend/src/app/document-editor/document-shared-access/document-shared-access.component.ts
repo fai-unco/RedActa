@@ -84,6 +84,7 @@ export class DocumentSharedAccessComponent implements OnInit {
         if (type.id === 'user') {
           this.dialogService.open(ItemSelectorComponent, {context: {items: this.users, itemName: 'cuenta', filterBy: 'name', autocomplete: true}}).onClose.subscribe(user => {
             if (user != null) {
+              this.viewState = 'loading';
               this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, resourceId: user.id, resourceType: 'user'})
                 .pipe(finalize(() => {this.viewState = 'rendering'}))
                 .subscribe({
@@ -106,6 +107,7 @@ export class DocumentSharedAccessComponent implements OnInit {
             }
           }).onClose.subscribe(group => {
             if (group != null) {
+              this.viewState = 'loading';
               this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, resourceId: group.id, resourceType: 'group'})
                 .pipe(finalize(() => {this.viewState = 'rendering'}))
                 .subscribe({
