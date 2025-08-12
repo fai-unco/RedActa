@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 
 class RedactaUser extends Authenticatable
 {
-    use HasApiTokens, HasFactory, SoftDeletes;
+    use HasApiTokens, HasFactory, SoftDeletes, HasRoles;
 
     protected $fillable = [
         'name',
@@ -32,10 +33,6 @@ class RedactaUser extends Authenticatable
     public function documents()
     {
         return $this->hasMany(Document::class);
-    }
-
-    public function roles(){
-        return $this->hasMany(Role::class);
     }
 
     public function documentSignaturePresentations()
