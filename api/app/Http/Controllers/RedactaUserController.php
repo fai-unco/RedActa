@@ -15,19 +15,12 @@ class RedactaUserController extends Controller
      */
     public function index()
     {
-        try {
-            $users = RedactaUser::all();
-            return response()->json([
-                'status' => 200,
-                'description' => 'OK',
-                'data' => $users       
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $users = RedactaUser::all();
+        return response()->json([
+            'status' => 200,
+            'description' => 'OK',
+            'data' => $users       
+        ]);
     }
 
     /**
@@ -59,25 +52,18 @@ class RedactaUserController extends Controller
      */
     public function show($id)
     {
-        try {
-            $user = RedactaUser::find($id);
-            if(!$user){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
+        $user = RedactaUser::find($id);
+        if(!$user){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $user           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $user           
+        ]);
     }
 
     /**

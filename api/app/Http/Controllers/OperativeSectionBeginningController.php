@@ -19,24 +19,17 @@ class OperativeSectionBeginningController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
-        try {    
-            if($request->has('issuer_id')){
-                $results = OperativeSectionBeginning::where('issuer_id', $request->query('issuer_id'))->get();
-            } else {
-                $results = OperativeSectionBeginning::all();
-            }
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $results           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+    { 
+        if($request->has('issuer_id')){
+            $results = OperativeSectionBeginning::where('issuer_id', $request->query('issuer_id'))->get();
+        } else {
+            $results = OperativeSectionBeginning::all();
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $results           
+        ]);
     }
 
     /**
@@ -56,21 +49,15 @@ class OperativeSectionBeginningController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(StoreOperativeSectionBeginningRequest $request)
-    {
-        try {  
-            $validatedData = $request->validated();
-            $operativeSectionBeginning = OperativeSectionBeginning::create($validatedData);
-            return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $operativeSectionBeginning           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+    {  
+        $this->authorize('create', OperaticeSectionBeginning::class);
+        $validatedData = $request->validated();
+        $operativeSectionBeginning = OperativeSectionBeginning::create($validatedData);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $operativeSectionBeginning           
+        ]);
     }
 
     /**
@@ -80,26 +67,19 @@ class OperativeSectionBeginningController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        try {  
-            $operativeSectionBeginning = OperativeSectionBeginning::find($id);
-            if (!$operativeSectionBeginning) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
+    {  
+        $operativeSectionBeginning = OperativeSectionBeginning::find($id);
+        if (!$operativeSectionBeginning) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $operativeSectionBeginning           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $operativeSectionBeginning           
+        ]);
     }
 
     /**
@@ -122,27 +102,21 @@ class OperativeSectionBeginningController extends Controller
      */
     public function update(UpdateOperativeSectionBeginningRequest $request, $id)
     {
-        try { 
-            $validatedData = $request->validated();
-            $operativeSectionBeginning = OperativeSectionBeginning::find($id);
-            if (!$operativeSectionBeginning) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
-            $operativeSectionBeginning->update($validatedData);
+        $operativeSectionBeginning = OperativeSectionBeginning::find($id);
+        if (!$operativeSectionBeginning) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $operativeSectionBeginning           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        $this->authorize('update', $operativeSectionBeginning);
+        $validatedData = $request->validated();
+        $operativeSectionBeginning->update($validatedData);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $operativeSectionBeginning           
+        ]);
     }
 
     /**
@@ -153,7 +127,20 @@ class OperativeSectionBeginningController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $operativeSectionBeginning = OperativeSectionBeginning::find($id);
+        if(!$operativeSectionBeginning){
+            return response()->json([
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
+        }
+        $this->authorize('delete', $operativeSectionBeginning);
+        $operativeSectionBeginning->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $operativeSectionBeginning         
+        ]);
     }
 }
 

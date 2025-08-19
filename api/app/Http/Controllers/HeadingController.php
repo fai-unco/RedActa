@@ -22,28 +22,21 @@ class HeadingController extends Controller
         /* Accepted query parameters:
             - include_file (boolean): send data of the associated file in response
             - issuer_id (number): the id of the issuer whose headings will be returned
-        */  
-        try {       
-            $searchParameters = [];
-            if($request->boolean('include_file', false)){
-                $headings = Heading::with(['file']);
-            } else {
-                $headings = Heading::query();
-            }
-            if($request->has('issuer_id')){
-                $headings = $headings->where('issuer_id', $request->query('issuer_id'));
-            }
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $headings->get()          
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+        */        
+        $searchParameters = [];
+        if($request->boolean('include_file', false)){
+            $headings = Heading::with(['file']);
+        } else {
+            $headings = Heading::query();
         }
+        if($request->has('issuer_id')){
+            $headings = $headings->where('issuer_id', $request->query('issuer_id'));
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $headings->get()          
+        ]);
     }
 
     /**
@@ -64,21 +57,15 @@ class HeadingController extends Controller
      */
     public function store(StoreHeadingRequest $request)
     {
-        try {
-            $validatedData = $request->validated();
-            $heading = new Heading(); 
-            $heading->set($validatedData);
-            return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $heading           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $this->authorize('create', Heading::class);
+        $validatedData = $request->validated();
+        $heading = new Heading(); 
+        $heading->set($validatedData);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $heading           
+        ]);
     }
 
     /**
@@ -89,30 +76,22 @@ class HeadingController extends Controller
      */
     public function show(Request $request, $id)
     {
-        try {
-            if($request->boolean('include_file', false)){
-                $heading = Heading::find($id);
-            } else {
-                $heading = Heading::with(['file'])->where('id', $id)->first();
-            }  
-            if(!$heading){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
+        if($request->boolean('include_file', false)){
+            $heading = Heading::find($id);
+        } else {
+            $heading = Heading::with(['file'])->where('id', $id)->first();
+        }  
+        if(!$heading){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $heading           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
-
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $heading           
+        ]);
     }
 
     /**
@@ -135,27 +114,21 @@ class HeadingController extends Controller
      */
     public function update(UpdateHeadingRequest $request, $id)
     {
-        try {
-            $validatedData = $request->validated();
-            $heading = Heading::find($id);
-            if(!$heading){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
-            $heading->set($validatedData);
+        $validatedData = $request->validated();
+        $heading = Heading::find($id);
+        if(!$heading){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $heading           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        $this->authorize('update', $heading);
+        $heading->set($validatedData);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $heading           
+        ]);
     }
 
     /**

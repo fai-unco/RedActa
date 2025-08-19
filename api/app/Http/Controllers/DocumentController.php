@@ -52,40 +52,33 @@ class DocumentController extends Controller
      */
     public function store(StoreDocumentRequest $request)
     {
-        try {
-            $data = $request->validated();
-            if (!isset($data['true_copy_stamp_id']) && isset($data['issuer_id'])) {
-                $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
-                if (isset($issuerSettings->suggestedTrueCopyStamp)) {
-                    $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
-                }
+        $data = $request->validated();
+        if (!isset($data['true_copy_stamp_id']) && isset($data['issuer_id'])) {
+            $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
+            if (isset($issuerSettings->suggestedTrueCopyStamp)) {
+                $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
             }
-            if (isset($data['stamps'])) {
-                $data['stamps'] = json_encode( $data['stamps']);
-            }
-            $data['redacta_user_id'] = $request->user()->id;
-            $document = new Document();
-            $document->set($data);
-            $document->save();
-            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
-            $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
-            $document->body = json_decode($document->body);
-            if ($document->stamps) {
-                $document->stamps = json_decode($document->stamps);
-            } else {
-                $document->stamps = [];
-            }
-            return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $document        
-            ], 201);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
         }
+        if (isset($data['stamps'])) {
+            $data['stamps'] = json_encode( $data['stamps']);
+        }
+        $data['redacta_user_id'] = $request->user()->id;
+        $document = new Document();
+        $document->set($data);
+        $document->save();
+        $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
+        $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
+        $document->body = json_decode($document->body);
+        if ($document->stamps) {
+            $document->stamps = json_decode($document->stamps);
+        } else {
+            $document->stamps = [];
+        }
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $document        
+        ], 201);
     }
 
     /**
@@ -97,47 +90,42 @@ class DocumentController extends Controller
      */
     public function show(Request $request, $id)
     {
-        try {
-            $document = Document::find($id);
-            $loggedInUserId = $request->user()->id;
-            if (!$document->isAccessibleToRedactaUser($request->user(), 2)) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
-                ], 403);
-            }                  
-            if ($request->accepts(['application/pdf'])) {                
-                $isCopy = $request->boolean('is_copy', false);
-                $blankPageAtEnd = $request->boolean('blank_page_at_end', false);
-                $filename = 'documento';
-                $filename = $document->name;
-                if($isCopy){
-                    $filename = $filename.'_copia';
-                }
-                return response($this->generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd))
-                    ->header('Content-Type', 'application/pdf')
-                    ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
-                    ->header('Access-Control-Expose-Headers', 'Content-Disposition');
-            } else if ($request->accepts(['application/json'])) {
-                $document->load('documentSharedAccesses');
-                $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
-                $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
-                $document->body = json_decode($document->body);
-                if ($document->stamps) {
-                    $document->stamps = json_decode($document->stamps);
-                } else {
-                    $document->stamps = [];
-                }
-                return response()->json([
-                    'status' => 200,
-                    'message' => $loggedInUserId,
-                    'data' => $document            
-                ]);  
-            }
-        } catch (\Throwable $th) {
+        $document = Document::find($id);
+        if (!$document) {
             return response()->json([
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente'        
+            ], 404);
+        }
+        $loggedInUserId = $request->user()->id;
+        $this->authorize('view', $document);              
+        if ($request->accepts(['application/pdf'])) {                
+            $isCopy = $request->boolean('is_copy', false);
+            $blankPageAtEnd = $request->boolean('blank_page_at_end', false);
+            $filename = 'documento';
+            $filename = $document->name;
+            if($isCopy){
+                $filename = $filename.'_copia';
+            }
+            return response($this->generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd))
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'.pdf"; filename*="'.$filename.'.pdf"')
+                ->header('Access-Control-Expose-Headers', 'Content-Disposition');
+        } else if ($request->accepts(['application/json'])) {
+            $document->load('documentSharedAccesses');
+            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
+            $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
+            $document->body = json_decode($document->body);
+            if ($document->stamps) {
+                $document->stamps = json_decode($document->stamps);
+            } else {
+                $document->stamps = [];
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'OK',
+                'data' => $document            
+            ]);  
         }
     }
 
@@ -163,48 +151,41 @@ class DocumentController extends Controller
 
     public function update(UpdateDocumentRequest $request, $id)
     {
-        try {
-            $data = $request->validated();
-            $document = Document::find($id);
-            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
-                ], 403);
-            }
-
-            if (isset($data['body'] )) {
-                $data['body'] = json_encode($data['body']);
-            }
-            if (isset($data['stamps'])) {
-                $data['stamps'] = json_encode( $data['stamps']);
-            }
-            if (isset($data['issuer_id']) && !$document->true_copy_stamp_id) {
-                $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
-                if (isset($issuerSettings->suggestedTrueCopyStamp)) {
-                    $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
-                }
-            }
-            $document->update($data);
-            $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
-            $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
-            $document->body = json_decode($document->body);
-            if ($document->stamps) {
-                $document->stamps = json_decode($document->stamps);
-            } else {
-                $document->stamps = [];
-            }
+        $data = $request->validated();
+        $document = Document::find($id);
+        if (!$document) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $document           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente'        
+            ], 404);
         }
+        $this->authorize('update', $document);
+        if (isset($data['body'] )) {
+            $data['body'] = json_encode($data['body']);
+        }
+        if (isset($data['stamps'])) {
+            $data['stamps'] = json_encode( $data['stamps']);
+        }
+        if (isset($data['issuer_id']) && !$document->true_copy_stamp_id) {
+            $issuerSettings = Issuer::find($data['issuer_id'])->issuerSettings;
+            if (isset($issuerSettings->suggestedTrueCopyStamp)) {
+                $data['true_copy_stamp_id'] = $issuerSettings->suggestedTrueCopyStamp->id;
+            }
+        }
+        $document->update($data);
+        $document->anexos = Anexo::with(['file'])->where('document_id', $document->id)->orderBy('index', 'ASC')->get();
+        $document->signatures = Signature::with(['stamp'])->where('document_id', $document->id)->get();
+        $document->body = json_decode($document->body);
+        if ($document->stamps) {
+            $document->stamps = json_decode($document->stamps);
+        } else {
+            $document->stamps = [];
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $document           
+        ]);
     }
 
     /**
@@ -216,27 +197,20 @@ class DocumentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        try { 
-            $document = Document::find($id);
-            //if (!$document || $document->redactaUser->id != $request->user()->id) {
-            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
-                ], 403);
-            }
-            $document->delete();
+        $document = Document::find($id);
+        if (!$document) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $document           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente'        
+            ], 404);
         }
+        $this->authorize('delete', $document);
+        $document->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $document           
+        ]);
     }
 
      /**
@@ -247,36 +221,24 @@ class DocumentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function setVisibilityLevel(Request $request, $id) {
-        try {
-            $document = Document::find($id);
-            if (!$document) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente'        
-                ], 404);
-            }
-            if ($document->redactaUser->id != $request->user()->id) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'Solo el propietario del recurso puede realizar la acción'        
-                ], 404);
-            }
-            $validator = Validator::make($request->all(), [
-                'visibility_level_id' => 'required|numeric|exists:visibility_levels,id'
-            ], [
-                'required' => 'El campo "nivel de visibilidad" es requerido',
-                'numeric' => 'El campo "nivel de visibilidad" debe ser un número',
-                'exists' => 'El valor ingresado para "nivel de visibilidad" no es válido'
-            ])->stopOnFirstFailure(true);
-            $validator->validate();
-            $document->visibility_level_id = $request->input('visibility_level_id');
-            $document->save();
-        } catch (\Throwable $th) {
+        $document = Document::find($id);
+        if (!$document) {
             return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente'        
+            ], 404);
         }
+        $this->authorize('update', $document);
+        $validator = Validator::make($request->all(), [
+            'visibility_level_id' => 'required|numeric|exists:visibility_levels,id'
+        ], [
+            'required' => 'El campo "nivel de visibilidad" es requerido',
+            'numeric' => 'El campo "nivel de visibilidad" debe ser un número',
+            'exists' => 'El valor ingresado para "nivel de visibilidad" no es válido'
+        ])->stopOnFirstFailure(true);
+        $validator->validate();
+        $document->visibility_level_id = $request->input('visibility_level_id');
+        $document->save();
     }
 
     public function generatePDF($document, $isCopy, $loggedInUserId, $blankPageAtEnd){      
@@ -294,98 +256,91 @@ class DocumentController extends Controller
         return $pdf;
     }
 
-    public function search(Request $request){
-        try {
-            $params = [
-                'keywords',
-                'document_type_id',
-                'name',
-                'number',
-                'issuer_id',
-                'issue_place',
-                'subject',
-                'destinatary'
-            ];
-            $searchInput = [];
-            $output = [];
+    public function search(Request $request){        
+        $params = [
+            'keywords',
+            'document_type_id',
+            'name',
+            'number',
+            'issuer_id',
+            'issue_place',
+            'subject',
+            'destinatary'
+        ];
+        $searchInput = [];
+        $output = [];
 
-            $isCopy = $request->boolean('is_copy', false);
-            $query =  Document::with(['issuer','documentType']);
-            if ($request->boolean('shared', false)) {
-                // Get ids from documents shared with the currrent user
-                $singleUserSharedDocumentQuery = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\RedactaUser')
-                    ->where('document_shared_accessable_id', $request->user()->id);
+        $isCopy = $request->boolean('is_copy', false);
+        $query =  Document::with(['issuer','documentType']);
+        if ($request->boolean('shared', false)) {
+            // Get ids from documents shared with the currrent user
+            $singleUserSharedDocumentQuery = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\RedactaUser')
+                ->where('document_shared_accessable_id', $request->user()->id);
 
-                // Get ids from documents shared with groups which current user belongs to
-                $userGroupIds = $request->user()->groups()->pluck('group_id')->toArray();
-                $groupSharedDocumentQuery = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\Group')
-                    ->whereIn('document_shared_accessable_id', $userGroupIds);
-                
-                if ($request->query('shared_by', '*') != '*') {
-                    $singleUserSharedDocumentQuery->where('redacta_user_id', $request->query('shared_by'));
-                    $groupSharedDocumentQuery->where('redacta_user_id', $request->query('shared_by'));
-                }
-                $singleUserSharedDocumentIds = $singleUserSharedDocumentQuery->pluck('document_id')->toArray();
-                $groupSharedDocumentIds = $groupSharedDocumentQuery->pluck('document_id')->toArray();
+            // Get ids from documents shared with groups which current user belongs to
+            $userGroupIds = $request->user()->groups()->pluck('group_id')->toArray();
+            $groupSharedDocumentQuery = DocumentSharedAccess::where('document_shared_accessable_type', 'App\\Models\\Group')
+                ->whereIn('document_shared_accessable_id', $userGroupIds);
+            
+            if ($request->query('shared_by', '*') != '*') {
+                $singleUserSharedDocumentQuery->where('redacta_user_id', $request->query('shared_by'));
+                $groupSharedDocumentQuery->where('redacta_user_id', $request->query('shared_by'));
+            }
+            $singleUserSharedDocumentIds = $singleUserSharedDocumentQuery->pluck('document_id')->toArray();
+            $groupSharedDocumentIds = $groupSharedDocumentQuery->pluck('document_id')->toArray();
 
-                // Merge both arrays and remove duplicates
-                $documentsId = array_unique(array_merge($singleUserSharedDocumentIds, $groupSharedDocumentIds));
+            // Merge both arrays and remove duplicates
+            $documentsId = array_unique(array_merge($singleUserSharedDocumentIds, $groupSharedDocumentIds));
 
-                $query = Document::whereIn('id', $documentsId)
-                    ->where('redacta_user_id', '<>', $request->user()->id);
-            } else {
-                $query = Document::where('redacta_user_id', $request->user()->id);
-            }
-            foreach ($params as $param) {
-                if ($request->has($param)) { 
-                    if (in_array($param, ['name', 'destinatary', 'subject'])){
-                        array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
-                    } else if ($param == 'keywords'){
-                        array_push($searchInput, ['body', 'REGEXP', preg_replace('/\s+/', '|', $request->query($param))]);
-                    } else {
-                        array_push($searchInput, [$param, '=', $request->query($param)]);
-                    }
-                }
-            }
-            $query = $query->where($searchInput);
-            if($request->has('issue_date_start')){
-                $query = $query->whereDate('issue_date', '>=', $request->query('issue_date_start'));
-            }
-            if($request->has('issue_date_end')){
-                $query = $query->whereDate('issue_date', '<=', $request->query('issue_date_end'));
-            }
-            $results = $query->orderBy('updated_at', 'desc')->get();
-            foreach ($results as $document) {
-                $data = [
-                    'id' => $document->id,
-                    'issuer' => $document->issuer? $document->issuer->description : 'Sin definir',
-                    'documentType' => $document->documentType->description,
-                    'name' => $document->name,
-                    'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
-                    'number' => $document->number,
-                    'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at)),
-                ];
-                if ($request->boolean('shared', false)) {
-                    $documentSharedAccesses = $document->documentSharedAccesses;
-                    if (!$documentSharedAccesses->isEmpty()) {
-                        $accessCreator = $documentSharedAccesses->first()->redactaUser;
-                        if ($accessCreator) {
-                            $data['shared_by'] =  $accessCreator->name.' '.$accessCreator->last_name;
-                        }
-                    }
-                }
-                array_push($output, $data);
-            }
-            return $output; 
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+            $query = Document::whereIn('id', $documentsId)
+                ->where('redacta_user_id', '<>', $request->user()->id);
+        } else {
+            $query = Document::where('redacta_user_id', $request->user()->id);
         }
+        foreach ($params as $param) {
+            if ($request->has($param)) { 
+                if (in_array($param, ['name', 'destinatary', 'subject'])){
+                    array_push($searchInput, [$param, 'LIKE', '%'.$request->query($param).'%']);
+                } else if ($param == 'keywords'){
+                    array_push($searchInput, ['body', 'REGEXP', preg_replace('/\s+/', '|', $request->query($param))]);
+                } else {
+                    array_push($searchInput, [$param, '=', $request->query($param)]);
+                }
+            }
+        }
+        $query = $query->where($searchInput);
+        if($request->has('issue_date_start')){
+            $query = $query->whereDate('issue_date', '>=', $request->query('issue_date_start'));
+        }
+        if($request->has('issue_date_end')){
+            $query = $query->whereDate('issue_date', '<=', $request->query('issue_date_end'));
+        }
+        $results = $query->orderBy('updated_at', 'desc')->get();
+        foreach ($results as $document) {
+            $data = [
+                'id' => $document->id,
+                'issuer' => $document->issuer? $document->issuer->description : 'Sin definir',
+                'documentType' => $document->documentType->description,
+                'name' => $document->name,
+                'issueDate' => $document->issue_date ? date('d-m-Y', strtotime($document->issue_date)) : '',
+                'number' => $document->number,
+                'updated_at' => date('d-m-Y H:m:s', strtotime($document->updated_at)),
+            ];
+            if ($request->boolean('shared', false)) {
+                $documentSharedAccesses = $document->documentSharedAccesses;
+                if (!$documentSharedAccesses->isEmpty()) {
+                    $accessCreator = $documentSharedAccesses->first()->redactaUser;
+                    if ($accessCreator) {
+                        $data['shared_by'] =  $accessCreator->name.' '.$accessCreator->last_name;
+                    }
+                }
+            }
+            array_push($output, $data);
+        }
+        return $output; 
     }
     
-    public function exportAnexo(Request $request, $id){
+    public function exportAnexo(Request $request, $id) {
         $document = Document::where('id', $id)->first();
         $html = "";
         if($document) {

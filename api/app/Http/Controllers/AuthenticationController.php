@@ -17,6 +17,7 @@ class AuthenticationController extends Controller
      */
     public function register (Request $request)
     {
+        $this->authorize('create', RedactaUser::class);
         $validatedData = $this->validateRequest($request);
         try {
             $user = User::create([

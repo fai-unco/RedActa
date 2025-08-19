@@ -44,8 +44,9 @@ class IssuerController extends Controller
      */
     public function store(StoreIssuerRequest $request)
     {
-        $issuer = new Issuer(); 
+        $this->authorize('create', Issuer::class);
         $validatedData = $this->validateRequest($request);
+        $issuer = new Issuer(); 
         $issuer->set($validatedData);
         return response()->json([
             'status' => 201,
@@ -103,6 +104,7 @@ class IssuerController extends Controller
                 'message' => 'El recurso al que desea acceder no existe'        
             ], 404);
         }
+        $this->authorize('update', $issuer);
         $validatedData = $request->validated();
         $issuer->set($validatedData);
         return response()->json([
@@ -120,6 +122,18 @@ class IssuerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $issuer = Issuer::find($id);
+        if(!$issuer){
+            return response()->json([
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
+        }
+        $this->authorize('delete', $issuer);
+        $issuer->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK'           
+        ]);
     }
 }

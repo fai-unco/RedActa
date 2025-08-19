@@ -41,39 +41,31 @@ class FileController extends Controller
      */
     public function store(StoreFileRequest $request)
     {
-        try {
-            $file = $request->file('file');
-            $name = $file->getClientOriginalName();
-            //$file = $request->file('file')->storeAs('uploads', $name);
-            $uploadsDirPath = env('STATIC_FILES_DIRECTORY').'/uploads';
-            $file->move($uploadsDirPath, $name);
-            $file = new File();
-            $file->filename = $name;
-            $file->redactaUser()->associate(RedactaUser::find($request->user()->id));
-            $file->save();
-            $currentPath = getcwd();
-            chdir($uploadsDirPath);
-            $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
-            if($fileExtension == 'pdf'){
-                shell_exec("pdftoppm -png -r 300 \"$name\" \"$file->id\"; rm \"$name.\"");
-            } else {
-                shell_exec("mv \"$name\" \"$file->id.$fileExtension\"");
-            }
-            chdir($currentPath);
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => [
-                    'filename' => $name,
-                    'id' => $file->id
-                ]       
-            ]);     
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+        $file = $request->file('file');
+        $name = $file->getClientOriginalName();
+        $uploadsDirPath = env('STATIC_FILES_DIRECTORY').'/uploads';
+        $file->move($uploadsDirPath, $name);
+        $file = new File();
+        $file->filename = $name;
+        $file->redactaUser()->associate(RedactaUser::find($request->user()->id));
+        $file->save();
+        $currentPath = getcwd();
+        chdir($uploadsDirPath);
+        $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
+        if($fileExtension == 'pdf'){
+            shell_exec("pdftoppm -png -r 300 \"$name\" \"$file->id\"; rm \"$name.\"");
+        } else {
+            shell_exec("mv \"$name\" \"$file->id.$fileExtension\"");
         }
+        chdir($currentPath);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => [
+                'filename' => $name,
+                'id' => $file->id
+            ]       
+        ]);             
     }
 
     /**
@@ -119,25 +111,19 @@ class FileController extends Controller
      */
     public function destroy($id)
     {
-        try {
-            $file = File::find($id);
-            if(!$file){ // || $request->user()->id != $file->user->id
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'Archivo inexistente'        
-                ], 404); 
-            }
-            $file->delete();
+        $file = File::find($id);
+        if (!$file) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $id          
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }   
+                'status' => 404,
+                'message' => 'Archivo inexistente'        
+            ], 404); 
+        }
+        $this->authorize('delete', $file);
+        $file->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $id          
+        ]);
     }
 }
