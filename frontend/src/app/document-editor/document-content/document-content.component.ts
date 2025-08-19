@@ -226,7 +226,7 @@ export class DocumentContentComponent implements OnInit {
       let requests = [
         this.connectionService.get('headings?issuer_id=' + issuer.id),
         this.connectionService.get('operative_section_beginnings?issuer_id=' + issuer.id),
-        this.connectionService.get('issuers_settings?issuer_id=' + issuer.id)
+        this.connectionService.get('issuer_settings?issuer_id=' + issuer.id)
       ];    
       forkJoin(requests)
         .pipe(finalize(() => this.state = 'showForm'))

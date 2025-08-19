@@ -85,7 +85,7 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.dialogService.open(ItemSelectorComponent, {context: {items: this.users, itemName: 'cuenta', filterBy: 'name', autocomplete: true}}).onClose.subscribe(user => {
             if (user != null) {
               this.viewState = 'loading';
-              this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, resourceId: user.id, resourceType: 'user'})
+              this.connectionService.post('document_shared_accesses', {documentId: this.documentId, resourceId: user.id, resourceType: 'user'})
                 .pipe(finalize(() => {this.viewState = 'rendering'}))
                 .subscribe({
                   next: _ => {
@@ -108,7 +108,7 @@ export class DocumentSharedAccessComponent implements OnInit {
           }).onClose.subscribe(group => {
             if (group != null) {
               this.viewState = 'loading';
-              this.connectionService.post('documents_shared_accesses', {documentId: this.documentId, resourceId: group.id, resourceType: 'group'})
+              this.connectionService.post('document_shared_accesses', {documentId: this.documentId, resourceId: group.id, resourceType: 'group'})
                 .pipe(finalize(() => {this.viewState = 'rendering'}))
                 .subscribe({
                   next: _ => {
@@ -127,7 +127,7 @@ export class DocumentSharedAccessComponent implements OnInit {
 
   removeDocumentSharedAccess(documentSharedAccessId: any) {
     this.viewState = 'loading';
-    this.connectionService.delete('documents_shared_accesses', documentSharedAccessId).subscribe({
+    this.connectionService.delete('document_shared_accesses', documentSharedAccessId).subscribe({
       next: _ => {
         this.getDocumentSharedAccesss();
       },
@@ -139,7 +139,7 @@ export class DocumentSharedAccessComponent implements OnInit {
   }
 
   getDocumentSharedAccesss(){
-    this.connectionService.get('documents_shared_accesses?document_id=' + this.documentId).subscribe({
+    this.connectionService.get('document_shared_accesses?document_id=' + this.documentId).subscribe({
       next: (res: any) => {
         this.documentSharedAccesses = res.data;
         this.viewState = 'rendering';
@@ -176,7 +176,7 @@ export class DocumentSharedAccessComponent implements OnInit {
     this.dialogService.open(ItemSelectorComponent, {context: {items: this.accessModes, itemName: 'modo de acceso', filterBy: 'label', autocomplete: false}}).onClose.subscribe(accessMode => {
       if (accessMode != null) {
         this.viewState = 'loading';
-        this.connectionService.patch('documents_shared_accesses', sharedAccessId, {accessModeId: accessMode.id})
+        this.connectionService.patch('document_shared_accesses', sharedAccessId, {accessModeId: accessMode.id})
         .pipe(finalize(() => {this.viewState = 'rendering'}))
           .subscribe({
             next: _ => {
