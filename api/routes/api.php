@@ -37,23 +37,23 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('anexos', AnexoController::class);
   Route::post('/logout', [AuthenticationController::class, 'logout']);
   Route::apiResource('files', FileController::class);
-  Route::apiResource('issuers_settings', IssuerSettingsController::class);
+  Route::apiResource('issuer_settings', IssuerSettingsController::class);
   Route::apiResource('headings', HeadingController::class);
   Route::apiResource('document_types', DocumentTypeController::class);
   Route::apiResource('issuers', IssuerController::class);
   Route::apiResource('operative_section_beginnings', OperativeSectionBeginningController::class);
   Route::apiResource('stamps', StampController::class);
   Route::apiResource('signatures', SignatureController::class);
-  Route::apiResource('documents_shared_accesses', DocumentSharedAccessController::class);
+  Route::apiResource('document_shared_accesses', DocumentSharedAccessController::class);
   Route::apiResource('redacta_users', RedactaUserController::class);
   Route::apiResource('visibility_levels', VisibilityLevelController::class);
   Route::patch('/documents/{id}/visibility_level', [DocumentController::class, 'setVisibilityLevel']);
   Route::apiResource('access_modes', AccessModeController::class);
-  Route::post('documents_shared_access/{id}/notify', [DocumentSharedAccessController::class, 'notify']);
+  Route::post('document_shared_access/{id}/notify', [DocumentSharedAccessController::class, 'notify']);
   Route::apiResource('groups', GroupController::class);
   Route::apiResource('group_memberships', GroupMembershipController::class);
+  Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
+  Route::post('/register', [AuthenticationController::class, 'register']);
 });
-Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
-Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/login', [AuthenticationController::class, 'login']);
 
