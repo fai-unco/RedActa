@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Models\Group;
@@ -13,21 +14,20 @@ class GroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        try {
+        $adminMode = $request->query('adminMode', false);
+        $this->authorize('viewAny', [Group::class, $adminMode]);
+        if ($adminMode) {
+            $groups = Group::with('redactaUsers')->get();
+        } else {
             $groups = auth()->user()->groups->load('redactaUsers');
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $groups
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $groups
+        ]);
     }
 
     /**
@@ -48,20 +48,14 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
-        try {
-            $data = $request->validated();
-            $group = Group::create($data);
-            return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $group
-            ], 201);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $this->authorize('create', Group::class);
+        $data = $request->validated();
+        $group = Group::create($data);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $group
+        ], 201);
     }
 
     /**
@@ -73,6 +67,7 @@ class GroupController extends Controller
     public function show(Group $group)
     {
         try {
+            $this->authorize('view', $group);
             return response()->json([
                 'status' => 200,
                 'message' => 'OK',
@@ -107,20 +102,14 @@ class GroupController extends Controller
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
-        try {
-            $data = $request->validated();
-            $group->update($data);
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $group
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $this->authorize('update', $group);
+        $data = $request->validated();
+        $group->update($data);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $group
+        ]);
     }
 
     /**
@@ -131,17 +120,12 @@ class GroupController extends Controller
      */
     public function destroy(Group $group)
     {
-        try {
-            $group->delete();
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK'
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $this->authorize('delete', $group);
+        $group->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK'
+        ], 200);
+       
     }
 }

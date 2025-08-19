@@ -17,7 +17,13 @@ class GroupMembershipController extends Controller
      */
     public function index()
     {
-        $groupMemberships = auth()->user()->groupMemberships()->with(['group', 'redactaUser'])->get();
+        $adminMode = request()->query('adminMode', false);
+        $this->authorize('viewAny', [GroupMembership::class, $adminMode]);
+        if ($adminMode) {
+            $groupMemberships = GroupMembership::with(['group', 'redactaUser'])->get();
+        } else {
+            $groupMemberships = auth()->user()->groupMemberships()->with(['group', 'redactaUser'])->get();
+        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',
@@ -43,28 +49,22 @@ class GroupMembershipController extends Controller
      */
     public function store(StoreGroupMembershipRequest $request)
     {
-        try {
-            $data = $request->validated();
-            $group = Group::find($data['group_id']);
-            $redactaUser = RedactaUser::find($data['redacta_user_id']);
-            if ($group->redactaUsers->contains($redactaUser)) {
-                return response()->json([
-                    'status' => 422,
-                    'message' => 'El usuario ya es miembro del grupo'
-                ], 422);
-            }
-            $groupMembership = GroupMembership::create($data);
+        $this->authorize('create', GroupMembership::class);
+        $data = $request->validated();
+        $group = Group::find($data['group_id']);
+        $redactaUser = RedactaUser::find($data['redacta_user_id']);
+        if ($group->redactaUsers->contains($redactaUser)) {
             return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $groupMembership
-            ], 201);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 422,
+                'message' => 'El usuario ya es miembro del grupo'
+            ], 422);
         }
+        $groupMembership = GroupMembership::create($data);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $groupMembership
+        ], 201);
     }
 
     /**
@@ -75,6 +75,7 @@ class GroupMembershipController extends Controller
      */
     public function show(GroupMembership $groupMembership)
     {
+        $this->authorize('view', $groupMembership);
         return response()->json([
             'status' => 200,
             'message' => 'OK',
@@ -102,28 +103,22 @@ class GroupMembershipController extends Controller
      */
     public function update(UpdateGroupMembershipRequest $request, GroupMembership $groupMembership)
     {
-        try {
-            $data = $request->validated();
-            $group = Group::find($data['group_id']);
-            $redactaUser = RedactaUser::find($data['redacta_user_id']);
-            if ($group->redactaUsers->contains($redactaUser)) {
-                return response()->json([
-                    'status' => 422,
-                    'message' => 'El usuario ya es miembro del grupo'
-                ], 422);
-            }
-            $groupMembership->update($data);
+        $this->authorize('update', $groupMembership);
+        $data = $request->validated();
+        $group = Group::find($data['group_id']);
+        $redactaUser = RedactaUser::find($data['redacta_user_id']);
+        if ($group->redactaUsers->contains($redactaUser)) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $groupMembership
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 422,
+                'message' => 'El usuario ya es miembro del grupo'
+            ], 422);
         }
+        $groupMembership->update($data);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $groupMembership
+        ]);
     }
 
     /**
@@ -134,17 +129,11 @@ class GroupMembershipController extends Controller
      */
     public function destroy(GroupMembership $groupMembership)
     {
-        try {
-            $groupMembership->delete();
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK'
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $this->authorize('delete', $groupMembership);
+        $groupMembership->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK'
+        ], 200);
     }
 }

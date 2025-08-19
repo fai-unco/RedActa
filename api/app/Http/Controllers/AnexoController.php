@@ -42,39 +42,28 @@ class AnexoController extends Controller
      */
     public function store(StoreAnexoRequest $request)
     {
-        try {
-            $data = $request->validated();
-            $file = File::find($data['file_id']);
-            // Check if the file exists and belongs to the user
-            if (!$file || $file->redactaUser->id != $request->user()->id) {
-                return response()->json([
-                    'status' => 422,
-                    'message' => 'Archivo inválido'        
-                ], 422);
-            }
-            $document = Document::find($data['document_id']);
-            // Check if the document exists and can be accessed by the user
-            if (!$document->isAccessibleToRedactaUser($request->user(), 1)) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
-                ], 422);
-            }
-            $anexo = new Anexo();
-            $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $document, $file);
+        $data = $request->validated();
+        $file = File::find($data['file_id']);
+        // Check if the file exists and belongs to the user
+        if (!$file || $file->redactaUser->id != $request->user()->id) {
             return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => [
-                    'id' => $anexo->id
-                ]       
-            ], 201);    
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 422,
+                'message' => 'Archivo inválido'        
+            ], 422);
         }
+        $document = Document::find($data['document_id']);
+        //Check if user is authorized to create anexo in the document
+        $this->authorize('create', [Anexo::class, $document]);
+        $anexo = new Anexo();
+        $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $document, $file);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => [
+                'id' => $anexo->id
+            ]       
+        ], 201);    
+    
     }
 
     /**
@@ -108,47 +97,34 @@ class AnexoController extends Controller
      */
     public function update(UpdateAnexoRequest $request, $id)
     {
-        try {
-            $data = $request->validated();
-            $anexo = Anexo::find($id);
-            if (!$anexo) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente',       
-                ], 404);  
-            }
-            // Check if the user has access to the document
-            if (!$anexo->document->isAccessibleToRedactaUser($request->user(), 1)) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
-                ], 403);
-            }
-
-            if (isset($data['file_id'])) {
-                // Check if the file exists and belongs to the user
-                $file = File::find($data['file_id']);
-                if ($file->redactaUser->id != $request->user()->id) {
-                    return response()->json([
-                        'status' => 422,
-                        'message' => 'Archivo inválido'        
-                    ], 422);
-                }
-            }
-            $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $anexo->document, $file);
+        $data = $request->validated();
+        $anexo = Anexo::find($id);
+        if (!$anexo) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => [
-                    'id' => $anexo->id
-                ]       
-            ]); 
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente',       
+            ], 404);  
         }
+        if (isset($data['file_id'])) {
+            // Check if the file exists and belongs to the user
+            $file = File::find($data['file_id']);
+            if ($file->redactaUser->id != $request->user()->id) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => 'Archivo inválido'        
+                ], 422);
+            }
+        }
+        // Check if user is authorized to update anexo in the document
+        $this->authorize('update', $anexo);
+        $anexo->set($data['index'], $data['title'], $data['subtitle'], $data['content'], $anexo->document, $file);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => [
+                'id' => $anexo->id
+            ]       
+        ]);
     }
 
     /**
@@ -159,34 +135,22 @@ class AnexoController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        try {
-            $anexo =  Anexo::find($id);
-            if(!$anexo){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente',       
-                ], 404);     
-            } 
-            // Check if the user has access to the document
-            if (!$anexo->document->isAccessibleToRedactaUser($request->user(), 1)) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'No tiene los permisos necesarios para realizar la operación'        
-                ], 403);            
-            }
-            $anexo->delete();
+        $anexo =  Anexo::find($id);
+        if(!$anexo){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => [
-                    'id' => $id
-                ]       
-            ]);   
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente',       
+            ], 404);     
         } 
+        // Check if user is authorized to delete anexo in the document
+        $this->authorize('delete', $anexo);
+        $anexo->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => [
+                'id' => $id
+            ]       
+        ]);        
     }
 }

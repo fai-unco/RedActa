@@ -13,20 +13,13 @@ class VisibilityLevelController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        try {    
-            $results = VisibilityLevel::all();
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $results           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+    {      
+        $results = VisibilityLevel::all();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $results           
+        ]);   
     }
 
     /**
@@ -58,25 +51,18 @@ class VisibilityLevelController extends Controller
      */
     public function show($id)
     {
-        try { 
-            $visibilityLevel = VisibilityLevel::find($id);
-            if (!$visibilityLevel) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'Recurso inexistente'        
-                ], 404);
-            }
+        $visibilityLevel = VisibilityLevel::find($id);
+        if (!$visibilityLevel) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $visibilityLevel          
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'Recurso inexistente'        
+            ], 404);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $visibilityLevel          
+        ]);
     }
 
     /**

@@ -17,20 +17,19 @@ class StampController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
-        try {    
+    {   
+        $adminMode = $request->query('admin_mode', false);    
+        $this->authorize('viewAny', [Stamp::class, $adminMode]);
+        if ($request->query('admin_mode', false)) {
+            $results = Stamp::all();
+        } else {
             $results = Stamp::where('redacta_user_id', '=', $request->user()->id)->get();
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $results           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $results           
+        ]);
     }
 
     /**
@@ -51,21 +50,14 @@ class StampController extends Controller
      */
     public function store(StoreStampRequest $request)
     {
-        try {  
-            $validatedData = $request->validated();
-            $validatedData['redacta_user_id'] = $request->user()->id;
-            $stamp = Stamp::create($validatedData);
-            return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $stamp          
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $validatedData = $request->validated();
+        $validatedData['redacta_user_id'] = $request->user()->id;
+        $stamp = Stamp::create($validatedData);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $stamp          
+        ]);
     }
 
     /**
@@ -99,27 +91,21 @@ class StampController extends Controller
      */
     public function update(UpdateStampRequest $request, $id)
     {
-        try { 
-            $validatedData = $request->validated();
-            $stamp = Stamp::find($id);
-            if (!$stamp || $stamp->redacta_user_id != $request->user()->id) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
-            $stamp->update($validatedData);
+        $stamp = Stamp::find($id);
+        if (!$stamp) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $stamp           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        $this->authorize('update', $stamp);
+        $validatedData = $request->validated();
+        $stamp->update($validatedData);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $stamp           
+        ]);
     }
 
     /**
@@ -131,25 +117,19 @@ class StampController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        try { 
-            $stamp = Stamp::find($id);
-            if (!$stamp || $stamp->redacta_user_id != $request->user()->id) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
-            $stamp->delete();
+        $stamp = Stamp::find($id);
+        if (!$stamp) {
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $stamp           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        $this->authorize('delete', $stamp);
+        $stamp->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $stamp           
+        ]);   
     }
 }

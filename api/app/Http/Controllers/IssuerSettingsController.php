@@ -17,24 +17,17 @@ class IssuerSettingsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
-        try {    
-            if($request->has('issuer_id')){
-                $results = IssuerSettings::where('issuer_id', $request->query('issuer_id'))->first();
-            } else {
-                $results = IssuerSettings::all();
-            }
-            return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $results           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+    {    
+        if($request->has('issuer_id')){
+            $results = IssuerSettings::where('issuer_id', $request->query('issuer_id'))->first();
+        } else {
+            $results = IssuerSettings::all();
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $results           
+        ]);
     }
 
     /**
@@ -55,22 +48,15 @@ class IssuerSettingsController extends Controller
      */
     public function store(StoreIssuerSettingsRequest $request)
     {
-        try {
-            $issuerSettings = new IssuerSettings(); 
-            $validatedData = $request->validated();
-            $issuerSettings->set($validatedData);
-            return response()->json([
-                'status' => 201,
-                'message' => 'OK',
-                'data' => $issuerSettings           
-            ]);
-        
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $this->authorize('create', IssuerSettings::class);
+        $validatedData = $request->validated();
+        $issuerSettings = new IssuerSettings(); 
+        $issuerSettings->set($validatedData);
+        return response()->json([
+            'status' => 201,
+            'message' => 'OK',
+            'data' => $issuerSettings           
+        ]);
     }
 
     /**
@@ -81,25 +67,18 @@ class IssuerSettingsController extends Controller
      */
     public function show($id)
     {
-        try {
-            $issuerSettings = IssuerSettings::find($id);
-            if(!$issuerSettings){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
+        $issuerSettings = IssuerSettings::find($id);
+        if(!$issuerSettings){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $issuerSettings           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $issuerSettings           
+        ]);
     }
 
     /**
@@ -122,27 +101,21 @@ class IssuerSettingsController extends Controller
      */
     public function update(UpdateIssuerSettingsRequest $request, $id)
     {
-        try {
-            $validatedData = $request->validated();
-            $issuerSettings = IssuerSettings::find($id);
-            if(!$issuerSettings){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
-            $issuerSettings->set($validatedData);
+        $validatedData = $request->validated();
+        $issuerSettings = IssuerSettings::find($id);
+        if(!$issuerSettings){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $issuerSettings           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        $this->authorize('update', $issuerSettings);
+        $issuerSettings->set($validatedData);
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $issuerSettings           
+        ]);
     }
 
     /**
@@ -153,7 +126,20 @@ class IssuerSettingsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $issuerSettings = IssuerSettings::find($id);
+        if(!$issueSettings){
+            return response()->json([
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
+        }
+        $this->authorize('delete', $issuerSettings);
+        $issuerSettings->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $issuerSettings           
+        ]);
     }
 }
 

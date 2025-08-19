@@ -14,19 +14,12 @@ class AccessModeController extends Controller
      */
     public function index()
     {
-        try { 
-            $accessModes = AccessMode::all();
-            return response()->json([
-                'status' => 200,
-                'description' => 'OK',
-                'data' => $accessModes       
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        $accessModes = AccessMode::all();
+        return response()->json([
+            'status' => 200,
+            'description' => 'OK',
+            'data' => $accessModes       
+        ]);  
     }
 
     /**
@@ -53,30 +46,22 @@ class AccessModeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  App\Models\AccessMode  $accessMode
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(AcessMode $accessMode)
     {
-        try { 
-            $accessMode = AccessMode::find($id);
-            if(!$accessMode){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
+        if(!$accessMode){
             return response()->json([
-                'status' => 200,
-                'message' => 'OK',
-                'data' => $accessMode           
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
+                'status' => 404,
+                'message' => 'El recurso al que desea acceder no existe'        
+            ], 404);
         }
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $accessMode           
+        ]);
     }
 
     /**
