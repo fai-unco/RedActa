@@ -71,21 +71,13 @@ class HeadingController extends Controller
     /**
      * Display the specified resource.
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \App\Models\Heading $heading
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, Heading $heading)
     {
         if($request->boolean('include_file', false)){
-            $heading = Heading::find($id);
-        } else {
-            $heading = Heading::with(['file'])->where('id', $id)->first();
-        }  
-        if(!$heading){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
+            $heading = $heading->load(['file']);
         }
         return response()->json([
             'status' => 200,
@@ -97,10 +89,10 @@ class HeadingController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\Heading $heading
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Heading $heading)
     {
         //
     }
@@ -109,19 +101,12 @@ class HeadingController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateHeadingRequest  $request
-     * @param  int  $id
+     * @param \App\Models\Heading $heading
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateHeadingRequest $request, $id)
+    public function update(UpdateHeadingRequest $request, Heading $heading)
     {
         $validatedData = $request->validated();
-        $heading = Heading::find($id);
-        if(!$heading){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('update', $heading);
         $heading->set($validatedData);
         return response()->json([
@@ -134,10 +119,10 @@ class HeadingController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Models\Heading $heading
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Heading $heading)
     {
         //
     }

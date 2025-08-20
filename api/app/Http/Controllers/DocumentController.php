@@ -85,18 +85,11 @@ class DocumentController extends Controller
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Document $document
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, Document $document)
     {
-        $document = Document::find($id);
-        if (!$document) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente'        
-            ], 404);
-        }
         $loggedInUserId = $request->user()->id;
         $this->authorize('view', $document);              
         if ($request->accepts(['application/pdf'])) {                
@@ -132,10 +125,10 @@ class DocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Document $document
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Document $document)
     {
         //
     }
@@ -144,22 +137,15 @@ class DocumentController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateDocumentRequest $request
-     * @param  int  $id
+     * @param  \App\Models\Document $document
      * @return \Illuminate\Http\Response
      */
 
 
-    public function update(UpdateDocumentRequest $request, $id)
+    public function update(UpdateDocumentRequest $request, Document $document)
     {
-        $data = $request->validated();
-        $document = Document::find($id);
-        if (!$document) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente'        
-            ], 404);
-        }
         $this->authorize('update', $document);
+        $data = $request->validated();
         if (isset($data['body'] )) {
             $data['body'] = json_encode($data['body']);
         }
@@ -192,18 +178,11 @@ class DocumentController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Document $document
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, Document $document)
     {
-        $document = Document::find($id);
-        if (!$document) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente'        
-            ], 404);
-        }
         $this->authorize('delete', $document);
         $document->delete();
         return response()->json([

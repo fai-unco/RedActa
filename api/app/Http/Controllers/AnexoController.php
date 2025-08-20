@@ -69,10 +69,10 @@ class AnexoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param App\Models\Anexo  $anexo
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Anexo $anexo)
     {
         //
     }
@@ -80,10 +80,10 @@ class AnexoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param App\Models\Anexo  $anexo
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Anexo $anexo)
     {
         //
     }
@@ -92,19 +92,13 @@ class AnexoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateAnexoRequest  $request
-     * @param  int  $id
+     * @param App\Models\Anexo  $anexo
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateAnexoRequest $request, $id)
+    public function update(UpdateAnexoRequest $request, Anexo $anexo)
     {
         $data = $request->validated();
-        $anexo = Anexo::find($id);
-        if (!$anexo) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente',       
-            ], 404);  
-        }
+        $anexo = Anexo::find($anexo);
         if (isset($data['file_id'])) {
             // Check if the file exists and belongs to the user
             $file = File::find($data['file_id']);
@@ -130,18 +124,11 @@ class AnexoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param App\Models\Anexo  $anexo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, Anexo $anexo)
     {
-        $anexo =  Anexo::find($id);
-        if(!$anexo){
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente',       
-            ], 404);     
-        } 
         // Check if user is authorized to delete anexo in the document
         $this->authorize('delete', $anexo);
         $anexo->delete();

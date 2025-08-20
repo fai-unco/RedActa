@@ -63,10 +63,10 @@ class StampController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\Stamp $stamp
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Stamp $stamp)
     {
         //
     }
@@ -74,10 +74,10 @@ class StampController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\Stamp $stamp
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Stamp $stamp)
     {
         //
     }
@@ -86,18 +86,11 @@ class StampController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateStampRequest  $request
-     * @param  int  $id
+     * @param \App\Models\Stamp $stamp
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateStampRequest $request, $id)
+    public function update(UpdateStampRequest $request, Stamp $stamp)
     {
-        $stamp = Stamp::find($id);
-        if (!$stamp) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('update', $stamp);
         $validatedData = $request->validated();
         $stamp->update($validatedData);
@@ -112,18 +105,11 @@ class StampController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \App\Models\Stamp $stamp
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, Stamp $stamp)
     {
-        $stamp = Stamp::find($id);
-        if (!$stamp) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('delete', $stamp);
         $stamp->delete();
         return response()->json([

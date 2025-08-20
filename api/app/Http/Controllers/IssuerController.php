@@ -58,18 +58,11 @@ class IssuerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\Issuer $issuer
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Issuer $issuer)
     {
-        $issuer = Issuer::find($id);
-        if(!$issuer){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',
@@ -80,10 +73,10 @@ class IssuerController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\Issuer $issuer
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Issuer $issuer)
     {
         //
     }
@@ -92,18 +85,11 @@ class IssuerController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateIssuerRequest  $request
-     * @param  int  $id
+     * @param \App\Models\Issuer $issuer
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateIssuerRequest $request, $id)
+    public function update(UpdateIssuerRequest $request, Issuer $issuer)
     {
-        $issuer = Issuer::find($id);
-        if(!$issuer){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('update', $issuer);
         $validatedData = $request->validated();
         $issuer->set($validatedData);
@@ -117,18 +103,11 @@ class IssuerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Models\Issuer $issuer
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Issuer $issuer)
     {
-        $issuer = Issuer::find($id);
-        if(!$issuer){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('delete', $issuer);
         $issuer->delete();
         return response()->json([

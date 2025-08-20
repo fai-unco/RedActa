@@ -62,18 +62,11 @@ class IssuerSettingsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\IssuerSettings $issuerSettings
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(IssuerSettings $issuerSettings)
     {
-        $issuerSettings = IssuerSettings::find($id);
-        if(!$issuerSettings){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',
@@ -84,10 +77,10 @@ class IssuerSettingsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\IssuerSettings $issuerSettings
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(IssuerSettings $issuerSettings)
     {
         //
     }
@@ -96,20 +89,13 @@ class IssuerSettingsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateIssuerSettingsRequest  $request
-     * @param  int  $id
+     * @param \App\Models\IssuerSettings $issuerSettings
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateIssuerSettingsRequest $request, $id)
+    public function update(UpdateIssuerSettingsRequest $request, IssuerSettings $issuerSettings)
     {
-        $validatedData = $request->validated();
-        $issuerSettings = IssuerSettings::find($id);
-        if(!$issuerSettings){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('update', $issuerSettings);
+        $validatedData = $request->validated();
         $issuerSettings->set($validatedData);
         return response()->json([
             'status' => 200,
@@ -121,18 +107,11 @@ class IssuerSettingsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Models\IssuerSettings $issuerSettings
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(IssuerSettings $issuerSettings)
     {
-        $issuerSettings = IssuerSettings::find($id);
-        if(!$issueSettings){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('delete', $issuerSettings);
         $issuerSettings->delete();
         return response()->json([

@@ -46,18 +46,11 @@ class VisibilityLevelController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\VisibilityLevel  $visibilityLevel
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(VisibilityLeve $visibilityLevel)
     {
-        $visibilityLevel = VisibilityLevel::find($id);
-        if (!$visibilityLevel) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente'        
-            ], 404);
-        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',

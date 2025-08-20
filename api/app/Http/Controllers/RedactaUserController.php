@@ -48,32 +48,25 @@ class RedactaUserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\RedactaUser $redactaUser
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(RedactaUser $redactaUser)
     {
-        $user = RedactaUser::find($id);
-        if(!$user){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $user           
+            'data' => $redactaUser          
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\RedactaUser $redactaUser
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(RedactaUser $redactaUser)
     {
         //
     }

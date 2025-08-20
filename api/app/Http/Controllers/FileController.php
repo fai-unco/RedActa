@@ -71,10 +71,10 @@ class FileController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\File $file
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(File $file)
     {
         //
     }
@@ -82,10 +82,10 @@ class FileController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\File $file
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(File $file)
     {
         //
     }
@@ -94,10 +94,10 @@ class FileController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \App\Models\File $file
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, File $file)
     {
         //
         
@@ -106,18 +106,11 @@ class FileController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Models\File $file
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(File $file)
     {
-        $file = File::find($id);
-        if (!$file) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Archivo inexistente'        
-            ], 404); 
-        }
         $this->authorize('delete', $file);
         $file->delete();
         return response()->json([

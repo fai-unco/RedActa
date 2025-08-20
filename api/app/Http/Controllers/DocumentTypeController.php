@@ -14,21 +14,13 @@ class DocumentTypeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        try {  
-            $documentTypes = DocumentType::all();
-            return response()->json([
-                'status' => 200,
-                'description' => 'OK',
-                'data' => $documentTypes        
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
-
+    { 
+        $documentTypes = DocumentType::all();
+        return response()->json([
+            'status' => 200,
+            'description' => 'OK',
+            'data' => $documentTypes        
+        ]);
     }
 
     /**
@@ -55,37 +47,22 @@ class DocumentTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\DocumentType  $documentType
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(DocumentType $documentType)
     {
-        //
-        try {  
-            $documentType = DocumentType::find($id);
-            if(!$documentType){
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'El recurso al que desea acceder no existe'        
-                ], 404);
-            }
-            return response()->json([
-                'status' => 200,
-                'description' => 'OK',
-                'data' => $documentType        
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error en el servidor. Reintente la operación'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 200,
+            'description' => 'OK',
+            'data' => $documentType        
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\DocumentType $documentType
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -97,10 +74,10 @@ class DocumentTypeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \App\Models\DocumentType $documentType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, DocumentType $documentType)
     {
         //
     }
@@ -108,10 +85,10 @@ class DocumentTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Models\DocumentType $documentType
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DocumentType $documentType)
     {
         //
     }

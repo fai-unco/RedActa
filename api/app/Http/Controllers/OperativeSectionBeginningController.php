@@ -63,18 +63,11 @@ class OperativeSectionBeginningController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\OperativeSectionBeginning $operativeSectionBeginning
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(OperativeSectionBeginning $operativeSectionBeginning)
     {  
-        $operativeSectionBeginning = OperativeSectionBeginning::find($id);
-        if (!$operativeSectionBeginning) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',
@@ -85,10 +78,10 @@ class OperativeSectionBeginningController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\OperativeSectionBeginning $operativeSectionBeginning
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(OperativeSectionBeginning $operativeSectionBeginning)
     {
         //
     }
@@ -97,18 +90,11 @@ class OperativeSectionBeginningController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateOperativeSectionBeginningRequest  $request
-     * @param  int  $id
+     * @param \App\Models\OperativeSectionBeginning $operativeSectionBeginning
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateOperativeSectionBeginningRequest $request, $id)
+    public function update(UpdateOperativeSectionBeginningRequest $request, OperativeSectionBeginning $operativeSectionBeginning)
     {
-        $operativeSectionBeginning = OperativeSectionBeginning::find($id);
-        if (!$operativeSectionBeginning) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('update', $operativeSectionBeginning);
         $validatedData = $request->validated();
         $operativeSectionBeginning->update($validatedData);
@@ -122,18 +108,11 @@ class OperativeSectionBeginningController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Models\OperativeSectionBeginning $operativeSectionBeginning
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(OperativeSectionBeginning $operativeSectionBeginning)
     {
-        $operativeSectionBeginning = OperativeSectionBeginning::find($id);
-        if(!$operativeSectionBeginning){
-            return response()->json([
-                'status' => 404,
-                'message' => 'El recurso al que desea acceder no existe'        
-            ], 404);
-        }
         $this->authorize('delete', $operativeSectionBeginning);
         $operativeSectionBeginning->delete();
         return response()->json([

@@ -105,12 +105,11 @@ class DocumentSharedAccessController extends Controller
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \App\Models\DocumentSharedAccess  $documentSharedAccess
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, DocumentSharedAccess $documentSharedAccess)
     {
-        $documentSharedAccess = DocumentSharedAccess::find($id);
         $this->authorize('view', $documentSharedAccess);
         return response()->json([
             'status' => 200,
@@ -122,10 +121,10 @@ class DocumentSharedAccessController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Models\DocumentSharedAccess  $documentSharedAccess
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(DocumentSharedAccess $documentSharedAccess)
     {
         //
     }
@@ -134,13 +133,12 @@ class DocumentSharedAccessController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateDocumentSharedAccessRequest $request
-     * @param  int  $id
+     * @param \App\Models\DocumentSharedAccess  $documentSharedAccess
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDocumentSharedAccessRequest $request, $id)
+    public function update(UpdateDocumentSharedAccessRequest $request, DocumentSharedAccess $documentSharedAccess)
     {
         $validatedData = $request->validated();
-        $documentSharedAccess = DocumentSharedAccess::find($id);
         if (!$documentSharedAccess) {
             return response()->json([
                 'status' => 404,
@@ -160,18 +158,11 @@ class DocumentSharedAccessController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \App\Models\DocumentSharedAccess  $documentSharedAccess
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, DocumentSharedAccess $documentSharedAccess)
     {
-        $documentSharedAccess = DocumentSharedAccess::find($id);
-        if (!$documentSharedAccess) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Recurso inexistente'
-            ], 404);
-        }
         $this->authorize('delete', $documentSharedAccess);
         $documentSharedAccess->delete();
         return response()->json([
