@@ -24,8 +24,9 @@ class AuthenticationController extends Controller
             'name' => $request->name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)       
+            'password' => Hash::make($request->password),
         ]);
+        $user->assignRole($request->role);
         return response()->json([
             'status' => 201,
             'message' => 'OK',
@@ -57,6 +58,7 @@ class AuthenticationController extends Controller
                 'token_type' => 'Bearer',
                 'username' => $user->name.' '.$user->last_name,
                 'redacta_user_id' => $user->id,
+                'role' => $user->roles->pluck('name')->first()
             ]
         ], 200);
     }
