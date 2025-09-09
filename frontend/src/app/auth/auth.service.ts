@@ -19,6 +19,7 @@ export class AuthService {
         localStorage.setItem('access_token', authResult.accessToken);
         localStorage.setItem('username', authResult.username);
         localStorage.setItem('user_id', authResult.redactaUserId);
+        localStorage.setItem('role', authResult.role);
         this.router.navigate(['/']);
     }          
 
@@ -43,6 +44,10 @@ export class AuthService {
 
     getCurrentUserId(): number {
         return Number(localStorage.getItem('user_id'));
+    }
+
+    getCurrentUserRole(): string {
+        return String(localStorage.getItem('role'));
     }
 }
           
