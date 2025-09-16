@@ -19,7 +19,6 @@ class AuthenticationController extends Controller
     public function register (StoreRedactaUserRequest $request)
     {
         $this->authorize('create', User::class);
-        $validatedData = $this->validateRequest($request);
         $user = User::create([
             'name' => $request->name,
             'last_name' => $request->last_name,
