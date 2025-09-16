@@ -14,13 +14,26 @@ class RedactaUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = RedactaUser::all();
+        $users = RedactaUser::where('name', 'LIKE', $request->input('name', '%'))
+            ->where('last_name', 'LIKE', $request->input('last_name', '%'))
+            ->where('email', 'LIKE', $request->input('email', '%'))
+            ->get();
+        $role = $request->input('role', '*');
+        if ($role != '*') {
+            $users = $users->filter(function ($user) use ($role) {
+                return $user->hasRole($role);
+            });
+        }
+        $users->load('roles');
+        if ($users->count() === 1) {
+            $users = [$users->first()];
+        }
         return response()->json([
             'status' => 200,
             'description' => 'OK',
-            'data' => $users       
+            'data' => $users   
         ]);
     }
 
