@@ -54,6 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('group_memberships', GroupMembershipController::class);
   Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
   Route::post('/register', [AuthenticationController::class, 'register']);
+  
 });
 Route::post('/login', [AuthenticationController::class, 'login']);
-
+oute::post('/confirm_registration', [AuthenticationController::class, 'confirmRegistration']);
+Route::get('/validate_signup_invitation', [AuthenticationController::class, 'validateSignUpInvitation']);

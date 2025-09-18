@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreRedactaUserRequest;
+use App\Models\SignupInvitation;
 
 class AuthenticationController extends Controller
 {
@@ -26,6 +27,7 @@ class AuthenticationController extends Controller
             'password' => Hash::make($request->password),
         ]);
         $user->assignRole($request->role);
+        \Mail::to($user->email)->send(new \App\Mail\SignupInvitationMail($user, $token));
         return response()->json([
             'status' => 201,
             'message' => 'OK',
@@ -61,6 +63,54 @@ class AuthenticationController extends Controller
             ]
         ], 200);
     }
+
+    /**
+     * Validate sign up invitation token
+     * 
+     */
+    public function validateSignUpInvitation(Request $request) {
+        if (!$request->has('token')) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Token is required'
+            ], 400);
+        }
+        $invitation = SignupInvitation::where('token', $request->get('token'))->first();
+        $isValid = $invitation && $invitation->isValid();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => [
+                'is_valid' => $isValid
+            ]
+        ], 200);
+    }
+
+    /** 
+     * Confirm registration using the token from the invitation
+     * 
+     */ 
+    public function confirmRegistration(Request $request) {
+        $validatedData = $request->validate([
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed'
+        ]);
+        $invitation = SignupInvitation::where('token', $validatedData['token'])->first();
+        if (!$invitation || !$invitation->isValid()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Invalid token'
+            ], 400);
+        }
+        $invitation->markAsUsed();
+        $invitation->redactaUser->password = Hash::make($validatedData['password']);
+        $invitation->redactaUser->save();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK'
+        ], 200);
+    }
+
     
     /**
      * Maneja la peticion de cierre de sesión
