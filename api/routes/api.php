@@ -19,7 +19,7 @@ use App\Http\Controllers\VisibilityLevelController;
 use App\Http\Controllers\AccessModeController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupMembershipController;
-
+use App\Http\Controllers\SignupInvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::apiResource('groups', GroupController::class);
   Route::apiResource('group_memberships', GroupMembershipController::class);
   Route::get('/export_anexo/{id}', [DocumentController::class, 'exportAnexo']);
+  Route::apiResource('signup_invitations', SignupInvitationController::class);
   Route::post('/register', [AuthenticationController::class, 'register']);
 });
 Route::post('/login', [AuthenticationController::class, 'login']);
-
+Route::get('/validate_signup_invitation', [AuthenticationController::class, 'validateSignUpInvitation']);

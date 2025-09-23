@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRedactaUserRequest extends FormRequest
+class UpdateSignupInvitationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,8 @@ class StoreRedactaUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',        
-            'last_name' => 'required|string|max:255',        
-            'email' => 'required|email|unique:redacta_users',              
-            'password' => 'required|confirmed|min:8',
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed'
         ];
     }
 }
