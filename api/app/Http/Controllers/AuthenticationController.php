@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreRedactaUserRequest;
+use App\Models\SignupInvitation;
+use Illuminate\Support\Facades\Mail;
+
 
 class AuthenticationController extends Controller
 {
@@ -18,14 +21,28 @@ class AuthenticationController extends Controller
      */
     public function register (StoreRedactaUserRequest $request)
     {
-        $this->authorize('create', User::class);
+        if(!$request->has('token')) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Token is required'
+            ], 400);
+        }
+        $invitation = SignupInvitation::where('token', $request->get('token'))->first();
+        if (!$invitation || !$invitation->isValid()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Invalid token'
+            ], 400);
+        }
+        $validatedData = $request->validated();
         $user = User::create([
-            'name' => $request->name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validatedData['name'],
+            'last_name' => $validatedData['last_name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
         ]);
-        $user->assignRole($request->role);
+        $user->assignRole('editor');
+        $invitation->markAsUsed();
         return response()->json([
             'status' => 201,
             'message' => 'OK',
@@ -58,6 +75,28 @@ class AuthenticationController extends Controller
                 'username' => $user->name.' '.$user->last_name,
                 'redacta_user_id' => $user->id,
                 'role' => $user->roles->pluck('name')->first()
+            ]
+        ], 200);
+    }
+
+    /**
+     * Validate sign up invitation token
+     * 
+     */
+    public function validateSignupInvitation(Request $request) {
+        if (!$request->has('token')) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Token is required'
+            ], 400);
+        }
+        $invitation = SignupInvitation::where('token', $request->get('token'))->first();
+        $isValid = $invitation && $invitation->isValid();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => [
+                'is_valid' => $isValid
             ]
         ], 200);
     }
