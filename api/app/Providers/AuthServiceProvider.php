@@ -26,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Group' => 'App\Policies\GroupPolicy',
         'App\Models\GroupMembership' => 'App\Policies\GroupMembershipPolicy',
         'App\Models\Stamp' => 'App\Policies\StampPolicy',
+        'App\Models\SignupInvitation' => 'App\Policies\SignupInvitationPolicy',
     ];
 
     /**
