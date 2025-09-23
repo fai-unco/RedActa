@@ -57,3 +57,4 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/register', [AuthenticationController::class, 'register']);
 });
 Route::post('/login', [AuthenticationController::class, 'login']);
+Route::get('/validate_signup_invitation', [AuthenticationController::class, 'validateSignUpInvitation']);
