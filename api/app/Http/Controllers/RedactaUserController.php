@@ -16,24 +16,31 @@ class RedactaUserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = RedactaUser::where('name', 'LIKE', $request->input('name', '%'))
+        // If the user is an admin, include soft-deleted users
+        if ($request->user()->hasAnyRole(['local_admin', 'super_admin'])) {
+            $query = RedactaUser::withTrashed();
+        } else {
+            $query = RedactaUser::query();
+        }
+        $users = $query->where('name', 'LIKE', $request->input('name', '%'))
             ->where('last_name', 'LIKE', $request->input('last_name', '%'))
             ->where('email', 'LIKE', $request->input('email', '%'))
             ->get();
-        $role = $request->input('role', '*');
-        if ($role != '*') {
-            $users = $users->filter(function ($user) use ($role) {
-                return $user->hasRole($role);
-            });
-        }
-        $users->load('roles');
-        if ($users->count() === 1) {
-            $users = [$users->first()];
+        // Apply role filter only if the requester is an admin
+        if ($request->user()->hasAnyRole(['local_admin', 'super_admin'])) {
+            if ($request->has('role')) {    
+                $role = $request->input('role');
+                $users = $users->filter(function ($user) use ($role) {
+                    return $user->hasRole($role);
+                });
+            }
+            // Load roles relationship for admin users
+            $users->load('roles');
         }
         return response()->json([
             'status' => 200,
             'description' => 'OK',
-            'data' => $users   
+            'data' => $users->values()->toArray()
         ]);
     }
 
@@ -98,7 +105,8 @@ class RedactaUserController extends Controller
         if (isset($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
         }
-        if (isset($validatedData['role'])) {
+        // Only admins can update roles
+        if (isset($validatedData['role']) && $request->user()->hasAnyRole(['local_admin', 'super_admin'])) {
             $redactaUser->syncRoles($validatedData['role']);
         }
         $redactaUser->update($validatedData);
@@ -121,7 +129,7 @@ class RedactaUserController extends Controller
         $redactaUser->delete();
         return response()->json([
             'status' => 200,
-            'message' => 'El usuario ha sido eliminado correctamente'
+            'message' => 'OK'
         ]);
     }
 }
