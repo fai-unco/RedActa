@@ -132,4 +132,22 @@ class RedactaUserController extends Controller
             'message' => 'OK'
         ]);
     }
+
+    /**
+     * Reactivate a soft-deleted user.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function restore($id)
+    {
+        $redactaUser = RedactaUser::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $redactaUser);
+        $redactaUser->restore();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $redactaUser           
+        ]);
+    }
 }
