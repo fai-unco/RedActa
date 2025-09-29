@@ -70,7 +70,8 @@ class RedactaUserPolicy
      */
     public function delete(RedactaUser $currentUser, RedactaUser $redactaUser)
     {
-        if ($currentUser->hasRole('super_admin') || $current->hasRole('local_admin')) {
+        if (($currentUser->hasRole('super_admin') || $currentUser->hasRole('local_admin')) &&
+            $currentUser->id !== $redactaUser->id) {
             return true;
         }
         return false;
