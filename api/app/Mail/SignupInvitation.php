@@ -31,7 +31,7 @@ class SignupInvitation extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Confirm Signup',
+            subject: 'Invitación a registrarse en RedActa',
         );
     }
 
@@ -43,7 +43,7 @@ class SignupInvitation extends Mailable
     public function content()
     {
         return new Content(
-            view: 'view.emails.signup-invitation',
+            view: 'emails.signup-invitation',
             with: [
                 'invitation' => $this->invitation,
                 'url' => env('APP_URL').'/signup?token='.$this->invitation->token
