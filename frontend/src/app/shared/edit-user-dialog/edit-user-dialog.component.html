@@ -1,0 +1,78 @@
+<nb-card>
+    <nb-card-header>{{ user ? 'Editar cuenta' : 'Agregar cuenta' }}</nb-card-header>
+    <nb-card-body>
+        <ng-container *ngIf="!loading">
+            <form *ngIf="!saveSuccess" [formGroup]="userForm">
+                <div class="form-group" *ngIf="user">
+                    <label class="label col-form-label">Nombre</label>
+                    <input nbInput fullWidth formControlName="name" placeholder="Nombre">
+                    <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="text-danger">
+                        <span *ngIf="userForm.get('name')?.errors?.['required']">El nombre es obligatorio.</span>
+                    </div>
+                </div>
+                <div class="form-group" *ngIf="user">
+                    <label class="label col-form-label">Apellido</label>
+                    <input nbInput fullWidth formControlName="lastName" placeholder="Apellido">
+                    <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched" class="text-danger">
+                        <span *ngIf="userForm.get('lastName')?.errors?.['required']">El apellido es obligatorio.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Email</label>
+                    <input nbInput fullWidth formControlName="email" placeholder="Email">
+                    <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="text-danger">
+                        <span *ngIf="userForm.get('email')?.errors?.['required']">El email es obligatorio.</span>
+                        <span *ngIf="userForm.get('email')?.errors?.['email']">El email no es válido.</span>
+                    </div>
+                </div>
+                <div *ngIf="user" class="form-group">
+                    <label class="label col-form-label">Contraseña</label>
+                    <nb-form-field>
+                        <input [type]="getPasswordFieldType('password')" nbInput fullWidth formControlName="password" placeholder="Contraseña">
+                        <button nbSuffix nbButton ghost (click)="togglePasswordVisibility('password')" type="button">
+                            <nb-icon [icon]="showPassword ? 'eye-outline' : 'eye-off-2-outline'"
+                                        pack="eva"
+                                        [attr.aria-label]="showPassword ? 'hide password' : 'show password'">
+                            </nb-icon>
+                        </button>
+                    </nb-form-field>
+                    <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="text-danger">
+                        <span *ngIf="userForm.get('password')?.errors?.['minlength']">Debe tener al menos 8 caracteres.</span>
+                    </div>
+                </div>
+                <div *ngIf="user" class="form-group">
+                    <label class="label col-form-label">Confirmar contraseña</label>
+                    <nb-form-field>
+                        <input [type]="getPasswordFieldType('passwordConfirmation')" nbInput fullWidth formControlName="passwordConfirmation" placeholder="Confirmar contraseña">
+                        <button nbSuffix nbButton ghost (click)="togglePasswordVisibility('passwordConfirmation')">
+                            <nb-icon [icon]="showPasswordConfirmation ? 'eye-outline' : 'eye-off-2-outline'"
+                                        pack="eva"
+                                        [attr.aria-label]="showPasswordConfirmation ? 'hide password' : 'show password'">
+                            </nb-icon>
+                        </button>
+                    </nb-form-field>
+                    <div *ngIf="userForm.errors?.['passwordMismatch'] && userForm.get('passwordConfirmation')?.touched" class="text-danger">
+                        Las contraseñas no coinciden.
+                    </div>
+                </div>
+                <div class="form-group" *ngIf="user && allowRolesSelection">
+                    <label class="label col-form-label">Rol</label>
+                    <nb-select fullWidth placeholder="Rol" formControlName="role">
+                        <nb-option *ngFor="let role of roles" [value]="role.name">{{role.label}}</nb-option>
+                    </nb-select>
+                </div>
+            </form>
+            <div class="d-flex justify-content-center" *ngIf="saveSuccess">
+                <div class="text-success" style="font-size:1.1em;">{{successMsg}}</div>
+            </div>
+        </ng-container>
+        <div class="d-flex justify-content-center" *ngIf="loading">
+            <nb-spinner status="primary"></nb-spinner>
+        </div>
+    </nb-card-body>
+    <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: 0.5rem;">
+        <button nbButton *ngIf="!saveSuccess" status="primary" class="mr-2" (click)="submit()" [disabled]="userForm.invalid">Aceptar</button>
+        <button *ngIf="!saveSuccess" nbButton status="basic" (click)="close()">Cancelar</button>
+        <button *ngIf="saveSuccess" nbButton status="primary" (click)="close()">Cerrar</button>
+    </nb-card-footer>
+</nb-card>
