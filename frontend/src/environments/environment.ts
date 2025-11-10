@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   API_URL_BASE: 'http://localhost:8000/api',
+  FRONTEND_URL_BASE: 'http://localhost:4200'
+
 };
 
 /*
