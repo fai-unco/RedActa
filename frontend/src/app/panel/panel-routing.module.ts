@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PanelComponent } from './panel.component';
+import { AdminRoleGuard } from '../auth/admin-role.guard';
 
 const routes: Routes = [
   {
@@ -22,6 +23,12 @@ const routes: Routes = [
       {
         path: 'sellos',
         loadChildren: () => import('../stamps/stamps.module').then(m => m.StampsModule) 
+      },
+      {
+        path: 'admin',
+        loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule),
+        canActivate: [AdminRoleGuard] 
+        
       }
     ]
   }

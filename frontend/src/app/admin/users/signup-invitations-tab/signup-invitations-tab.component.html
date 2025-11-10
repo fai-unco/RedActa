@@ -1,0 +1,30 @@
+<div *ngIf="!loading" class="h-100 scrollable"> 
+  <nb-card>
+    <nb-card-header>
+      Invitaciones de registro pendientes
+    </nb-card-header>
+    <nb-list>
+      <nb-list-item *ngFor="let invitation of invitations">
+        <div class="w-100 d-flex justify-content-between">
+          <div class="d-flex flex-column">
+              <!--nb-icon icon="person-outline"></nb-icon-->
+              <b>{{invitation.email}}</b>
+              <span>Link de invitación: <a href="{{signupBaseUrl + invitation.token}}">{{signupBaseUrl + invitation.token}}</a></span>
+              <span>Creado el: {{invitation.createdAt}}</span>
+          </div>
+          <div nbTooltip="Revocar invitacion">
+            <button class="ghost-btn" nbButton ghost (click)="revokeInvitation(invitation)">
+              <nb-icon icon="trash-2-outline" status="primary"></nb-icon>
+            </button>
+          </div>
+        </div>
+      </nb-list-item>
+      <nb-list-item *ngIf="invitations.length === 0">
+        <div class="w-100 text-center text-muted">No hay invitaciones de registro pendientes.</div>
+      </nb-list-item>
+    </nb-list>
+  </nb-card>
+</div>
+<div class="d-flex justify-content-center" *ngIf="loading">
+    <nb-spinner status="primary"></nb-spinner>
+</div>

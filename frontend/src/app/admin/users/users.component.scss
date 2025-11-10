@@ -1,0 +1,12 @@
+nb-tab {
+    padding-left: 0;
+    padding-right: 0;
+    height: calc(100vh - 17rem);
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+nb-tabset {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}

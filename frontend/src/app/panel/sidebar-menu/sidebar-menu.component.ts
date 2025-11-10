@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NbMenuItem, NbThemeService } from '@nebular/theme';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar-menu',
@@ -26,6 +27,7 @@ export class SidebarMenuComponent implements OnInit {
       url: 'sellos',
       icon: 'settings-2-outline'
     }
+    
     /*{
       title: 'Configuración',
       url: 'configuracion',
@@ -35,9 +37,32 @@ export class SidebarMenuComponent implements OnInit {
 
   darkModeEnabled = localStorage.getItem('uiTheme') == 'dark';
 
-  constructor (private themeService: NbThemeService) { }
+  constructor (private themeService: NbThemeService, private authService: AuthService) { }
 
   ngOnInit(): void {
+    if (["local_admin", "super_admin"].includes(this.authService.getCurrentUserRole())) {
+      this.items.push({
+        title: 'Administración',
+        icon: 'settings-2-outline',
+        children: [
+          {
+            title: 'Cuentas',
+            link: 'admin/cuentas',
+            icon: 'people-outline'
+          },
+          {
+            title: 'Dependencias',
+            link: 'admin/dependencias',
+            icon: 'home-outline'
+          },
+          {
+            title: 'Membretes',
+            link: 'admin/membretes',
+            icon: 'home-outline'
+          }
+        ]
+      });
+    }
   }
 
   changeTheme(enableDarkMode: boolean){

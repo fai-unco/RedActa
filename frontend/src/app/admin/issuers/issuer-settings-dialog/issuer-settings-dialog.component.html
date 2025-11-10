@@ -1,0 +1,55 @@
+<nb-card>
+    <nb-card-header>
+        Configuraciones de {{issuer?.description}}
+    </nb-card-header>
+    <nb-card-body>
+        <ng-container *ngIf="!loading">
+            <form *ngIf="!success" [formGroup]="settingsForm">
+                <div class="form-group">
+                    <label class="label col-form-label">Inicio de sección </label>
+                    <nb-select fullWidth formControlName="suggestedOperativeSectionBeginningId" placeholder="Seleccionar inicio de sección" 
+                        [(selected)]="settingsForm.value.suggestedOperativeSectionBeginningId">
+                    <nb-option *ngFor="let item of operativeSectionBeginnings" [value]="item.id">{{item.description}}</nb-option>
+                    </nb-select>
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Membrete</label>
+                    <nb-select fullWidth formControlName="suggestedHeadingId" placeholder="Seleccionar membrete"
+                        [(selected)]="settingsForm.value.suggestedHeadingId">
+                    <nb-option *ngFor="let item of headings" [value]="item.id">{{item.description}}</nb-option>
+                    </nb-select>
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Sello de copia fiel</label>
+                    <nb-select fullWidth formControlName="suggestedTrueCopyStampId" placeholder="Seleccionar sello de copia fiel"
+                        [(selected)]="settingsForm.value.suggestedTrueCopyStampId">
+                    <nb-option *ngFor="let item of stamps" [value]="item.id">{{item.description}}</nb-option>
+                    </nb-select>
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Último artículo sugerido en sección operativa</label>
+                    <input nbInput fullWidth formControlName="suggestedOperativeSectionLastArticle" placeholder="Ingresar último artículo sugerido en sección operativa">
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Frase inicial sugerida</label>
+                    <input nbInput fullWidth formControlName="suggestedStartingPhrase" placeholder="Ingresar frase inicial sugerida">
+                </div>
+                <div class="form-group">
+                    <label class="label col-form-label">Frase de cierre sugerida</label>
+                    <input nbInput fullWidth formControlName="suggestedPartingPhrase" placeholder="Ingresar frase de cierre sugerida">
+                </div> 
+            </form>
+            <div *ngIf="success" class="text-success text-center">
+                ¡Configuración guardada exitosamente!
+            </div>
+        </ng-container>
+        <div class="d-flex justify-content-center" *ngIf="loading">
+            <nb-spinner status="primary"></nb-spinner>
+        </div>
+    </nb-card-body>
+    <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: 0.5rem;">
+        <button nbButton status="primary" *ngIf="success" (click)="close()">Cerrar</button>
+        <button nbButton status="success" *ngIf="!success" (click)="saveSettings()">Guardar</button>
+        <button nbButton status="basic" *ngIf="!success" (click)="close()">Cancelar</button>
+    </nb-card-footer>
+</nb-card>
