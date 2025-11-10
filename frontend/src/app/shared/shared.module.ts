@@ -9,6 +9,7 @@ import { PageContainerComponent } from './page-container/page-container.componen
 import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { ItemSelectorComponent } from './item-selector/item-selector.component';
 import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.com
     PageContainerComponent,
     ItemSelectorComponent,
     EditUserDialogComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
