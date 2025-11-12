@@ -13,10 +13,14 @@ class RedactaUserPolicy
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\RedactaUser  $redactaUser
+     * @param bool $adminMode
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(RedactaUser $redactaUser)
+    public function viewAny(RedactaUser $redactaUser, bool $adminMode)
     {
+        if ($adminMode) {
+            return $redactaUser->hasAnyRole(['super_admin', 'local_admin']);
+        }
         return true;
     }
 
