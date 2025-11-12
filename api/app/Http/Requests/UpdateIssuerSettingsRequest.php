@@ -31,6 +31,8 @@ class UpdateIssuerSettingsRequest extends FormRequest
             'suggested_operative_section_beginning_id' => 'sometimes|numeric|exists:operative_section_beginnings,id',
             'suggested_true_copy_stamp_id' => 'sometimes|numeric|exists:stamps,id',
             'suggested_heading_id' => 'sometimes|numeric|exists:headings,id',
+            'suggested_starting_phrase' => 'sometimes|string|nullable',
+            'suggested_parting_phrase' => 'sometimes|string|nullable',
         ];
     }
 }

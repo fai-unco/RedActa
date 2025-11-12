@@ -28,14 +28,8 @@ class UpdateHeadingRequest extends FormRequest
     {
         return [
             'description' => 'sometimes|string',
-            'phone' => 'sometimes|numeric|nullable',
-            'address' => 'sometimes|string|nullable',
-            'postal_code' => 'sometimes|string|nullable',
-            'province' => 'sometimes|string|nullable',
-            'city' => 'sometimes|string|nullable',
-            'website_url' => 'sometimes|string|nullable',
-            'email' => 'sometimes|string|nullable',
-            'code' => 'sometimes|string|nullable'
+            'issuer_id' => 'sometimes|numeric',
+            'file_id' => 'sometimes|numeric|exists:files,id'
         ];
     }
 }

@@ -27,7 +27,7 @@ class StoreIssuerRequest extends FormRequest
     {
         return [
             'description' => 'required|string',
-            'phone' => 'sometimes|numeric|nullable',
+            'phone' => 'sometimes|string|nullable',
             'address' => 'sometimes|string|nullable',
             'postal_code' => 'sometimes|string|nullable',
             'province' => 'sometimes|string|nullable',
