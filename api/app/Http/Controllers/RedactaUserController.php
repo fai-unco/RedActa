@@ -16,9 +16,11 @@ class RedactaUserController extends Controller
      */
     public function index(Request $request)
     {
+        $adminMode = $request->boolean('admin_mode', false);
+        $this->authorize('viewAny', [RedactaUser::class, $adminMode]);
         // If the user is an admin, include soft-deleted users
-        if ($request->user()->hasAnyRole(['local_admin', 'super_admin'])) {
-            $query = RedactaUser::withTrashed();
+        if ($adminMode && $request->boolean('include_inactive', false)) {
+            $query = RedactaUser::onlyTrashed();
         } else {
             $query = RedactaUser::query();
         }
@@ -27,7 +29,7 @@ class RedactaUserController extends Controller
             ->where('email', 'LIKE', $request->input('email', '%'))
             ->get();
         // Apply role filter only if the requester is an admin
-        if ($request->user()->hasAnyRole(['local_admin', 'super_admin'])) {
+        if ($adminMode) {
             if ($request->has('role')) {    
                 $role = $request->input('role');
                 $users = $users->filter(function ($user) use ($role) {

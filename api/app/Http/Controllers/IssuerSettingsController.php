@@ -50,37 +50,45 @@ class IssuerSettingsController extends Controller
     {
         $this->authorize('create', IssuerSettings::class);
         $validatedData = $request->validated();
-        $issuerSettings = new IssuerSettings(); 
-        $issuerSettings->set($validatedData);
+        //Check if issuer settings already exist for the issuer
+        $existingSettings = IssuerSettings::where('issuer_id', $validatedData['issuer_id'])->first();
+        if ($existingSettings) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'Settings already exist for this issuer'        
+            ], 422);
+        }
+        $issuerSetting = new IssuerSettings(); 
+        $issuerSetting->set($validatedData);
         return response()->json([
             'status' => 201,
             'message' => 'OK',
-            'data' => $issuerSettings           
+            'data' => $issuerSetting           
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\IssuerSettings $issuerSettings
+     * @param \App\Models\IssuerSettings $issuerSetting
      * @return \Illuminate\Http\Response
      */
-    public function show(IssuerSettings $issuerSettings)
+    public function show(IssuerSettings $issuerSetting)
     {
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $issuerSettings           
+            'data' => $issuerSetting           
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\IssuerSettings $issuerSettings
+     * @param \App\Models\IssuerSettings $issuerSetting
      * @return \Illuminate\Http\Response
      */
-    public function edit(IssuerSettings $issuerSettings)
+    public function edit(IssuerSettings $issuerSetting)
     {
         //
     }
@@ -89,35 +97,35 @@ class IssuerSettingsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\UpdateIssuerSettingsRequest  $request
-     * @param \App\Models\IssuerSettings $issuerSettings
+     * @param \App\Models\IssuerSettings $issuerSetting
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateIssuerSettingsRequest $request, IssuerSettings $issuerSettings)
+    public function update(UpdateIssuerSettingsRequest $request, IssuerSettings $issuerSetting)
     {
-        $this->authorize('update', $issuerSettings);
+        $this->authorize('update', $issuerSetting);
         $validatedData = $request->validated();
-        $issuerSettings->set($validatedData);
+        $issuerSetting->update($validatedData);
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $issuerSettings           
+            'data' => $issuerSetting           
         ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\IssuerSettings $issuerSettings
+     * @param \App\Models\IssuerSettings $issuerSetting
      * @return \Illuminate\Http\Response
      */
-    public function destroy(IssuerSettings $issuerSettings)
+    public function destroy(IssuerSettings $issuerSetting)
     {
-        $this->authorize('delete', $issuerSettings);
-        $issuerSettings->delete();
+        $this->authorize('delete', $issuerSetting);
+        $issuerSetting->delete();
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $issuerSettings           
+            'data' => $issuerSetting           
         ]);
     }
 }

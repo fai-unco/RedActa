@@ -116,7 +116,7 @@ class FileController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $id          
+            'data' => $file          
         ]);
     }
 }

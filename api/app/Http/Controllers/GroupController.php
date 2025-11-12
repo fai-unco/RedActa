@@ -16,7 +16,7 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $adminMode = $request->query('adminMode', false);
+        $adminMode = $request->query('admin_mode', false);
         $this->authorize('viewAny', [Group::class, $adminMode]);
         if ($adminMode) {
             $groups = Group::with('redactaUsers')->get();

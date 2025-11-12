@@ -7,6 +7,7 @@ use App\Models\Heading;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreHeadingRequest;
 use App\Http\Requests\UpdateHeadingRequest;
+use App\Models\File;
 
 
 class HeadingController extends Controller
@@ -59,8 +60,7 @@ class HeadingController extends Controller
     {
         $this->authorize('create', Heading::class);
         $validatedData = $request->validated();
-        $heading = new Heading(); 
-        $heading->set($validatedData);
+        $heading = Heading::create($validatedData);
         return response()->json([
             'status' => 201,
             'message' => 'OK',
@@ -108,7 +108,17 @@ class HeadingController extends Controller
     {
         $validatedData = $request->validated();
         $this->authorize('update', $heading);
-        $heading->set($validatedData);
+        $heading->update($validatedData);
+        if ($validatedData['file_id']) {
+            $file = File::find($validatedData['file_id']);
+            if ($file && $heading->file != $file) {
+                if ($heading->file) {
+                    $heading->file()->update(['fileable_id' => $heading->id]);
+                } else {
+                    $heading->file()->save($file);
+                }
+            }
+        }
         return response()->json([
             'status' => 200,
             'message' => 'OK',

@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
      */
     public function register (StoreRedactaUserRequest $request)
     {
-        if(!$request->has('token')) {
+        if (!$request->has('token')) {
             return response()->json([
                 'status' => 400,
                 'message' => 'Token is required'
@@ -96,7 +96,8 @@ class AuthenticationController extends Controller
             'status' => 200,
             'message' => 'OK',
             'data' => [
-                'is_valid' => $isValid
+                'is_valid' => $isValid,
+                'invitation' => $invitation
             ]
         ], 200);
     }

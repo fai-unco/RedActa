@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateGroupMembershipRequest;
 use App\Models\GroupMembership;
 use App\Models\Group;
 use App\Models\RedactaUser;
+use Illuminate\Http\Request;
 
 class GroupMembershipController extends Controller
 {
@@ -15,19 +16,25 @@ class GroupMembershipController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $adminMode = request()->query('adminMode', false);
+        $adminMode = $request->boolean('admin_mode', false);
         $this->authorize('viewAny', [GroupMembership::class, $adminMode]);
         if ($adminMode) {
-            $groupMemberships = GroupMembership::with(['group', 'redactaUser'])->get();
+            $groupMemberships = GroupMembership::with(['group', 'redactaUser']);
         } else {
-            $groupMemberships = auth()->user()->groupMemberships()->with(['group', 'redactaUser'])->get();
+            $groupMemberships = auth()->user()->groupMemberships()->with(['group', 'redactaUser']);
+        }
+        if ($request->has('group_id')) {
+            $groupMemberships = $groupMemberships->where('group_id', $request->query('group_id'));
+        }
+        if ($request->has('redacta_user_id')) {
+            $groupMemberships = $groupMemberships->where('redacta_user_id', $request->query('redacta_user_id'));
         }
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $groupMemberships
+            'data' => $groupMemberships->get()->values()->toArray()
         ]);
     }
 

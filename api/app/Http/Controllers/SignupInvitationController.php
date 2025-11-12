@@ -26,21 +26,14 @@ class SignupInvitationController extends Controller
             $query = SignupInvitation::query();
         }
         $invitations = $query->with('redactaUser')->get();
-        if ($request->has('expired')) {
-            if (!$request->boolean('expired')) {
-                $invitations = $invitations->where(function ($invitation) {
-                    return $invitation->isValid();
-                });
-            } else {
-                $invitations = $invitations->where(function ($invitation) {
-                    return !$invitation->isValid();
-                });
-            }
-        }
+        $invitations = $invitations->where(function ($invitation) use ($request) {
+            return $request->boolean('expired', false) ?
+                !$invitation->isValid(): $invitation->isValid();
+        });
         return response()->json([
             'status' => 200,
             'message' => 'OK',
-            'data' => $invitations
+            'data' => $invitations->values()->toArray()
         ]);
     }
 
@@ -82,6 +75,8 @@ class SignupInvitationController extends Controller
         $validatedData['redacta_user_id'] = $request->user()->id;
         $validatedData['token'] = Str::uuid()->toString();
         $signupInvitation = SignupInvitation::create($validatedData);
+        //Send email
+        \Mail::to($signupInvitation->email)->send(new \App\Mail\SignupInvitation($signupInvitation));
         return response()->json([
             'status' => 201,
             'message' => 'OK',
