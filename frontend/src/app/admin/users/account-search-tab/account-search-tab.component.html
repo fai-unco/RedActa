@@ -1,0 +1,100 @@
+<div *ngIf="!loading" class="h-100 scrollable">
+  <nb-card>
+    <nb-card-header>
+      Parámetros de búsqueda
+    </nb-card-header>
+    <nb-card-body>
+      <form [formGroup]="searchForm" (ngSubmit)="search()">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="label col-form-label">Nombre(s)</label>
+              <input nbInput fullWidth formControlName="name" placeholder="Ingresar nombre(s)">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="label col-form-label">Apellido(s)</label>
+              <input nbInput fullWidth formControlName="lastName" placeholder="Ingresar apellido(s)">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="label col-form-label">Email</label>
+              <input type="email" formControlName="email" nbInput fullWidth placeholder="Ingresar email">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="label col-form-label">Rol</label>
+              <nb-select fullWidth placeholder="Seleccionar rol" formControlName="role">
+                <nb-option *ngFor="let item of roles" [value]="item.name">{{item.label}}</nb-option>
+                <nb-option value="*">Cualquiera</nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="label col-form-label">Estado</label>
+              <nb-select fullWidth formControlName="includeInactive">
+                <nb-option value="false">Activas</nb-option>
+                <nb-option value="true">Inactivas</nb-option>
+              </nb-select>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end" style="gap: 0.5rem">
+          <button status="primary" nbButton type="submit">Buscar</button>
+          <button status="basic" nbButton type="button" (click)="resetForm()">Reiniciar</button>
+        </div>
+      </form>
+    </nb-card-body>
+  </nb-card>
+  <nb-card>
+    <nb-card-header>
+      {{resultsCardTitle}}
+    </nb-card-header>
+    <nb-list>
+      <nb-list-item *ngFor="let user of users; let i=index">
+        <div class="w-100 d-flex flex-column">
+          <div class="w-100 d-flex justify-content-between">
+            <div class="d-flex flex-column">
+              <div>
+                <nb-icon icon="person-outline"></nb-icon>
+                <b class="ml-2">{{user['name']}} {{user['lastName']}}</b>
+              </div>
+              <div>
+                {{user['email']}}
+              </div>
+            </div>
+            <div class="d-flex">
+                <div *ngIf="!user.deletedAt" nbTooltip="Editar cuenta">
+                  <button class="ghost-btn" nbButton ghost (click)="editUser(user)">
+                    <nb-icon icon="edit-outline" status="primary"></nb-icon>
+                  </button>
+                </div>
+                <div *ngIf="!user.deletedAt" nbTooltip="Desactivar cuenta">
+                  <button class="ghost-btn" nbButton ghost (click)="removeUser(user)">
+                    <nb-icon icon="person-remove-outline" status="primary"></nb-icon>
+                  </button>
+                </div>
+                <div *ngIf="user.deletedAt" nbTooltip="Reactivar cuenta">
+                  <button class="ghost-btn" nbButton ghost (click)="reactivateUser(user)">
+                    <nb-icon icon="person-done-outline" status="success"></nb-icon>
+                  </button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </nb-list-item>
+      <nb-list-item *ngIf="users.length === 0">
+        <div class="w-100 text-center text-muted">No se encontraron usuarios que coincidan con los criterios de búsqueda.</div>
+      </nb-list-item>
+    </nb-list>
+  </nb-card>
+</div>
+<div class="d-flex justify-content-center" *ngIf="loading">
+    <nb-spinner status="primary"></nb-spinner>
+</div>

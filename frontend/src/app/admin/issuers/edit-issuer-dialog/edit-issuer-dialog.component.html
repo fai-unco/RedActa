@@ -1,0 +1,85 @@
+<nb-card>
+    <nb-card-header>
+        Editar emisor
+    </nb-card-header>
+    <nb-card-body>
+        <ng-container *ngIf="!loading">
+            <form *ngIf="!success" [formGroup]="issuerForm">
+                <div class="form-group">
+                    <label class="label col-form-label">Descripción</label>
+                    <input nbInput fullWidth formControlName="description" placeholder="Ingresar descripción del emisor">
+                    <div *ngIf="issuerForm.get('description')?.invalid && issuerForm.get('description')?.touched" class="text-danger mt-1">
+                        La descripción es obligatoria
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Email</label>
+                            <input type="email" nbInput fullWidth formControlName="email" placeholder="Ingresar email del emisor">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Teléfono</label>
+                            <input nbInput fullWidth formControlName="phone" placeholder="Ingresar teléfono del emisor">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Dirección</label>
+                            <input nbInput fullWidth formControlName="address" placeholder="Ingresar dirección del emisor">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Ciudad</label>
+                            <input nbInput fullWidth formControlName="city" placeholder="Ingresar ciudad del emisor">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Provincia</label>
+                            <input nbInput fullWidth formControlName="province" placeholder="Ingresar provincia del emisor">
+                        </div>
+                    </div>
+                    <div class="col-md-6">     
+                        <div class="form-group">
+                            <label class="label col-form-label">Código postal</label>
+                            <input nbInput fullWidth formControlName="postalCode" placeholder="Ingresar código postal del emisor">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Sitio web</label>
+                            <input nbInput fullWidth formControlName="websiteUrl" placeholder="Ingresar sitio web del emisor">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label col-form-label">Código</label>
+                            <input nbInput fullWidth formControlName="code" placeholder="Ingresar código del emisor">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div *ngIf="success" class="text-success text-center">
+                {{successMsg}}
+            </div>
+        </ng-container>
+        <div class="d-flex justify-content-center" *ngIf="loading">
+            <nb-spinner status="primary"></nb-spinner>
+        </div>
+    </nb-card-body>
+    <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: 0.5rem;">
+        <button nbButton status="primary" *ngIf="success" (click)="close()">Cerrar</button>
+        <button nbButton status="success" *ngIf="!success" [disabled]="issuerForm.invalid" (click)="saveIssuer()">Guardar</button>
+        <button nbButton status="basic" *ngIf="!success" (click)="close()">Cancelar</button>
+    </nb-card-footer>
+</nb-card>

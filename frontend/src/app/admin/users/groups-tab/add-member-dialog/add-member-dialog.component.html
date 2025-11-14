@@ -1,0 +1,39 @@
+<nb-card>
+  <nb-card-header *ngIf="!success">Agregar integrante a grupo</nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="!loading && !success">
+        <div class="form-group">
+          <label class="label col-form-label">Seleccionar usuario</label>
+          <input nbInput fullWidth
+                 [nbAutocomplete]="auto"
+                 [ngModel]="userInputValue"
+                 (ngModelChange)="onUserInputValueChange($event)"
+                 placeholder="Buscar por nombre, apellido o email"
+                 (click)="onUserInputValueChange(userInputValue)">
+          <nb-autocomplete #auto>
+            <nb-option class="d-flex flex-column" *ngFor="let u of (filteredUsers$ | async)" [value]="u.name + ' ' + u.lastName" (click)="selectUser(u)">
+              <span>{{u.name}} {{u.lastName}}</span>
+              <span class="text-muted">{{u.email}}</span>
+            </nb-option>
+          </nb-autocomplete>
+          <div *ngIf="form.get('redactaUserId')?.invalid && form.get('redactaUserId')?.touched" class="text-danger mt-1">
+            Debes seleccionar un usuario.
+          </div>
+        </div>
+    </ng-container>
+
+    <div class="d-flex justify-content-center" *ngIf="loading">
+      <nb-spinner status="primary"></nb-spinner>
+    </div>
+
+    <div class="text-success text-center" *ngIf="success">
+      Integrante agregado correctamente
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: .5rem;">
+    <button *ngIf="!success" nbButton status="success" (click)="submit()" [disabled]="form.invalid">Agregar</button>
+    <button *ngIf="!success" nbButton status="basic" (click)="close()">Cancelar</button>
+    <button *ngIf="success" nbButton status="primary" (click)="close()">Cerrar</button>
+  </nb-card-footer>
+</nb-card>

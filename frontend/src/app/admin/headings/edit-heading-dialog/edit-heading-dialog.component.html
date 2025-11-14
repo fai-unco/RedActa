@@ -1,0 +1,51 @@
+<nb-card>
+    <nb-card-header>
+        {{heading ? 'Editar membrete' : 'Agregar membrete'}}
+    </nb-card-header>
+    <nb-card-body>
+        <ng-container *ngIf="!loading && !success">
+            <div class="form-group" *ngIf="!heading">
+                <label class="label col-form-label">Dependencia</label>
+                <nb-select fullWidth placeholder="Seleccionar dependencia" [(selected)]="issuerId" >
+                    <nb-option *ngFor="let issuer of issuers" (click)="selectIssuer(issuer.id)" [value]="issuer.id">{{issuer.description}}</nb-option>
+                </nb-select>
+                <div *ngIf="headingForm.get('issuerId')?.invalid && headingForm.get('issuerId')?.touched" class="text-danger mt-1">
+                    La dependencia es obligatoria.
+                </div>
+            </div>
+            <form *ngIf="!success" [formGroup]="headingForm">
+                <div class="form-group">
+                    <label class="label col-form-label">Descripción del membrete</label>
+                    <input nbInput fullWidth formControlName="description" placeholder="Ingresar descripcion del membrete">
+                    <div *ngIf="headingForm.get('description')?.invalid && headingForm.get('description')?.touched" class="text-danger mt-1">
+                        La descripción es obligatoria.
+                    </div>
+                </div>
+            </form>
+            <div class="form-group">
+                <label class="label col-form-label">Contenido del membrete</label>
+                <div *ngIf="file">
+                    Archivo subido: {{file.filename || file.name}}
+                    <button class="ghost-btn ml-2" nbButton ghost nbTooltip="Eliminar archivo" (click)="deleteFile()">
+                        <nb-icon icon="close-outline" status="primary"></nb-icon>
+                    </button>
+                </div>
+                <input *ngIf="!file" type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload nbInput fullWidth>
+                <div *ngIf="headingForm.get('fileId')?.invalid && headingForm.get('fileId')?.touched" class="text-danger mt-1">
+                    Se requiere un archivo para el membrete.
+                </div>
+            </div>
+        </ng-container>
+        <div *ngIf="success && !loading" class="text-success text-center">
+            {{successMsg}}
+        </div>
+        <div class="d-flex justify-content-center" *ngIf="loading">
+            <nb-spinner status="primary"></nb-spinner>
+        </div>
+    </nb-card-body>
+    <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: 0.5rem;">
+        <button nbButton status="primary" *ngIf="success" (click)="close()">Cerrar</button>
+        <button nbButton status="success" *ngIf="!success" (click)="submit()" [disabled]="headingForm.invalid || !file">Guardar</button>
+        <button nbButton status="basic" *ngIf="!success" (click)="close()">Cancelar</button>
+    </nb-card-footer>
+</nb-card>
