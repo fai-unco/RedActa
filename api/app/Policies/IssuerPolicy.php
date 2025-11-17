@@ -14,11 +14,15 @@ class IssuerPolicy
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\RedactaUser  $redactaUser
+     * @param boolean $adminMode
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(RedactaUser $redactaUser)
+    public function viewAny(RedactaUser $redactaUser, bool $adminMode)
     {
-        //
+        if ($adminMode) {
+            return $redactaUser->hasRole('super_admin') || $redactaUser->hasRole('local_admin');
+        }
+        return true;
     }
 
     /**
