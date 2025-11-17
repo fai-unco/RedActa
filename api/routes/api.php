@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/register', [AuthenticationController::class, 'register']);
   Route::apiResource('roles', RoleController::class);
   Route::patch('/redacta_users/{redacta_user}/reactivate', [RedactaUserController::class, 'restore']);
+  Route::patch('/issuers/{issuer}/reactivate', [IssuerController::class, 'restore']);
 });
 Route::post('/login', [AuthenticationController::class, 'login']);
 Route::get('/validate_signup_invitation', [AuthenticationController::class, 'validateSignUpInvitation']);

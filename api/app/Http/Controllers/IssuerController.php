@@ -126,4 +126,24 @@ class IssuerController extends Controller
             'message' => 'OK'           
         ]);
     }
+
+    /**
+     * Reactivate a soft-deleted issuer.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function restore($id)
+    {
+        $issuer = Issuer::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $issuer);
+        $issuer->restore();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $issuer           
+        ]);
+    }
+
+
 }
