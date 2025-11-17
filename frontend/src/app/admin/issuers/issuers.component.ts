@@ -69,7 +69,7 @@ export class IssuersComponent implements OnInit {
       closeOnBackdropClick: false
     }).onClose.subscribe((deactivated: boolean) => {
       if (deactivated) {
-        this.loadIssuers
+        this.loadIssuers();
       }
     });
   }
@@ -81,6 +81,7 @@ export class IssuersComponent implements OnInit {
         submitType: 'success',
         submitBtnLabel: 'Reactivar',
         apiRoute: 'issuers',
+        nestedApiResource: 'reactivate',
         resourceId: issuer.id,
         requestType: 'update',
       },
