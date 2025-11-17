@@ -18,11 +18,22 @@ class IssuerController extends Controller
      */
     public function index()
     {
-        $issuers = Issuer::all();
+        $request = request();
+        $adminMode = $request->boolean('admin_mode', false);
+        $includeInactive = $request->boolean('include_inactive', false);
+        // Pass admin_mode to the policy
+        $this->authorize('viewAny', [Issuer::class, $adminMode]);
+        if ($adminMode && $includeInactive) {
+            // return only soft-deleted (inactive) issuers
+            $issuers = Issuer::onlyTrashed();
+        } else {
+            // return only not-deleted issuers
+            $issuers = Issuer::query();
+        }
         return response()->json([
             'status' => 200,
             'description' => 'OK',
-            'data' => $issuers       
+            'data' => $issuers->get()    
         ]);
     }
 
