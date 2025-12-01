@@ -1,0 +1,58 @@
+<nb-card *ngIf="!loading">
+  <nb-card-header>{{ group ? 'Editar grupo' : 'Crear grupo' }}</nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="!success">
+      <form [formGroup]="form">
+        <div class="form-group">
+          <label class="label col-form-label">Nombre del grupo</label>
+          <input nbInput fullWidth formControlName="name" placeholder="Ingresar nombre del grupo">
+          <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger mt-1">
+            El nombre es obligatorio.
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="label col-form-label">Agregar integrantes</label>
+          <input nbInput fullWidth
+                 [nbAutocomplete]="auto"
+                 formControlName="memberInput"
+                 placeholder="Buscar por nombre, apellido o email">
+          <nb-autocomplete #auto>
+            <nb-option *ngFor="let u of (filteredUsers$ | async)" [value]="u" (click)="selectUser(u)">
+              <div class="d-flex flex-column">
+                <span>{{u.name}} {{u.lastName}}</span>
+                <small class="text-muted">{{u.email}}</small>
+              </div>
+            </nb-option>
+          </nb-autocomplete>
+          <div class="mt-4" *ngIf="groupMembers.length > 0">
+            <div *ngFor="let u of groupMembers" class="d-flex align-items-center justify-content-between py-1">
+              <div>
+                <b>{{u.name}} {{u.lastName}}</b>
+                <div class="text-muted">{{u.email}}</div>
+              </div>
+              <div nbTooltip="Quitar integrante">
+                <button nbButton ghost status="basic" (click)="removeSelectedUser(u)">
+                  <nb-icon icon="person-remove-outline"></nb-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+    <div class="text-success text-center" *ngIf="success">
+      Grupo guardado correctamente
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="d-flex justify-content-end" style="gap: .5rem;">
+    <button *ngIf="!success" nbButton status="success" (click)="submit()">
+      {{ group ? 'Guardar cambios' : 'Crear' }}
+    </button>
+    <button *ngIf="!success" nbButton status="basic" (click)="close()">Cancelar</button>
+    <button *ngIf="success" nbButton status="primary" (click)="close()">Cerrar</button>
+  </nb-card-footer>
+</nb-card>
+
+<div class="d-flex justify-content-center" *ngIf="loading">
+  <nb-spinner status="primary"></nb-spinner>
+</div>

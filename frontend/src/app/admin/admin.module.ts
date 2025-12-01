@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UsersComponent } from './users/users.component';
 import { AdminRoutingModule } from './admin-routing.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NbCardModule, NbButtonModule, NbInputModule, NbTableModule, NbListModule, NbIconModule, NbSpinnerModule, NbOptionModule, NbSelectModule, NbAccordionModule, NbTooltipModule, NbTabsetModule, NbAutocompleteModule, NbContextMenuModule } from '@nebular/theme';
+import { NbCardModule, NbButtonModule, NbInputModule, NbTableModule, NbListModule, NbIconModule, NbSpinnerModule, NbOptionModule, NbSelectModule, NbAccordionModule, NbTooltipModule, NbTabsetModule, NbAutocompleteModule} from '@nebular/theme';
 import { AccountSearchTabComponent } from './users/account-search-tab/account-search-tab.component';
 import { SharedModule } from '../shared/shared.module';
 import { SignupInvitationsTabComponent } from './users/signup-invitations-tab/signup-invitations-tab.component';
@@ -14,6 +14,7 @@ import { HeadingsComponent } from './headings/headings.component';
 import { EditHeadingDialogComponent } from './headings/edit-heading-dialog/edit-heading-dialog.component';
 import { GroupsTabComponent } from './users/groups-tab/groups-tab.component';
 import { AddMemberDialogComponent } from './users/groups-tab/add-member-dialog/add-member-dialog.component';
+import { EditGroupDialogComponent } from './users/edit-group-dialog/edit-group-dialog.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { AddMemberDialogComponent } from './users/groups-tab/add-member-dialog/a
     EditHeadingDialogComponent,
     GroupsTabComponent,
     AddMemberDialogComponent,
+    EditGroupDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -47,7 +49,6 @@ import { AddMemberDialogComponent } from './users/groups-tab/add-member-dialog/a
     NbTabsetModule,
     SharedModule,
     NbAutocompleteModule,
-    NbContextMenuModule,
   ]
 })
 export class AdminModule { }
