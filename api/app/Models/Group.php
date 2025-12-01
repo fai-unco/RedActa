@@ -12,13 +12,10 @@ class Group extends Model
     protected $fillable = [
         'name',
     ];
-    protected $hidden = [
-        'pivot',
-    ];
 
     public function redactaUsers()
     {
-        return $this->belongsToMany(RedactaUser::class, 'group_memberships', 'group_id', 'redacta_user_id');
+        return $this->belongsToMany(RedactaUser::class, 'group_memberships', 'group_id', 'redacta_user_id')->as('group_membership')->withPivot(['id']);
     }
 
     public function documentSharedAccesses()
