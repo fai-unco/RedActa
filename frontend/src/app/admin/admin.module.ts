@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UsersComponent } from './users/users.component';
 import { AdminRoutingModule } from './admin-routing.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NbCardModule, NbButtonModule, NbInputModule, NbTableModule, NbListModule, NbIconModule, NbSpinnerModule, NbOptionModule, NbSelectModule, NbAccordionModule, NbTooltipModule, NbTabsetModule, NbAutocompleteModule} from '@nebular/theme';
+import { NbCardModule, NbButtonModule, NbInputModule, NbTableModule, NbListModule, NbIconModule, NbSpinnerModule, NbOptionModule, NbSelectModule, NbAccordionModule, NbTooltipModule, NbTabsetModule, NbAutocompleteModule, NbContextMenuModule } from '@nebular/theme';
 import { AccountSearchTabComponent } from './users/account-search-tab/account-search-tab.component';
 import { SharedModule } from '../shared/shared.module';
 import { SignupInvitationsTabComponent } from './users/signup-invitations-tab/signup-invitations-tab.component';
@@ -49,6 +49,7 @@ import { EditGroupDialogComponent } from './users/edit-group-dialog/edit-group-d
     NbTabsetModule,
     SharedModule,
     NbAutocompleteModule,
+    NbContextMenuModule,
   ]
 })
 export class AdminModule { }

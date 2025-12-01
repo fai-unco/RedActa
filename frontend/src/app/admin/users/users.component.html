@@ -2,8 +2,8 @@
     <div class="d-flex justify-content-between">
         <h1>Cuentas</h1>
         <div class="d-flex align-items-center">
-            <button nbButton ghost nbTooltip="Crear nueva cuenta" (click)="addUser()">
-                <nb-icon icon="person-add-outline" status="primary"></nb-icon>
+            <button nbButton ghost nbTooltip="Crear nueva cuenta" [nbContextMenu]="addOptions" nbContextMenuTag="add-options">
+                <nb-icon icon="plus-outline" status="primary"></nb-icon>
             </button>
         </div>
     </div>
