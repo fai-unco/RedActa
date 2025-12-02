@@ -13,7 +13,6 @@ import { EditIssuerDialogComponent } from './issuers/edit-issuer-dialog/edit-iss
 import { HeadingsComponent } from './headings/headings.component';
 import { EditHeadingDialogComponent } from './headings/edit-heading-dialog/edit-heading-dialog.component';
 import { GroupsTabComponent } from './users/groups-tab/groups-tab.component';
-import { AddMemberDialogComponent } from './users/groups-tab/add-member-dialog/add-member-dialog.component';
 import { EditGroupDialogComponent } from './users/edit-group-dialog/edit-group-dialog.component';
 
 @NgModule({
@@ -27,7 +26,6 @@ import { EditGroupDialogComponent } from './users/edit-group-dialog/edit-group-d
     HeadingsComponent,
     EditHeadingDialogComponent,
     GroupsTabComponent,
-    AddMemberDialogComponent,
     EditGroupDialogComponent,
   ],
   imports: [
