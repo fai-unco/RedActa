@@ -79,7 +79,7 @@ class DocumentSharedAccessController extends Controller
         // Notify the user or group members about the shared access
         $usersToNotify = [];
         if ($validatedData['document_shared_accessable_type'] == 'App\Models\RedactaUser') {
-            $usersToNotify[] = $documentSharedAccess->document_shared_accessable;
+            $usersToNotify[] = $documentSharedAccess->documentSharedAccessable;
         } else {
             foreach ($documentSharedAccess->documentSharedAccessable->redactaUsers as $user) {
                 $usersToNotify[] = $user;
@@ -92,7 +92,6 @@ class DocumentSharedAccessController extends Controller
                     ->send(new ShareDocumentMailService($document->id, $request->user()));
             }
         }
-
         return response()->json([
             'status' => 201,
             'message' => 'OK',
