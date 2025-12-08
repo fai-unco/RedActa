@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
 import { ItemSelectorComponent } from 'src/app/shared/item-selector/item-selector.component';
+import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { EditSharedAccessComponent } from './edit-shared-access/edit-shared-access.component';
 
 @Component({
   selector: 'app-document-shared-access',
@@ -55,9 +57,10 @@ export class DocumentSharedAccessComponent implements OnInit {
           this.accessModes = res[3].data;
           this.groups = res[4].data.map((group: any) => ({
             ...group,
+            //detail shows up to 4 members of the group
             detail: group.redactaUsers
-              ? group.redactaUsers.map((u: any) => `${u.name} ${u.lastName}`).join(', ')
-              : ''
+              ? group.redactaUsers.slice(0, 4).map((user: any) => user.name + ' ' + user.lastName).join(', ') + (group.redactaUsers.length > 4 ? ', ...' : '')
+              : 'Sin miembros'
           }));
           this.owner = this.users.find((user: any) => user.id == res[0].data.redactaUserId);
         },
@@ -69,76 +72,40 @@ export class DocumentSharedAccessComponent implements OnInit {
   }
 
   addDocumentSharedAccess() {
-    this.dialogService.open(ItemSelectorComponent, {
-      context: {
-        items: [
-          { id: 'user', name: 'Cuenta individual' },
-          { id: 'group', name: 'Grupo' }
-        ],
-        itemName: 'tipo de acceso',
-        filterBy: 'name',
-        autocomplete: false
-      }
-    }).onClose.subscribe(type => {
-      if (type != null) {
-        if (type.id === 'user') {
-          this.dialogService.open(ItemSelectorComponent, {context: {items: this.users, itemName: 'cuenta', filterBy: 'name', autocomplete: true}}).onClose.subscribe(user => {
-            if (user != null) {
-              this.viewState = 'loading';
-              this.connectionService.post('document_shared_accesses', {documentId: this.documentId, resourceId: user.id, resourceType: 'user'})
-                .pipe(finalize(() => {this.viewState = 'rendering'}))
-                .subscribe({
-                  next: _ => {
-                    this.getDocumentSharedAccesss();
-                  },
-                  error: e => {
-                    this.errorHandler.handle(e);
-                  }
-                })
-            }
-          })
-        } else if (type.id === 'group') {
-          this.dialogService.open(ItemSelectorComponent, {
-            context: {
-              items: this.groups,
-              itemName: 'grupo',
-              filterBy: 'name',
-              autocomplete: true
-            }
-          }).onClose.subscribe(group => {
-            if (group != null) {
-              this.viewState = 'loading';
-              this.connectionService.post('document_shared_accesses', {documentId: this.documentId, resourceId: group.id, resourceType: 'group'})
-                .pipe(finalize(() => {this.viewState = 'rendering'}))
-                .subscribe({
-                  next: _ => {
-                    this.getDocumentSharedAccesss();
-                  },
-                  error: e => {
-                    this.errorHandler.handle(e);
-                  }
-                })
-            }
-          })
-        }
+    this.dialogService.open(EditSharedAccessComponent, {
+      context: { 
+        users: this.users, 
+        groups: this.groups,
+        documentId: this.documentId
+      },
+      closeOnBackdropClick: false
+    }).onClose.subscribe(success => {
+      if (success) {
+        this.getDocumentSharedAccesss();
       }
     })
   }
 
-  removeDocumentSharedAccess(documentSharedAccessId: any) {
-    this.viewState = 'loading';
-    this.connectionService.delete('document_shared_accesses', documentSharedAccessId).subscribe({
-      next: _ => {
-        this.getDocumentSharedAccesss();
+  removeDocumentSharedAccess(documentSharedAccess: any) {
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: { 
+        message: `Confirma eliminar el acceso compartido a <b>${this.getSharedAccessName(documentSharedAccess)}</b>?`,
+        submitType: 'danger',
+        submitBtnLabel: 'Eliminar',
+        apiRoute: 'document_shared_accesses',
+        resourceId: documentSharedAccess.id,
+        requestType: 'delete'
       },
-      error: e => {
-        this.viewState = '';
-        this.errorHandler.handle(e);
+      closeOnBackdropClick: false
+    }).onClose.subscribe((removed: boolean) => {
+      if (removed) {
+        this.getDocumentSharedAccesss();
       }
-    });  
+    });
   }
 
-  getDocumentSharedAccesss(){
+  getDocumentSharedAccesss() {
+    this.viewState = 'loading';
     this.connectionService.get('document_shared_accesses?document_id=' + this.documentId).subscribe({
       next: (res: any) => {
         this.documentSharedAccesses = res.data;

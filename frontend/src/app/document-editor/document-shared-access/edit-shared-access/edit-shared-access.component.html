@@ -1,0 +1,41 @@
+<nb-card class="h-100" *ngIf="loading" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+</nb-card>
+<nb-card *ngIf="!loading">
+  <nb-card-header>Agregar acceso compartido</nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="!success">
+      <div class="form-group">
+        <label class="label col-form-label">Seleccionar tipo de acceso</label>
+        <nb-select fullWidth placeholder="Seleccionar cuenta" (selectedChange)="onAccessTypeChange($event)" [selected]="accessType">
+          <nb-option value="user">Cuenta personal</nb-option>
+          <nb-option value="group">Grupo</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group">
+        <label class="label col-form-label">Ingresar nombre</label>
+        <input #itemNameInput (input)="onItemNameChange()" fullWidth nbInput placeholder="Ingresar nombre"  [nbAutocomplete]="autoControl" />
+        <nb-autocomplete #autoControl (selectedChange)="selectItem($event)">
+          <nb-option *ngFor="let item of filteredItems | async" [value]="item"> 
+              <div>
+                {{ item.name }} 
+                <ng-container *ngIf="accessType == 'group'">
+                  <div class="text-muted">
+                      {{ item.detail }}
+                  </div>
+                </ng-container>
+              </div>
+          </nb-option>
+        </nb-autocomplete>
+      </div>
+    </ng-container>
+    <div class="text-success text-center" *ngIf="success">
+      Acceso compartido agregado correctamente
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="d-flex justify-content-end">
+    <button *ngIf="!success" nbButton status="primary" (click)="submit()" class="mr-2" [disabled]="form.invalid">Guardar</button>
+    <button *ngIf="!success" nbButton (click)="close()">Cancelar</button>
+    <button *ngIf="success" nbButton (click)="close()">Cerrar</button>
+  </nb-card-footer>
+</nb-card>

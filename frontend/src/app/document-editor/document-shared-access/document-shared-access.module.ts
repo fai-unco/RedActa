@@ -4,14 +4,14 @@ import { NbAutocompleteModule, NbButtonModule, NbCardModule, NbContextMenuModule
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 import { DocumentSharedAccessComponent } from './document-shared-access.component';
-import { UserSelectorComponent } from './user-selector/user-selector.component';
+import { EditSharedAccessComponent } from './edit-shared-access/edit-shared-access.component';
 
 
 
 @NgModule({
   declarations: [
     DocumentSharedAccessComponent,
-    UserSelectorComponent
+    EditSharedAccessComponent
   ],
   imports: [
     CommonModule,

@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UserSelectorComponent } from './user-selector.component';
+import { EditSharedAccessComponent } from './edit-shared-access.component';
 
-describe('UserSelectorComponent', () => {
-  let component: UserSelectorComponent;
-  let fixture: ComponentFixture<UserSelectorComponent>;
-
+describe('EditSharedAccessComponent', () => {
+  let component: EditSharedAccessComponent;
+  let fixture: ComponentFixture<EditSharedAccessComponent>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UserSelectorComponent ]
+      declarations: [ EditSharedAccessComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UserSelectorComponent);
+    fixture = TestBed.createComponent(EditSharedAccessComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
