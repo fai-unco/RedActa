@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\DocumentSharedAccess;
 use App\Models\RedactaUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Models\Document;
 
 class DocumentSharedAccessPolicy
 {
