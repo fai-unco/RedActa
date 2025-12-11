@@ -62,3 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::post('/login', [AuthenticationController::class, 'login']);
 Route::get('/validate_signup_invitation', [AuthenticationController::class, 'validateSignUpInvitation']);
+
+// Rutas públicas para restablecer contraseña
+Route::post('/password/forgot', [AuthenticationController::class, 'forgotPassword']);
+Route::post('/password/reset', [AuthenticationController::class, 'resetPassword']);
