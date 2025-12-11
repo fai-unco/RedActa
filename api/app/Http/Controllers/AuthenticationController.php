@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreRedactaUserRequest;
 use App\Models\SignupInvitation;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Models\PasswordReset;
+use App\Mail\PasswordResetMail;
+use Carbon\Carbon;
 
 
 class AuthenticationController extends Controller
@@ -109,6 +113,51 @@ class AuthenticationController extends Controller
     public function logout (Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        $email = $request->input('email');
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return response()->json(['status' => 400, 'message' => 'El mail ingresado no está asociado a ninguna cuenta'], 400);
+        }
+        $token = Str::random(64);
+        $passwordReset = PasswordReset::create([
+            'email' => $email,
+            'token' => $token, 
+            'created_at' => now()
+        ]);
+        $frontendBase = env('APP_URL', config('app.app_url', ''));
+        $link = $frontendBase . '/reset-password?token=' . $token;
+        Mail::to($email)->send(new PasswordResetMail($user, $link, $passwordReset->created_at->addMinutes(60)->format('d/m/Y H:i')));
+        return response()->json(['status' => '200', 'message' => 'OK']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        $token = $request->input('token');
+        $passwordReset = PasswordReset::where('token', $token)
+            ->where('used', false)
+            ->first();
+        if (!$passwordReset) {
+            return response()->json(['status' => 400, 'message' => 'El link es inválido'], 400);
+        }
+        $created = Carbon::parse($passwordReset->created_at);
+        if ($created->addMinutes(60)->isPast()) {
+            return response()->json(['status' => 400, 'message' => 'El link ha expirado'], 400);
+        }
+        $user = User::where('email', $passwordReset->email)->first();
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+        $passwordReset->used = true;
+        $passwordReset->save();
+        return response()->json(['status' => 200, 'message' => 'OK']);
     }
 }
 
