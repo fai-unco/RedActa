@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, finalize, of, throwError } from 'rxjs';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../auth-core/auth.service';
 
 @Component({
   selector: 'app-login',

@@ -6,7 +6,7 @@ import { DatePipe } from '@angular/common'
 import { ErrorHandlerService } from '../shared/error-handler/error-handler.service';
 import { NbDialogService } from '@nebular/theme';
 import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth/auth-core/auth.service';
 
 
 @Component({
