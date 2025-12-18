@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NbMenuItem, NbThemeService } from '@nebular/theme';
-import { AuthService } from 'src/app/auth/auth.service';
+import { AuthService } from 'src/app/auth/auth-core/auth.service';
 
 @Component({
   selector: 'app-sidebar-menu',

@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { NB_WINDOW, NbMenuService, NbSidebarService} from '@nebular/theme';
 import { Subscription } from 'rxjs';
-import { AuthService } from 'src/app/auth/auth.service';
+import { AuthService } from 'src/app/auth/auth-core/auth.service';
 
 @Component({
   selector: 'app-navbar',

@@ -6,8 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbMenuModule, NbSidebarModule, NbDatepickerModule, NbDialogModule, NbCardModule, NbButton, NbButtonComponent, NbButtonModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
-import { AuthInterceptor } from './auth/auth.interceptor';
 import { PanelModule } from './panel/panel.module';
+import { AuthInterceptor } from './auth/auth-core/auth.interceptor';
 
 
 @NgModule({

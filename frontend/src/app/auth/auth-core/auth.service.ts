@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +13,18 @@ export class AuthService {
 
     login(email:string, password:string ): Observable<any> {
         return this.http.post(environment.API_URL_BASE + '/login', {email, password})
+    }
+
+    forgotPassword(email: string): Observable<any> {
+        return this.http.post(environment.API_URL_BASE + '/password/forgot', { email });
+    }
+
+    resetPassword(token: string, password: string, passwordConfirmation: string): Observable<any> {
+        return this.http.post(environment.API_URL_BASE + '/password/reset', {
+            token,
+            password,
+            password_confirmation: passwordConfirmation
+        });
     }
         
     setSession(authResult: any) {
@@ -50,5 +62,4 @@ export class AuthService {
         return String(localStorage.getItem('role'));
     }
 }
-          
-    
+
