@@ -11,6 +11,7 @@
           <div class="form-group">
             <label class="label" for="password">Contraseña</label>
             <input type="password" nbInput fullWidth id="password" formControlName="password" name="password" placeholder="Ingrese contraseña">
+            <a class="forgot-password-link" routerLink="/forgot-password">Olvidé mi contraseña</a>
           </div>
           <button fullWidth [nbSpinner]="loading" nbSpinnerStatus="primary" status="primary" nbButton type="submit" [disabled]="!loginForm.valid || loading">
             <ng-container *ngIf="!loading">Iniciar sesión</ng-container> 
