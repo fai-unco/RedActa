@@ -1,14 +1,14 @@
-<nb-card>
+<nb-card class="h-100" *ngIf="loading" [nbSpinner]="true" nbSpinnerStatus="primary">
+    <nb-card-body></nb-card-body>
+</nb-card>
+<nb-card *ngIf="!loading">
   <nb-card-body>
-    <div *ngIf="!loading && !success" [innerHTML]="message"></div>
-    <div class="d-flex justify-content-center" *ngIf="loading">
-      <nb-spinner status="danger"></nb-spinner>
-    </div>
+    <div *ngIf="!success" [innerHTML]="message"></div>
     <div class="text-success text-center" *ngIf="success">
       Operación realizada con éxito
     </div>
   </nb-card-body>
-  <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: .5rem;">
+  <nb-card-footer class="d-flex justify-content-end" style="gap: .5rem;">
     <button *ngIf="!success" nbButton [status]="submitType" (click)="confirm()">{{submitBtnLabel}}</button>
     <button *ngIf="!success" nbButton status="basic" (click)="cancel()">Cancelar</button>
     <button *ngIf="success" nbButton status="primary" (click)="close()">Cerrar</button>
