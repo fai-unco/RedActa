@@ -14,14 +14,10 @@ class GroupPolicy
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\RedactaUser  $redactaUser
-     * @param boolean $adminMode
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(RedactaUser $redactaUser, bool $adminMode)
+    public function viewAny(RedactaUser $redactaUser)
     {
-        if ($adminMode) {
-            return $redactaUser->hasRole('super_admin') || $redactaUser->hasRole('local_admin');
-        }
         return true;
     }
 
@@ -34,10 +30,7 @@ class GroupPolicy
      */
     public function view(RedactaUser $redactaUser, Group $group)
     {
-        if ($redactaUser->hasRole('super_admin') || $redactaUser->hasRole('local_admin')) {
-            return true;
-        }
-        return $group->redactaUsers->contains($redactaUser);
+        return true;
     }
 
     /**
