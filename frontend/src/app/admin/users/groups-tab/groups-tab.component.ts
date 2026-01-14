@@ -82,7 +82,7 @@ export class GroupsTabComponent implements OnInit {
 
   private loadGroups(): void {
     this.loading = true;
-    this.api.get('groups?admin_mode=true')
+    this.api.get('groups?viewAll=true')
       .pipe(finalize(() => (this.loading = false))) 
       .subscribe({
         next: (res: any) => {

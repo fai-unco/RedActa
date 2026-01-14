@@ -7,6 +7,7 @@ import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.
 import { ItemSelectorComponent } from 'src/app/shared/item-selector/item-selector.component';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { EditSharedAccessComponent } from './edit-shared-access/edit-shared-access.component';
+import { AuthService } from 'src/app/auth/auth-core/auth.service';
 
 @Component({
   selector: 'app-document-shared-access',
@@ -33,7 +34,8 @@ export class DocumentSharedAccessComponent implements OnInit {
   constructor(private dialogService: NbDialogService,
               private connectionService: ApiConnectionService,
               private route: ActivatedRoute,
-              private errorHandler: ErrorHandlerService) { }
+              private errorHandler: ErrorHandlerService,
+              private authService: AuthService) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {this.documentId = params['id']});
@@ -44,7 +46,7 @@ export class DocumentSharedAccessComponent implements OnInit {
         this.connectionService.get('visibility_levels'),
         this.connectionService.get('redacta_users'),
         this.connectionService.get('access_modes'),
-        this.connectionService.get('groups'),
+        this.connectionService.get('groups?viewAll=true'),
       ];
       forkJoin(requests).subscribe({
         next: (res: any) => {
@@ -72,10 +74,14 @@ export class DocumentSharedAccessComponent implements OnInit {
   }
 
   addDocumentSharedAccess() {
+    // Get groups the current user belongs to
+    let userGroups = this.groups.filter((group: any) => {
+      return group.redactaUsers.some((user: any) => user.id == this.authService.getCurrentUserId());
+    });
     this.dialogService.open(EditSharedAccessComponent, {
       context: { 
         users: this.users, 
-        groups: this.groups,
+        groups: userGroups,
         documentId: this.documentId
       },
       closeOnBackdropClick: false
