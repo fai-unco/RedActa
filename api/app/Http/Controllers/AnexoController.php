@@ -98,7 +98,6 @@ class AnexoController extends Controller
     public function update(UpdateAnexoRequest $request, Anexo $anexo)
     {
         $data = $request->validated();
-        $anexo = Anexo::find($anexo);
         if (isset($data['file_id'])) {
             // Check if the file exists and belongs to the user
             $file = File::find($data['file_id']);
