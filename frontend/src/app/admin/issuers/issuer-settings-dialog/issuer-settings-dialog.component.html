@@ -9,7 +9,7 @@
                     <label class="label col-form-label">Inicio de sección </label>
                     <nb-select fullWidth formControlName="suggestedOperativeSectionBeginningId" placeholder="Seleccionar inicio de sección" 
                         [(selected)]="settingsForm.value.suggestedOperativeSectionBeginningId">
-                    <nb-option *ngFor="let item of operativeSectionBeginnings" [value]="item.id">{{item.description}}</nb-option>
+                    <nb-option *ngFor="let item of operativeSectionBeginnings" [value]="item.id">{{item.content}}</nb-option>
                     </nb-select>
                 </div>
                 <div class="form-group">
@@ -28,7 +28,7 @@
                 </div>
                 <div class="form-group">
                     <label class="label col-form-label">Último artículo sugerido en sección operativa</label>
-                    <input nbInput fullWidth formControlName="suggestedOperativeSectionLastArticle" placeholder="Ingresar último artículo sugerido en sección operativa">
+                    <app-text-editor formControlName="suggestedOperativeSectionLastArticle" placeholder="Ingresar último artículo sugerido en sección operativa"></app-text-editor>
                 </div>
                 <div class="form-group">
                     <label class="label col-form-label">Frase inicial sugerida</label>

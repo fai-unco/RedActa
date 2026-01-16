@@ -34,14 +34,6 @@ export class IssuerSettingsDialogComponent implements OnInit {
       this.api.get(`stamps`),
       this.api.get(`headings?issuerId=${this.issuer.id}`),
     ];
-    this.settingsForm = this.fb.group({
-      suggestedOperativeSectionBeginningId: this.fb.control(''),
-      suggestedTrueCopyStampId: this.fb.control(''),
-      suggestedHeadingId: this.fb.control(''),
-      suggestedOperativeSectionLastArticle: this.fb.control(''),
-      suggestedStartingPhrase: this.fb.control( ''),
-      suggestedPartingPhrase: this.fb.control('')
-    });
     forkJoin(requests)
     .pipe(finalize(() => this.loading = false))
       .subscribe({
@@ -49,17 +41,15 @@ export class IssuerSettingsDialogComponent implements OnInit {
           this.operativeSectionBeginnings = res[1].data;
           this.stamps = res[2].data;
           this.headings = res[3].data;
-          if (res[0].data) {
-            this.submitRequest = 'patch';
-            this.settingsForm = this.fb.group({
-              suggestedOperativeSectionBeginningId: this.fb.control(res[0].data.suggestedOperativeSectionBeginning),
-              suggestedTrueCopyStampId: this.fb.control(res[0].data.suggestedTrueCopyStampId),
-              suggestedHeadingId: this.fb.control(res[0].data.suggestedHeadingId),
-              suggestedOperativeSectionLastArticle: this.fb.control(res[0].data.suggestedOperativeSectionLastArticleId),
-              suggestedStartingPhrase: this.fb.control(res[0].data.suggestedStartingPhrase),
-              suggestedPartingPhrase: this.fb.control(res[0].data.suggestedPartingPhrase)
-            });
-          }
+          this.submitRequest = res[0].data ? 'patch' : 'post';
+          this.settingsForm = this.fb.group({
+            suggestedOperativeSectionBeginningId: this.fb.control(res[0].data ? res[0].data.suggestedOperativeSectionBeginningId : ''),
+            suggestedTrueCopyStampId: this.fb.control(res[0].data ? res[0].data.suggestedTrueCopyStampId : ''),
+            suggestedHeadingId: this.fb.control(res[0].data ? res[0].data.suggestedHeadingId : ''),
+            suggestedOperativeSectionLastArticle: this.fb.control(res[0].data ? res[0].data.suggestedOperativeSectionLastArticle : ''),
+            suggestedStartingPhrase: this.fb.control(res[0].data ? res[0].data.suggestedStartingPhrase : ''),
+            suggestedPartingPhrase: this.fb.control(res[0].data ? res[0].data.suggestedPartingPhrase : '')
+          });
         },
         error: (error) => this.errorHandler.handle(error)
       }); 
