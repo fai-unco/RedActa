@@ -63,7 +63,7 @@ export class ResetPasswordComponent implements OnInit {
       .subscribe({
         next: () => {
           this.success = true;
-          setTimeout(() => this.router.navigate(['/login']), 200);
+          setTimeout(() => this.router.navigate(['/login']), 4000);
         },
         error: (e) => {
           this.error = e?.error?.message || 'Error al restablecer la contraseña';
