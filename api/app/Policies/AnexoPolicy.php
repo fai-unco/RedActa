@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Anexo;
 use App\Models\RedactaUser;
+use App\Models\Document;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AnexoPolicy
@@ -46,7 +47,7 @@ class AnexoPolicy
     {
          return $redactaUser->hasRole('super_admin') || 
             $redactaUser->hasRole('local_admin') || 
-            $anexo->document->isAccessibleToRedactaUser($redactaUser, 1);
+            $document->isAccessibleToRedactaUser($redactaUser, 1);
     }
 
     /**
