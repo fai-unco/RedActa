@@ -135,7 +135,7 @@ class AnexoController extends Controller
             'status' => 200,
             'message' => 'OK',
             'data' => [
-                'id' => $id
+                'id' => $anexo->id
             ]       
         ]);        
     }
