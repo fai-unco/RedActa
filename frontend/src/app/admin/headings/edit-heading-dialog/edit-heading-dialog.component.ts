@@ -33,7 +33,7 @@ export class EditHeadingDialogComponent implements OnInit {
     this.headingForm = this.fb.group({
       description: this.fb.control(this.heading? this.heading.description: '', [Validators.required]),
       issuerId: this.fb.control(this.heading? this.heading.issuerId : '', [Validators.required]),
-      fileId: this.fb.control(this.heading && this.heading.file? this.heading.file.id : '', [Validators.required])
+      fileId: this.fb.control(this.heading && this.heading.file? this.heading.file.id : '')
     })
     this.loading = false;
     this.file = this.heading && this.heading.file? this.heading.file : null;
