@@ -4,7 +4,7 @@ import { NbDialogService } from '@nebular/theme';
 import { EditHeadingDialogComponent } from './edit-heading-dialog/edit-heading-dialog.component';
 import { ApiConnectionService } from 'src/app/api-connection.service';
 import { ErrorHandlerService } from 'src/app/shared/error-handler/error-handler.service';
-import { finalize  } from 'rxjs';
+import { finalize  , forkJoin } from 'rxjs';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -17,9 +17,9 @@ export class HeadingsComponent implements OnInit {
   loading!: boolean;
   headingForm!: FormGroup;
   headings: any [] = [];
-  heading! :any;
   issuers: any [] = [];
   selectedIssuerId: any;
+  currentSettings: any = null; // <-- nueva propiedad para guardar settings actuales
 
   constructor(protected api: ApiConnectionService,
               protected fb: FormBuilder,
@@ -55,7 +55,7 @@ export class HeadingsComponent implements OnInit {
       closeOnBackdropClick: false
     }).onClose.subscribe((removed: boolean) => {
       if (removed) {
-        this.loadIssuers();
+        this.loadHeadings();
       }
     });
   }
@@ -63,12 +63,7 @@ export class HeadingsComponent implements OnInit {
   selectIssuer(newIssuerId: any) {
     this.loading = true;
     this.selectedIssuerId = newIssuerId;
-    this.api.get(`headings?issuerId=${this.selectedIssuerId}&includeFile=true`)
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: (res: any) => this.headings = res.data,
-        error: e => this.errorHandler.handle(e)
-      });
+    this.loadHeadings();
   }
 
   loadIssuers() {
@@ -79,5 +74,22 @@ export class HeadingsComponent implements OnInit {
         next: (res: any) => this.issuers = res.data,
         error: e => this.errorHandler.handle(e)
       });
+  }
+
+  loadHeadings() {
+    if (this.selectedIssuerId) {
+      this.loading = true;
+      const headings$ = this.api.get(`headings?issuerId=${this.selectedIssuerId}&includeFile=true`);
+      const settings$ = this.api.get(`issuer_settings?issuer_id=${this.selectedIssuerId}`);
+      forkJoin([headings$, settings$])
+        .pipe(finalize(() => this.loading = false))
+        .subscribe({
+          next: ([headingsRes, settingsRes]: any) => {
+            this.headings = headingsRes.data || [];
+            this.currentSettings = settingsRes?.data || null;
+          },
+          error: e => this.errorHandler.handle(e)
+        });
+    }
   }
 }
