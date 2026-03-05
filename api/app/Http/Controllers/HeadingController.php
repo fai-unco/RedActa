@@ -60,7 +60,9 @@ class HeadingController extends Controller
     {
         $this->authorize('create', Heading::class);
         $validatedData = $request->validated();
+        $file = File::find($validatedData['file_id']);
         $heading = Heading::create($validatedData);
+        $heading->file()->save($file);
         return response()->json([
             'status' => 201,
             'message' => 'OK',
@@ -134,6 +136,12 @@ class HeadingController extends Controller
      */
     public function destroy(Heading $heading)
     {
-        //
+        $this->authorize('delete', $heading);
+        $heading->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'OK',
+            'data' => $heading           
+        ]);
     }
 }
