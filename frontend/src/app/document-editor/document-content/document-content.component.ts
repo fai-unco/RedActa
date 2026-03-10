@@ -334,6 +334,8 @@ export class DocumentContentComponent implements OnInit {
     this.form.get('name')?.setValue('Nuevo documento');
     this.form.get('hasAnexoUnico')?.setValue(false);
     this.form.get('number')?.setValue(null);
+    this.form.get('headingId')?.setValue(this.issuerSettings? this.issuerSettings.suggestedHeadingId : null);
+    this.form.get('issueDate')?.setValue(null);
     this.router.navigate([], 
       {
         relativeTo: this.route,
