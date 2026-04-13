@@ -80,7 +80,7 @@ export class GroupsTabComponent implements OnInit {
     });
   }
 
-  private loadGroups(): void {
+  loadGroups(): void {
     this.loading = true;
     this.api.get('groups?viewAll=true')
       .pipe(finalize(() => (this.loading = false))) 

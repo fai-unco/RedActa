@@ -4,6 +4,7 @@ import { EditUserDialogComponent } from '../../shared/edit-user-dialog/edit-user
 import { SignupInvitationsTabComponent } from './signup-invitations-tab/signup-invitations-tab.component';
 import { filter, Subscription } from 'rxjs';
 import { EditGroupDialogComponent } from './edit-group-dialog/edit-group-dialog.component';
+import { GroupsTabComponent } from './groups-tab/groups-tab.component';
 
 
 
@@ -15,6 +16,7 @@ import { EditGroupDialogComponent } from './edit-group-dialog/edit-group-dialog.
 export class UsersComponent implements OnInit {
 
   @ViewChild('invitationsTab') invitationsTab?: SignupInvitationsTabComponent;
+  @ViewChild('groupsTab') groupsTab?: GroupsTabComponent;
   addOptionsMenuSubscription!: Subscription;
   addOptions = [
     { title: 'Crear cuenta' },
@@ -56,6 +58,8 @@ export class UsersComponent implements OnInit {
       closeOnBackdropClick: false
     }).onClose.subscribe((success: boolean) => {
       if (success) {
+        console.log(success);
+        this.groupsTab?.loadGroups();
         //this.invitationsTab?.loadInvitations();
       }
     });
