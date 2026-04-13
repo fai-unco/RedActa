@@ -33,7 +33,7 @@ export class HeadingsComponent implements OnInit {
   openEditHeadingDialog(heading: any = null) {
     let issuers = this.issuers;
     this.dialogService.open(EditHeadingDialogComponent, {
-      context: { heading, issuers },
+      context: { heading, issuers, issuerId: this.selectedIssuerId },
       closeOnBackdropClick: false
     }).onClose.subscribe((success: boolean) => {
       if (success) {

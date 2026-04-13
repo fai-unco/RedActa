@@ -18,7 +18,7 @@ export class EditHeadingDialogComponent implements OnInit {
   success: boolean = false;
   successMsg: string = '';
   @Input() issuers: any[] = [];
-  issuerId!: any;
+  @Input() issuerId!: any;
   file: any;
   fileHasBeenUploaded: boolean = false;
   deletedFileId!: any;
