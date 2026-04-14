@@ -20,7 +20,7 @@
 			<thead class="document-header">
 				<tr>
 					<th>
-						<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$document->heading->file->id.'.png' }}">
+						<img src="{{ env('STATIC_FILES_DIRECTORY').'/uploads/'.$document->heading->file->id.'.'.pathinfo($document->heading->file->filename, PATHINFO_EXTENSION) }}">
 						<hr>
 					</th>
 				</tr>
