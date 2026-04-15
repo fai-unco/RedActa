@@ -28,6 +28,7 @@ class StoreRedactaUserRequest extends FormRequest
             'last_name' => 'required|string|max:255',        
             'email' => 'required|email|unique:redacta_users',              
             'password' => 'required|confirmed|min:8',
+            'role_id' => 'sometimes|exists:roles,id',
         ];
     }
 }

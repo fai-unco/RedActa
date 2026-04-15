@@ -19,10 +19,6 @@ use Carbon\Carbon;
 
 class AuthenticationController extends Controller
 {
-    /**
-     * Maneja la peticion de creacion de nuevo usuario
-     * 
-     */
     public function register (StoreRedactaUserRequest $request)
     {
         if (!$request->has('token')) {
@@ -45,7 +41,13 @@ class AuthenticationController extends Controller
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
         ]);
-        $user->assignRole('editor');
+        if ($invitation->role_id) {
+            $role = \Spatie\Permission\Models\Role::find($invitation->role_id);
+            $user->assignRole($role->name);
+        } 
+        if (!$user->roles->isNotEmpty()) {
+            $user->assignRole('editor');
+        }
         $invitation->markAsUsed();
         return response()->json([
             'status' => 201,
@@ -54,10 +56,6 @@ class AuthenticationController extends Controller
         ], 200);
     }
 
-    /**
-     * Maneja la peticion de inicio de sesión
-     * 
-     */
     public function login (Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))){
@@ -83,10 +81,6 @@ class AuthenticationController extends Controller
         ], 200);
     }
 
-    /**
-     * Validate sign up invitation token
-     * 
-     */
     public function validateSignupInvitation(Request $request) {
         if (!$request->has('token')) {
             return response()->json([
@@ -106,10 +100,6 @@ class AuthenticationController extends Controller
         ], 200);
     }
     
-    /**
-     * Maneja la peticion de cierre de sesión
-     * 
-     */
     public function logout (Request $request)
     {
         $request->user()->currentAccessToken()->delete();
