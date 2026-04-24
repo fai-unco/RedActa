@@ -30,7 +30,7 @@
                         <nb-icon icon="close-outline" status="primary"></nb-icon>
                     </button>
                 </div>
-                <input *ngIf="!file" type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload nbInput fullWidth>
+                <input *ngIf="!file" type="file" accept=".png, .jpg, .jpeg" class="file-input" (change)="onFileSelected($event)" #fileUpload nbInput fullWidth>
                 <div *ngIf="headingForm.get('fileId')?.invalid && headingForm.get('fileId')?.touched" class="text-danger mt-1">
                     Se requiere un archivo para el membrete.
                 </div>
