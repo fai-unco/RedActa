@@ -107,7 +107,7 @@
 		</table>	
 		@if($isCopy)
 			<div class="footer">
-				<p>ES COPIA FIEL</p>
+				ES COPIA FIEL
 				<div style="display: flex; flex-flow: row-reverse;">
 					<div class="true-copy-stamp">
 						@if(isset($document->trueCopyStamp))
