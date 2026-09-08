@@ -36,7 +36,7 @@ class ShareDocumentMailService extends Mailable
     public function __construct(
         protected int $documentId,
         protected RedactaUser $sender,
-
+        protected string $documentName
     ) {}
 
     /**
@@ -51,11 +51,14 @@ class ShareDocumentMailService extends Mailable
 
     public function build()
     {
+        $senderFullName = $this->sender->name.' '.$this->sender->last_name;
         return $this->view('emails.share-document')
-            ->subject('Invitación a documento')
+            ->replyTo($this->sender->email, $senderFullName)
+            ->subject('Invitación a documento: '.$this->documentName)
             ->with([
                 'url' => env('APP_URL').'/documentos/editar?id='.$this->documentId,
-                'sender' => $this->sender->name.' '.$this->sender->last_name
+                'sender' => $senderFullName,
+                'documentName' => $this->documentName
             ]);
     }
 

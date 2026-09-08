@@ -89,7 +89,7 @@ class DocumentSharedAccessController extends Controller
         foreach ($usersToNotify as $user) {
             if ($user->id != $request->user()->id) {
                 Mail::to($user->email)
-                    ->send(new ShareDocumentMailService($document->id, $request->user()));
+                    ->send(new ShareDocumentMailService($document->id, $request->user(), $document->name));
             }
         }
         return response()->json([
