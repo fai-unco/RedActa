@@ -1,7 +1,7 @@
 <nb-card>
     <nb-card-header>{{ user ? 'Editar cuenta' : 'Agregar cuenta' }}</nb-card-header>
     <nb-card-body>
-        <ng-container *ngIf="!loading">
+        <!--ng-container *ngIf="!loading"-->
             <form *ngIf="!saveSuccess" [formGroup]="userForm">
                 <div class="form-group" *ngIf="user">
                     <label class="label col-form-label">Nombre</label>
@@ -65,10 +65,10 @@
             <div class="d-flex justify-content-center" *ngIf="saveSuccess">
                 <div class="text-success" style="font-size:1.1em;">{{successMsg}}</div>
             </div>
-        </ng-container>
-        <div class="d-flex justify-content-center" *ngIf="loading">
+        <!--/ng-container-->
+        <!--div class="d-flex justify-content-center" *ngIf="loading">
             <nb-spinner status="primary"></nb-spinner>
-        </div>
+        </div-->
     </nb-card-body>
     <nb-card-footer *ngIf="!loading" class="d-flex justify-content-end" style="gap: 0.5rem;">
         <button nbButton *ngIf="!saveSuccess" status="primary" class="mr-2" (click)="submit()" [disabled]="userForm.invalid">Aceptar</button>
@@ -76,3 +76,7 @@
         <button *ngIf="saveSuccess" nbButton status="primary" (click)="close()">Cerrar</button>
     </nb-card-footer>
 </nb-card>
+
+<div class="d-flex justify-content-center" *ngIf="loading">
+  <nb-spinner status="primary"></nb-spinner>
+</div>
