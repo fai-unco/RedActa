@@ -1,0 +1,30 @@
+<nb-card *ngIf="!loading">
+  <nb-card-header>Crear invitación de registro</nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="!success">
+      <form [formGroup]="signupInvitationForm">
+        <div class="form-group">
+          <label class="label col-form-label">Email</label>
+          <input nbInput fullWidth formControlName="email" placeholder="Ingresar email de invitación">
+          <div *ngIf="signupInvitationForm.get('email')?.invalid && signupInvitationForm.get('email')?.touched" class="text-danger mt-1">
+            El email es obligatorio.
+          </div>
+        </div>        
+      </form>
+    </ng-container>
+    <div class="text-success text-center" *ngIf="success">
+      Se ha enviado un correo al usuario con las instrucciones para crear su cuenta
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="d-flex justify-content-end" style="gap: .5rem;">
+    <button *ngIf="!success" nbButton status="success" (click)="submit()" [disabled]="signupInvitationForm.invalid">
+        Crear invitación
+    </button>
+    <button *ngIf="!success" nbButton status="basic" (click)="close()">Cancelar</button>
+    <button *ngIf="success" nbButton status="primary" (click)="close()">Cerrar</button>
+  </nb-card-footer>
+</nb-card>
+
+<div class="d-flex justify-content-center" *ngIf="loading">
+  <nb-spinner status="primary"></nb-spinner>
+</div>

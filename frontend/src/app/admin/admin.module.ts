@@ -14,6 +14,7 @@ import { HeadingsComponent } from './headings/headings.component';
 import { EditHeadingDialogComponent } from './headings/edit-heading-dialog/edit-heading-dialog.component';
 import { GroupsTabComponent } from './users/groups-tab/groups-tab.component';
 import { EditGroupDialogComponent } from './users/edit-group-dialog/edit-group-dialog.component';
+import { AddSignupInvitationComponent } from './users/add-signup-invitation/add-signup-invitation.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { EditGroupDialogComponent } from './users/edit-group-dialog/edit-group-d
     EditHeadingDialogComponent,
     GroupsTabComponent,
     EditGroupDialogComponent,
+    AddSignupInvitationComponent
   ],
   imports: [
     CommonModule,

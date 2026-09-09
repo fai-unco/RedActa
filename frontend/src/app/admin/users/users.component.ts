@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NbDialogService, NbMenuService } from '@nebular/theme';
-import { EditUserDialogComponent } from '../../shared/edit-user-dialog/edit-user-dialog.component';
+import { AddSignupInvitationComponent } from './add-signup-invitation/add-signup-invitation.component';
 import { SignupInvitationsTabComponent } from './signup-invitations-tab/signup-invitations-tab.component';
 import { filter, Subscription } from 'rxjs';
 import { EditGroupDialogComponent } from './edit-group-dialog/edit-group-dialog.component';
@@ -44,7 +44,7 @@ export class UsersComponent implements OnInit {
   }
 
   addUser() {
-    this.dialogService.open(EditUserDialogComponent, {
+    this.dialogService.open(AddSignupInvitationComponent, {
       closeOnBackdropClick: false
     }).onClose.subscribe((success: boolean) => {
       if (success) {
