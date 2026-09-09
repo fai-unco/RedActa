@@ -1,0 +1,19 @@
+<nb-layout>
+    <nb-layout-column class="d-flex align-items-center justify-content-center">
+        <app-edit-user-dialog
+            *ngIf="!loading && !successMsg && !errorMsg"
+            [user]="{email: invitationEmail}"
+            [allowRolesSelection]="false"
+            (saved)="onSaved($event)"
+            [invitationToken]="invitationToken">
+        </app-edit-user-dialog>
+        <nb-card *ngIf="!loading && (errorMsg || successMsg)" class="w-50">
+            <nb-card-body>
+                <div *ngIf="errorMsg" class="text-danger text-center">{{ errorMsg }}</div>
+                <div *ngIf="successMsg" class="text-success text-center">{{ successMsg }}</div>
+            </nb-card-body>
+        </nb-card>
+        <nb-spinner *ngIf="loading" class="m-5"></nb-spinner>
+    </nb-layout-column>
+</nb-layout>
+
